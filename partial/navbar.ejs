@@ -17,7 +17,7 @@ const isActive = (u) => {
   if (u === "/") return navUrl === "/" || navUrl === "";
   return typeof navUrl === "string" && navUrl.indexOf(u) === 0;
 };
-%><header id="navbar" data-mode="<%= nav.mode || 'dynamic' %>"<%- widthFull ? ' data-width-full="true"' : '' %>>
+%><header id="navbar" data-mode="<%= nav.mode || 'dynamic' %>" data-width-full="<%= widthFull ? 'true' : 'false' %>" data-is-home="<%= view === 'home' ? 'true' : 'false' %>">
   <div class="navbar-inner">
     <a class="navbar-brand" href="/" aria-label="<%= site.title %>">
       <% if (logo.light) { %><img class="navbar-logo logo-light" src="<%= logo.light %>" alt="" width="28" height="28" fetchpriority="high"><% } %>

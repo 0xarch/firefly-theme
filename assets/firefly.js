@@ -43,7 +43,7 @@
     function update() {
       var y = window.pageYOffset;
       var max = document.documentElement.scrollHeight - window.innerHeight;
-      nav.classList.toggle("scrolled", y > 50);
+      nav.classList.toggle("scrolled", y > 8);
       if (mode === "dynamic") {
         if (y > lastY && y > 200) nav.classList.add("hidden-up");
         else nav.classList.remove("hidden-up");
@@ -368,6 +368,10 @@
       var v = doc.body.getAttribute(a);
       if (v === null) body.removeAttribute(a); else body.setAttribute(a, v);
     });
+    // the navbar survives pjax, so keep its home/non-home flag in sync (the
+    // mobile banner glass is only used on the home page)
+    var nav = document.getElementById("navbar");
+    if (nav) nav.setAttribute("data-is-home", body.getAttribute("data-view") === "home" ? "true" : "false");
 
     var anchor = document.getElementById("back-to-top");
     var oldWall = document.getElementById("wallpaper-wrapper");
