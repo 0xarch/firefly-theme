@@ -144,6 +144,13 @@ postList:
     words: true
     reading: true
 
+license:
+  # show a licence notice at the end of every post; a post can override the
+  # name/link with `license:` / `licenseUrl:` (or `license-url:`) frontmatter
+  enable: true
+  name: "CC BY-NC-SA 4.0"
+  url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+
 # ---- reserved integration hook points (disabled by default) ----------------
 comments:
   enable: false

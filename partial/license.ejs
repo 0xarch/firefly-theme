@@ -1,0 +1,34 @@
+<%
+/**
+ * Licence notice shown at the end of a post (theme.license).
+ * Mirrors the upstream Firefly block: the post title + link, then
+ * Author / Published at / License, with a large watermark icon.
+ *
+ * A single post can override the licence with frontmatter:
+ *   license: CC BY 4.0
+ *   licenseUrl: https://creativecommons.org/licenses/by/4.0/
+ */
+const lic = theme.license || {};
+const meta = (page && page.meta) || {};
+const show = lic.enable !== false;
+const name = meta.license || lic.name || "";
+const url = meta.licenseUrl || meta["license-url"] || lic.url || "";
+const author = meta.author || (theme.profile && theme.profile.name) || site.title;
+const siteUrl = (site.extra && site.extra.seo && site.extra.seo.siteUrl) || "";
+const postUrl = siteUrl.replace(/\/+$/, "") + (page.url || "");
+const isCc = /creative\s*commons|\bcc(\s|-|0)/i.test(name);
+%>
+<% if (show && name) { %>
+<section class="post-license" aria-label="<%= t.license.license %>">
+  <div class="license-watermark" aria-hidden="true"><%- partial('icon', { name: isCc ? 'cc' : 'copyright', size: 160 }) %></div>
+  <h2 class="license-title"><%= meta.title %></h2>
+  <% if (postUrl) { %>
+  <a class="license-url" href="<%= postUrl %>" rel="noopener"><%- partial('icon', { name: 'link', size: 15 }) %><span><%= postUrl %></span></a>
+  <% } %>
+  <dl class="license-fields">
+    <div class="license-field"><dt><%= t.license.author %></dt><dd><%= author %></dd></div>
+    <% if (meta.date) { %><div class="license-field"><dt><%= t.license.published_at %></dt><dd><time datetime="<%= meta.date %>"><%= h.formatDate(meta.date, "YYYY-MM-DD") %></time></dd></div><% } %>
+    <div class="license-field"><dt><%= t.license.license %></dt><dd><% if (url) { %><a href="<%= url %>" rel="license noopener" target="_blank"><%= name %></a><% } else { %><%= name %><% } %></dd></div>
+  </dl>
+</section>
+<% } %>

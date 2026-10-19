@@ -28,5 +28,6 @@ const cats = Array.isArray(meta.categories) ? meta.categories : [];
     <% } else { %><span class="neighbor placeholder"></span><% } %>
   </nav>
 </article>
+<%- partial('license') %>
 <%- partial('comments') %>
 <%- partial('footer', { view: 'post', navUrl: page.url, navTitle: meta.title }) %>

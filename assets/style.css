@@ -193,6 +193,7 @@ hr { border: none; border-top: 1px solid var(--line-divider); }
 .widget-card,
 .post-card,
 .post-article,
+.post-license,
 .listing-head,
 .pagination {
   background: var(--card-bg);
@@ -202,6 +203,7 @@ hr { border: none; border-top: 1px solid var(--line-divider); }
 :root:not(.dark) .widget-card,
 :root:not(.dark) .post-card,
 :root:not(.dark) .post-article,
+:root:not(.dark) .post-license,
 :root:not(.dark) .listing-head {
   box-shadow: 0 2px 12px -8px rgb(0 0 0 / 0.25);
 }
@@ -681,6 +683,31 @@ details:not([open]) > summary .chev { transform: rotate(-90deg); }
 
 /* comments */
 .comments { background: var(--card-bg); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; }
+
+/* ==========================================================================
+   Post licence notice
+   ========================================================================== */
+.post-license { position: relative; overflow: hidden; padding: 1.5rem 1.6rem; }
+.license-watermark {
+  position: absolute; right: -1.2rem; bottom: -2rem;
+  color: var(--primary); opacity: 0.08; pointer-events: none;
+}
+:root.dark .license-watermark { opacity: 0.12; }
+.license-title { font-size: 1.15rem; font-weight: 700; color: var(--deep-text); }
+.license-url {
+  display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.35rem;
+  font-size: 0.85rem; color: var(--content-meta); word-break: break-all;
+}
+.license-url:hover { color: var(--primary); }
+.license-fields {
+  position: relative; display: grid; gap: 0.5rem; margin-top: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}
+.license-field { display: flex; flex-direction: column; gap: 0.15rem; }
+.license-field dt { font-size: 0.78rem; color: var(--content-meta); }
+.license-field dd { font-size: 0.95rem; font-weight: 600; color: var(--deep-text); }
+.license-field dd a { color: var(--primary); }
+.license-field dd a:hover { text-decoration: underline; }
 
 /* ==========================================================================
    Pagination

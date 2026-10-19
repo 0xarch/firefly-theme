@@ -51,6 +51,12 @@ post:
   back_to_top: Back to top
   comments: Comments
 
+license:
+  author: Author
+  published_at: Published on
+  license: License
+  post_url: Post link
+
 footer:
   rights: All rights reserved
   powered_by: "Powered by {0}"

@@ -51,6 +51,12 @@ post:
   back_to_top: 回到顶部
   comments: 评论
 
+license:
+  author: 作者
+  published_at: 发布时间
+  license: 许可协议
+  post_url: 文章链接
+
 footer:
   rights: 保留所有权利
   powered_by: "由 {0} 强力驱动"
