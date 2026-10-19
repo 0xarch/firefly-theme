@@ -72,6 +72,15 @@
   }
 
   /* ---------- navbar ---------- */
+  /* The sticky sidebar columns are anchored under the navbar; when the bar
+     slides away (dynamic mode) their tops must rise with it. The bar's
+     `hidden-up` class is the single source of truth, so mirror it onto <body>
+     where the CSS can reach it (body.navbar-hidden). */
+  function syncNavbarHidden(nav) {
+    var el = nav || document.getElementById("navbar");
+    document.body.classList.toggle("navbar-hidden", !!(el && el.classList.contains("hidden-up")));
+  }
+
   function initNavbar() {
     var nav = $("#navbar");
     if (!nav) return;
@@ -87,6 +96,7 @@
         if (y > lastY && y > 200) nav.classList.add("hidden-up");
         else nav.classList.remove("hidden-up");
       }
+      syncNavbarHidden(nav);
       var bar = $("#progress-bar");
       if (bar) {
         var pct = max > 0 ? (y / max) * 100 : 0;
@@ -443,6 +453,9 @@
     // mobile banner glass is only used on the home page)
     var nav = document.getElementById("navbar");
     if (nav) nav.setAttribute("data-is-home", body.getAttribute("data-view") === "home" ? "true" : "false");
+    // the body class is reset with className above; the navbar element survives
+    // pjax, so re-derive the sidebar offset state from it
+    syncNavbarHidden(nav);
 
     var anchor = document.getElementById("back-to-top");
     var oldWall = document.getElementById("wallpaper-wrapper");

@@ -443,7 +443,12 @@ html[data-wallpaper-mode="none"] #wallpaper-wrapper { display: none; }
    (see partial/sidebar.ejs): a listing page has no TOC, so its right column
    collapses instead of leaving an empty gap. */
 @media (min-width: 1024px) {
-  .sidebar { position: sticky; top: calc(var(--navbar-h) + 1rem); order: 0; }
+  /* the sticky columns are anchored under the navbar; `top` is animated so the
+     tops travel with the bar when it slides away (see body.navbar-hidden) */
+  .sidebar { position: sticky; top: calc(var(--navbar-h) + 1rem); order: 0; transition: top var(--dur) var(--ease); }
+  /* dynamic navbar hidden (scrolled down): the bar no longer covers the top, so
+     the sticky column tops rise to where the bar used to be */
+  body[data-navbar-mode="dynamic"].navbar-hidden .sidebar { top: 1rem; }
   #content-column { order: 0; }
   #main-grid:has(> .sidebar-left:not(.is-empty)) { grid-template-columns: var(--sidebar-w) minmax(0, 1fr); }
   #main-grid:has(> .sidebar-right:not(.is-empty)) { grid-template-columns: minmax(0, 1fr) var(--sidebar-w); }
