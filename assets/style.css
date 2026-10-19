@@ -11,6 +11,7 @@
   --page-bg: oklch(0.95 0.01 var(--hue));
   --card-bg: #ffffff;
   --float-panel-bg: #ffffff;
+  --card-bg-hover: oklch(0.98 0.005 var(--hue));
 
   --btn-content: oklch(0.55 0.12 var(--hue));
   --btn-regular-bg: oklch(0.95 0.025 var(--hue));
@@ -73,6 +74,7 @@
   --page-bg: oklch(0.16 0.014 var(--hue));
   --card-bg: oklch(0.23 0.015 var(--hue));
   --float-panel-bg: oklch(0.19 0.015 var(--hue));
+  --card-bg-hover: oklch(0.30 0.03 var(--hue));
 
   --btn-content: oklch(0.75 0.1 var(--hue));
   --btn-regular-bg: oklch(0.33 0.035 var(--hue));
@@ -193,7 +195,6 @@ hr { border: none; border-top: 1px solid var(--line-divider); }
 .widget-card,
 .post-card,
 .post-article,
-.post-license,
 .listing-head,
 .pagination {
   background: var(--card-bg);
@@ -203,7 +204,6 @@ hr { border: none; border-top: 1px solid var(--line-divider); }
 :root:not(.dark) .widget-card,
 :root:not(.dark) .post-card,
 :root:not(.dark) .post-article,
-:root:not(.dark) .post-license,
 :root:not(.dark) .listing-head {
   box-shadow: 0 2px 12px -8px rgb(0 0 0 / 0.25);
 }
@@ -674,25 +674,36 @@ details:not([open]) > summary .chev { transform: rotate(-90deg); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.post-neighbors { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 2rem; }
+/* Neighbour links: their own cards below the article (upstream keeps them out
+   of the post card), stacked on phones and side by side from md up. */
+.post-neighbors { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
 .neighbor {
   display: flex; flex-direction: column; gap: 0.25rem; padding: 0.85rem 1rem;
-  border-radius: var(--radius-md); background: var(--btn-regular-bg);
+  border-radius: var(--radius-lg); background: var(--card-bg); box-shadow: var(--shadow-card);
   transition: background-color var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
-.neighbor:hover { background: var(--btn-regular-bg-hover); transform: translateY(-2px); }
+:root:not(.dark) .neighbor { box-shadow: 0 2px 12px -8px rgb(0 0 0 / 0.25); }
+.neighbor:hover { background: var(--card-bg-hover); transform: translateY(-2px); }
 .neighbor.newer { text-align: right; align-items: flex-end; }
 .neighbor-label { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.78rem; color: var(--content-meta); }
 .neighbor-title { font-weight: 600; font-size: 0.95rem; }
-.neighbor.placeholder { background: transparent; }
+.neighbor.placeholder { background: transparent; box-shadow: none; }
+@media (min-width: 768px) {
+  .post-neighbors { grid-template-columns: 1fr 1fr; }
+}
 
 /* comments */
 .comments { background: var(--card-bg); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; }
 
 /* ==========================================================================
-   Post licence notice
+   Post licence notice — a tinted block inside the article card (upstream's
+   `license-container`, `--license-block-bg`)
    ========================================================================== */
-.post-license { position: relative; overflow: hidden; padding: 1.5rem 1.6rem; }
+.post-license {
+  position: relative; overflow: hidden; margin-top: 2rem;
+  padding: 1.4rem 1.5rem; border-radius: var(--radius-md);
+  background: var(--btn-regular-bg);
+}
 .license-watermark {
   position: absolute; right: -1.2rem; bottom: -2rem;
   color: var(--primary); opacity: 0.08; pointer-events: none;

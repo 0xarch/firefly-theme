@@ -19,15 +19,17 @@ const cats = Array.isArray(meta.categories) ? meta.categories : [];
   </div>
   <div class="seg-loading" hidden aria-hidden="true"><span class="spinner"></span></div>
 
-  <nav class="post-neighbors">
-    <% if (meta._next && meta._next.meta && meta._next.meta.title) { %>
-    <a class="neighbor older" href="<%= meta._next.url %>"><span class="neighbor-label"><%- partial('icon', { name: 'chevron-left', size: 16 }) %><%= t.post.next %></span><span class="neighbor-title"><%= meta._next.meta.title %></span></a>
-    <% } else { %><span class="neighbor placeholder"></span><% } %>
-    <% if (meta._prev && meta._prev.meta && meta._prev.meta.title) { %>
-    <a class="neighbor newer" href="<%= meta._prev.url %>"><span class="neighbor-label"><%= t.post.prev %><%- partial('icon', { name: 'chevron-right', size: 16 }) %></span><span class="neighbor-title"><%= meta._prev.meta.title %></span></a>
-    <% } else { %><span class="neighbor placeholder"></span><% } %>
-  </nav>
+  <% /* the licence notice belongs to the article card (like upstream Firefly);
+        the neighbours are their own cards below it. */ %>
+  <%- partial('license') %>
 </article>
-<%- partial('license') %>
+<nav class="post-neighbors">
+  <% if (meta._next && meta._next.meta && meta._next.meta.title) { %>
+  <a class="neighbor older" href="<%= meta._next.url %>"><span class="neighbor-label"><%- partial('icon', { name: 'chevron-left', size: 16 }) %><%= t.post.next %></span><span class="neighbor-title"><%= meta._next.meta.title %></span></a>
+  <% } else { %><span class="neighbor placeholder"></span><% } %>
+  <% if (meta._prev && meta._prev.meta && meta._prev.meta.title) { %>
+  <a class="neighbor newer" href="<%= meta._prev.url %>"><span class="neighbor-label"><%= t.post.prev %><%- partial('icon', { name: 'chevron-right', size: 16 }) %></span><span class="neighbor-title"><%= meta._prev.meta.title %></span></a>
+  <% } else { %><span class="neighbor placeholder"></span><% } %>
+</nav>
 <%- partial('comments') %>
 <%- partial('footer', { view: 'post', navUrl: page.url, navTitle: meta.title }) %>
