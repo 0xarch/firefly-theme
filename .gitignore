@@ -1,0 +1,10 @@
+# npm tooling for the icon pipeline (devDependencies only — the theme itself
+# ships no runtime dependencies, and node_modules is never part of a release)
+node_modules/
+
+# Bundled demo media (wallpapers, avatar, logo, favicons) is deliberately not
+# part of this repository: the files come from third-party artwork and would
+# pollute the source tree. The default theme.yaml still points at
+# /assets/images/..., so copy your own files there (or under your site's
+# source/assets/images/) — see the README.
+assets/images/

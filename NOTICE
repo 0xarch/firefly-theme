@@ -9,9 +9,11 @@ projects. The EJS templates, CSS and JavaScript in this repository are an
 original implementation for the Ngwg rendering pipeline, not a copy of the
 upstream Astro/Svelte/Starlight sources.
 
-The bundled wallpapers (`assets/images/wallpaper/*`), author avatar
-(`assets/images/avatar.avif`) and logo (`assets/images/logo/*`) are copied
-verbatim from the Firefly project and remain under their original MIT license:
+This repository does **not** distribute media assets: the demo wallpapers
+(`assets/images/wallpaper/*`), author avatar (`assets/images/avatar.avif`) and
+logo (`assets/images/logo/*`) are listed in `.gitignore`. When they are present
+in a working copy they are copied verbatim from the Firefly project and remain
+under their original MIT license:
 
 - Copyright (c) 2024 saicaca — fuwari
 - Copyright (c) 2025 CuteLeaf — Firefly

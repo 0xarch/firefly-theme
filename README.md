@@ -133,6 +133,11 @@ theme can stay dependency-free while leaving room for these features:
   links only to the per-slug pages.
 - The statistics card's running days and last-activity rows are computed in the
   browser; without JavaScript they keep the values from build time.
+- No media is shipped with the theme: `assets/images/` (wallpapers, avatar,
+  logo, favicons) is git-ignored, while the default `theme.yaml` still points at
+  `/assets/images/...`. A fresh clone therefore renders without those images
+  until you copy your own files into the theme's `assets/images/` or into your
+  site's `source/assets/images/`.
 
 ## Credits & license
 
