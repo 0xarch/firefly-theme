@@ -1,0 +1,32 @@
+<%
+const meta = page.meta || {};
+const tags = Array.isArray(meta.tags) ? meta.tags : [];
+const cats = Array.isArray(meta.categories) ? meta.categories : [];
+%>
+<%- partial('header', { view: 'post', navUrl: page.url, navTitle: meta.title }) %>
+<article class="post-article">
+  <header class="post-header">
+    <h2 class="post-title"><%= meta.title %></h2>
+    <div class="post-header-meta">
+      <% if (meta.date) { %><span class="meta-item"><%- partial('icon', { name: 'calendar', size: 16 }) %><time datetime="<%= meta.date %>"><%= h.formatDate(meta.date, "YYYY-MM-DD") %></time></span><% } %>
+      <% if (tags.length) { %><span class="meta-item post-tags"><%- partial('icon', { name: 'tag', size: 16 }) %><% for (const tag of tags) { %><a class="tag-item" href="/tags/<%= h.slugify(tag) %>/">#<%= tag %></a><% } %></span><% } %>
+      <% if (cats.length) { %><span class="meta-item post-cats"><%- partial('icon', { name: 'folder', size: 16 }) %><% for (const c of cats) { %><a class="meta-link" href="/categories/<%= h.slugify(c) %>/"><%= c %></a><% } %></span><% } %>
+    </div>
+  </header>
+
+  <div class="post-body markdown" id="post-body">
+    <%- page.html %>
+  </div>
+  <div class="seg-loading" hidden aria-hidden="true"><span class="spinner"></span></div>
+
+  <nav class="post-neighbors">
+    <% if (meta._next && meta._next.meta && meta._next.meta.title) { %>
+    <a class="neighbor older" href="<%= meta._next.url %>"><span class="neighbor-label"><%- partial('icon', { name: 'chevron-left', size: 16 }) %><%= t.post.next %></span><span class="neighbor-title"><%= meta._next.meta.title %></span></a>
+    <% } else { %><span class="neighbor placeholder"></span><% } %>
+    <% if (meta._prev && meta._prev.meta && meta._prev.meta.title) { %>
+    <a class="neighbor newer" href="<%= meta._prev.url %>"><span class="neighbor-label"><%= t.post.prev %><%- partial('icon', { name: 'chevron-right', size: 16 }) %></span><span class="neighbor-title"><%= meta._prev.meta.title %></span></a>
+    <% } else { %><span class="neighbor placeholder"></span><% } %>
+  </nav>
+</article>
+<%- partial('comments') %>
+<%- partial('footer', { view: 'post', navUrl: page.url, navTitle: meta.title }) %>

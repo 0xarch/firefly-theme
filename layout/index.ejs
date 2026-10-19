@@ -1,0 +1,10 @@
+<%- partial('header', { view: 'home', navUrl: '/', navTitle: site.title }) %>
+<section class="post-list" data-layout="<%= (theme.postList || {}).layout || 'list' %>">
+  <% if (page.posts && page.posts.length) { %>
+    <% for (const post of page.posts) { %><%- partial('post-card', { post }) %><% } %>
+  <% } else { %>
+    <p class="empty-note"><%= t.listing.empty %></p>
+  <% } %>
+</section>
+<%- partial('pagination') %>
+<%- partial('footer', { view: 'home', navUrl: '/' }) %>

@@ -1,0 +1,9 @@
+<%- partial('header', { view: 'tag', navUrl: `/tags/${h.slugify(page.tag)}/`, navTitle: '#' + page.tag, bannerTitle: '#' + page.tag }) %>
+<div class="listing-head">
+  <h2 class="listing-title"># <%= page.tag %></h2>
+  <p class="listing-subtitle"><%= h.t("listing.post_count", page.posts.length) %></p>
+</div>
+<section class="post-list" data-layout="<%= (theme.postList || {}).layout || 'list' %>">
+  <% for (const post of page.posts) { %><%- partial('post-card', { post }) %><% } %>
+</section>
+<%- partial('footer', { view: 'tag', navUrl: `/tags/${h.slugify(page.tag)}/` }) %>

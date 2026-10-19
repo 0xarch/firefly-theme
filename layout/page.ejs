@@ -1,0 +1,18 @@
+<%
+const meta = page.meta || {};
+%>
+<%- partial('header', { view: 'page', navUrl: page.url, navTitle: meta.title }) %>
+<article class="post-article page-article">
+  <% if (meta.title) { %>
+  <header class="post-header">
+    <h2 class="post-title"><%= meta.title %></h2>
+    <% if (meta.date) { %>
+    <div class="post-header-meta"><span class="meta-item"><%- partial('icon', { name: 'calendar', size: 16 }) %><time datetime="<%= meta.date %>"><%= h.formatDate(meta.date, "YYYY-MM-DD") %></time></span></div>
+    <% } %>
+  </header>
+  <% } %>
+  <div class="post-body markdown" id="post-body">
+    <%- page.html %>
+  </div>
+</article>
+<%- partial('footer', { view: 'page', navUrl: page.url, navTitle: meta.title }) %>
