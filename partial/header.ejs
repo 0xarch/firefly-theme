@@ -50,6 +50,7 @@ const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="darkreader-lock">
   <meta name="theme-color" content="oklch(0.70 0.14 <%= hue %>)">
   <title><%= pageTitle %></title>
   <% if (typeof h.seoMeta === "function") { %><%- h.seoMeta(page, site) %>

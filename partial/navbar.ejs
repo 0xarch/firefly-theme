@@ -48,10 +48,17 @@ const isActive = (u) => {
       <% } %>
     </nav>
     <div class="navbar-actions">
-      <button type="button" id="theme-toggle" class="btn-icon" aria-label="<%= t.theme.toggle %>" title="<%= t.theme.toggle %>">
-        <span class="theme-icon-light"><%- partial('icon', { name: 'sun', size: 20 }) %></span>
-        <span class="theme-icon-dark"><%- partial('icon', { name: 'moon', size: 20 }) %></span>
-      </button>
+      <div class="theme-mode">
+        <button type="button" id="theme-toggle" class="btn-icon" aria-label="<%= t.theme.toggle %>" title="<%= t.theme.toggle %>" aria-haspopup="menu" aria-controls="theme-mode-panel" aria-expanded="false">
+          <span class="theme-icon-light"><%- partial('icon', { name: 'sun', size: 20 }) %></span>
+          <span class="theme-icon-dark"><%- partial('icon', { name: 'moon', size: 20 }) %></span>
+        </button>
+        <div id="theme-mode-panel" class="float-panel theme-mode-panel" role="menu" aria-labelledby="theme-toggle">
+          <button type="button" role="menuitemradio" aria-checked="false" class="theme-mode-item" data-theme-mode="light"><%- partial('icon', { name: 'sun', size: 20 }) %><span><%= t.theme.light %></span></button>
+          <button type="button" role="menuitemradio" aria-checked="false" class="theme-mode-item" data-theme-mode="dark"><%- partial('icon', { name: 'moon', size: 20 }) %><span><%= t.theme.dark %></span></button>
+          <button type="button" role="menuitemradio" aria-checked="false" class="theme-mode-item" data-theme-mode="system"><%- partial('icon', { name: 'monitor', size: 20 }) %><span><%= t.theme.system %></span></button>
+        </div>
+      </div>
       <button type="button" id="nav-menu-switch" class="btn-icon menu-btn" aria-label="<%= t.nav.menu %>" aria-controls="nav-menu-panel" aria-expanded="false">
         <%- partial('icon', { name: 'menu', size: 22 }) %>
       </button>

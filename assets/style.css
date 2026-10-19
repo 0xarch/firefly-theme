@@ -308,9 +308,28 @@ html[data-wallpaper-mode="banner"] .navbar-inner {
 }
 .nav-dropdown-item:hover { background: var(--btn-plain-bg-hover); }
 
+/* ---------- theme mode switch (light / dark / system) ---------- */
+.theme-mode { position: relative; display: inline-flex; }
 .theme-icon-dark { display: none; }
 :root.dark .theme-icon-light { display: none; }
 :root.dark .theme-icon-dark { display: block; }
+
+.theme-mode-panel {
+  position: absolute; top: calc(100% + 0.35rem); right: 0;
+  min-width: 9.5rem; padding: 0.4rem; border-radius: var(--radius-md);
+  background: var(--float-panel-bg); box-shadow: var(--shadow-navbar);
+  backdrop-filter: blur(12px);
+  opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-6px);
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility var(--dur);
+}
+.theme-mode.open .theme-mode-panel { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
+.theme-mode-item {
+  display: flex; align-items: center; gap: 0.6rem; width: 100%;
+  padding: 0.5rem 0.7rem; border: none; border-radius: var(--radius-sm);
+  background: transparent; font-size: 0.92rem; text-align: left; white-space: nowrap;
+}
+.theme-mode-item:hover { background: var(--btn-plain-bg-hover); }
+.theme-mode-item[aria-checked="true"] { color: var(--primary); font-weight: 600; }
 
 body[data-navbar-mode="dynamic"] #navbar.hidden-up { transform: translate(-50%, -100%); }
 
