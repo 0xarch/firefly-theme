@@ -1,0 +1,26 @@
+{
+  "lockfileVersion": 2,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "ngwg-firefly-theme",
+      "devDependencies": {
+        "@iconify-json/fa7-brands": "^1.2.4",
+        "@iconify-json/fa7-regular": "^1.2.3",
+        "@iconify-json/fa7-solid": "^1.2.5",
+        "@iconify-json/material-symbols": "^1.2.91",
+      },
+    },
+  },
+  "packages": {
+    "@iconify-json/fa7-brands": ["@iconify-json/fa7-brands@1.2.4", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-60acXyxhQl1lddBH5YGzfQLkzlP9jqNcblFmgel7lJpgsVx/4QmrXAL90ARb8XhHX7dFMGRDmlqER9mq8aaz2g=="],
+
+    "@iconify-json/fa7-regular": ["@iconify-json/fa7-regular@1.2.3", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-j+3awnyNH2fpMaxqShVWT1JzaG7HR1N3SkKrMXYeonB3XRdW0SJuMaXqwzl1yPAdcqSO5bmCRIznPJ1j/PDi8w=="],
+
+    "@iconify-json/fa7-solid": ["@iconify-json/fa7-solid@1.2.5", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-e9EOtXuvDhiv6gBjbuW1q4bSR2tU5HmsDxqbLElQt2w2dR1Byh2mXfPLdRgEVwEr50uQV5tKxE3YAL6LTa+1fA=="],
+
+    "@iconify-json/material-symbols": ["@iconify-json/material-symbols@1.2.95", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-n34GNbwe8We3LPXK2N8JuQewEQkITJiRsmX/0UYJsOyKzviVl22mNfLUiGGtXLKDPqxZa17q1Hg57zdA3BYa0w=="],
+
+    "@iconify/types": ["@iconify/types@2.0.0", "", {}, "sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg=="],
+  }
+}

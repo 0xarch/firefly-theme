@@ -117,8 +117,13 @@ theme can stay dependency-free while leaving room for these features:
   pointing `themes.firefly` at it, or fork this repository.
 - Layouts live in `layout/` (same base names as `layouts:` in `theme.yaml`),
   reusable fragments in `partial/` (call with `partial('name', { ...extra })`).
-- Icons are inlined from `partial/icon.ejs` — add an entry to `ICONS` (stroke)
-  or `FILLED` and use `partial('icon', { name: 'my-icon' })`.
+- Icons are inlined by `partial/icon.ejs`, which maps a short name to an
+  [iconify](https://iconify.design) icon from the packs the original theme uses
+  (`@iconify-json/material-symbols`, `@iconify-json/fa7-*`). The drawing data in
+  `partial/icon-svg.ejs` is **generated** — never edit it by hand: add or change
+  a name in the manifest in `partial/icon.ejs`, then run `bun install` (once)
+  and `bun run icons`. The generated file is committed, so using the theme still
+  needs no npm install.
 
 ## Known limitations
 

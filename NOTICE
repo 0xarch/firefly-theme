@@ -19,3 +19,15 @@ under their original MIT license:
 - Copyright (c) 2025 CuteLeaf — Firefly
 
 Both are distributed under the MIT License reproduced in `LICENSE`.
+
+## Icons
+
+`partial/icon-svg.ejs` embeds icon drawings generated from the iconify packs
+that the original theme uses (see `package.json` and `scripts/build-icons.mjs`):
+
+- [Material Symbols](https://github.com/google/material-design-icons) — Apache-2.0
+- [Font Awesome Free](https://github.com/FortAwesome/Font-Awesome)
+  (Regular, Solid, Brands) — CC-BY-4.0
+
+Pack versions are pinned in `bun.lock`; regenerate the drawings with
+`bun run icons` after editing the manifest in `partial/icon.ejs`.
