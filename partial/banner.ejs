@@ -1,0 +1,93 @@
+<%
+/**
+ * Wallpaper / banner section. Renders behind the content panel.
+ *
+ * `view` selects the overlay: home text, post info, or a plain page title.
+ * A random wallpaper is chosen at build time; `<picture>` downloads only the
+ * variant matching the viewport.
+ */
+const bcfg = theme.banner || {};
+const mode = bcfg.mode || "banner";
+const pickImg = (v) => {
+  if (!v) return "";
+  if (typeof v === "string") return v;
+  if (Array.isArray(v) && v.length) return v[Math.floor(Math.random() * v.length)];
+  return "";
+};
+const desktopImg = pickImg(bcfg.desktop);
+const mobileImg = pickImg(bcfg.mobile) || desktopImg;
+const dim = Number.isFinite(Number(bcfg.dimOpacity)) ? Number(bcfg.dimOpacity) : 0.2;
+const homeText = bcfg.homeText || {};
+const cache = bcfg.mode === "none" ? "none" : "banner";
+
+// word / reading-time estimate for post banners
+const src = (page && page.html) || "";
+const plain = src.replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ");
+const cjk = (plain.match(/[\u3400-\u9fff]/g) || []).length;
+const latin = (plain.replace(/[\u3400-\u9fff]/g, " ").match(/[A-Za-z0-9]+/g) || []).length;
+const words = cjk + latin;
+const minutes = Math.max(1, Math.round(cjk / 400 + latin / 220));
+%>
+<% if (mode !== "none") { %>
+<div id="wallpaper-wrapper" data-mode="<%= cache %>" style="--banner-dim: <%= dim %>">
+  <% if (desktopImg) { %>
+  <picture class="banner-media">
+    <% if (mobileImg) { %><source media="(max-width: 1023px)" srcset="<%= mobileImg %>"><% } %>
+    <img class="banner-img" src="<%= desktopImg %>" alt="" fetchpriority="high" style="object-position: <%= bcfg.position || 'center' %>">
+  </picture>
+  <% } else { %>
+  <div class="banner-media banner-media-plain"></div>
+  <% } %>
+  <div class="banner-dim" aria-hidden="true"></div>
+
+  <div class="banner-overlay">
+    <% if (view === "home") { %>
+      <% if (homeText.enable !== false) { %>
+      <div class="banner-home-text">
+        <div class="banner-home-title" style="font-size: <%= homeText.titleSize || '4.5rem' %>"><%= homeText.title || site.title %></div>
+        <div class="banner-home-subtitle" id="banner-subtitle" style="font-size: <%= homeText.subtitleSize || '1.5rem' %>; min-height: 2.2em">
+          <span id="banner-subtitle-text"><% const subs = homeText.subtitle || []; %><%= Array.isArray(subs) && subs.length ? subs[0] : "" %></span><span class="typewriter-caret" aria-hidden="true"></span>
+        </div>
+        <% if (homeText.links && homeText.links.length) { %>
+        <div class="banner-home-links">
+          <% for (const l of homeText.links) { %>
+          <a class="banner-link" href="<%= l.url %>"<%- /^https?:/.test(l.url) ? ' target="_blank" rel="noopener noreferrer"' : '' %> aria-label="<%= l.name %>" title="<%= l.name %>">
+            <% if (l.icon) { %><%- partial('icon', { name: l.icon, size: 20, extraClass: 'icon-banner-' + l.icon }) %><% } %>
+            <% if (l.showName) { %><span><%= l.name %></span><% } %>
+          </a>
+          <% } %>
+        </div>
+        <% } %>
+      </div>
+      <% } %>
+    <% } else if (view === "post") { %>
+      <div class="banner-post-overlay">
+        <h1 class="banner-post-title"><%= (page && page.meta && page.meta.title) || "" %></h1>
+        <% if (bcfg.postInfo && bcfg.postInfo.mode === "meta") { %>
+        <div class="banner-post-meta">
+          <span class="meta-item"><%- partial('icon', { name: 'calendar', size: 16 }) %><time datetime="<%= page.meta.date %>"><%= h.formatDate(page.meta.date, "YYYY-MM-DD") %></time></span>
+          <span class="meta-item"><%- partial('icon', { name: 'file-text', size: 16 }) %><%= h.t("post.words_count", words) %></span>
+          <span class="meta-item"><%- partial('icon', { name: 'clock', size: 16 }) %><%= h.t("post.reading_time", minutes) %></span>
+        </div>
+        <% } else { %>
+        <p class="banner-post-desc"><%= (page && page.meta && (page.meta.description || h.excerpt(page, 160))) || "" %></p>
+        <% } %>
+      </div>
+    <% } else { %>
+      <div class="banner-page-title"><span><%= typeof bannerTitle !== "undefined" ? bannerTitle : ((page && page.meta && page.meta.title) || "") %></span></div>
+    <% } %>
+  </div>
+
+  <div class="banner-waves" aria-hidden="true">
+    <svg viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="geometricPrecision">
+      <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18v48h-352z"/></defs>
+      <g>
+        <use href="#gentle-wave" x="-42" y="0" class="w1"/>
+        <use href="#gentle-wave" x="2.6" y="3" class="w2"/>
+        <use href="#gentle-wave" x="48.9" y="5" class="w3"/>
+        <use href="#gentle-wave" x="92.5" y="7" class="w4"/>
+      </g>
+    </svg>
+  </div>
+</div>
+<% } %>

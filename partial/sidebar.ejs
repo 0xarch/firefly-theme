@@ -1,0 +1,25 @@
+<%
+/**
+ * One sidebar column. Rendered twice (side = "left" | "right"); the widgets
+ * come from theme.sidebar.left / theme.sidebar.right.
+ *
+ * Each widget decides on its own whether it has anything to render, so the
+ * column is emitted only when the joined output is non-empty. The page grid
+ * keys its column count off the aside's presence (`:has()`), which keeps an
+ * unused side — e.g. the TOC column on a listing, or on a post with no
+ * headings — from leaving an empty gap.
+ */
+const sb = theme.sidebar || {};
+const position = sb.position || "both";
+const enabled = sb.enable !== false &&
+  (position === "both" || position === side) &&
+  !(sb.hideOnPostPage === true && view === "post");
+const WIDGETS = ["profile", "announcement", "categories", "tags", "toc"];
+const list = ((side === "left" ? sb.left : sb.right) || []).filter((w) => WIDGETS.includes(w));
+const inner = enabled ? list.map((w) => partial(w)).join("").trim() : "";
+%>
+<% if (inner) { %>
+<aside class="sidebar sidebar-<%= side %>" data-side="<%= side %>">
+<%- inner %>
+</aside>
+<% } %>

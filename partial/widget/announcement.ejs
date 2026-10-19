@@ -1,0 +1,21 @@
+<%
+const a = theme.announcement || {};
+const link = a.link || {};
+const title = a.title || (t.announcement && t.announcement.title) || "Announcement";
+%>
+<% if (a.enable !== false && a.content) { %>
+<section class="widget-card announcement-card" id="announcement" data-closable="<%= a.closable !== false %>">
+  <h2 class="widget-title"><%- partial('icon', { name: 'announcement' }) %><span><%= title %></span></h2>
+  <div class="announcement-body"><%- a.content %></div>
+  <div class="announcement-foot">
+    <div>
+      <% if (link.enable !== false && link.url) { %>
+      <a class="btn-regular announcement-link" href="<%= link.url %>"<%- link.external ? ' target="_blank" rel="noopener noreferrer"' : '' %>><%= link.text || "→" %></a>
+      <% } %>
+    </div>
+    <% if (a.closable !== false) { %>
+    <button type="button" class="btn-icon announcement-close" aria-label="<%= t.announcement.close %>"><%- partial('icon', { name: 'close', size: 16 }) %></button>
+    <% } %>
+  </div>
+</section>
+<% } %>

@@ -1,0 +1,24 @@
+<%
+const p = theme.profile || {};
+const links = p.links || [];
+%>
+<section class="widget-card profile-card">
+  <% if (p.avatar) { %>
+  <a class="profile-avatar-link" href="/about/" aria-label="<%= p.name %>">
+    <img class="profile-avatar" src="<%= p.avatar %>" alt="<%= p.name %>" loading="lazy">
+  </a>
+  <% } %>
+  <div class="profile-name"><%= p.name || site.title %></div>
+  <div class="profile-divider" aria-hidden="true"></div>
+  <% if (p.bio) { %><div class="profile-bio"><%= p.bio %></div><% } %>
+  <% if (links.length) { %>
+  <div class="profile-links">
+    <% for (const l of links) { %>
+    <a class="btn-regular profile-link<%= l.showName ? ' with-name' : ' icon-only' %>" href="<%= l.url %>"<%- /^https?:/.test(l.url) ? ' target="_blank" rel="noopener noreferrer me"' : ' rel="me"' %> aria-label="<%= l.name %>" title="<%= l.name %>">
+      <% if (l.icon) { %><%- partial('icon', { name: l.icon, size: 20 }) %><% } %>
+      <% if (l.showName) { %><span><%= l.name %></span><% } %>
+    </a>
+    <% } %>
+  </div>
+  <% } %>
+</section>

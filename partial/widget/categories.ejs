@@ -1,0 +1,16 @@
+<%
+const cats = h.categoryTree(site.categories || {});
+const title = t.sidebar.categories;
+%>
+<% if (cats.length) { %>
+<section class="widget-card collapsible-card">
+  <details open>
+    <summary class="widget-title"><%- partial('icon', { name: 'folder' }) %><span><%= title %></span><%- partial('icon', { name: 'chevron-down', size: 16, extraClass: 'chev' }) %></summary>
+    <ul class="widget-list">
+      <% for (const c of cats) { %>
+      <li><a href="/categories/<%= h.slugify(c.name) %>/"><span class="widget-list-name"><%= c.name %></span><span class="count"><%= c.count %></span></a></li>
+      <% } %>
+    </ul>
+  </details>
+</section>
+<% } %>

@@ -1,0 +1,37 @@
+<%
+/**
+ * Closes the grid, renders the right sidebar, footer, back-to-top button and
+ * the theme script, then closes <body>/<html>. Counterpart of partial/header.
+ */
+const p = theme.profile || {};
+const seo = (site.extra && site.extra.seo) || null;
+const year = new Date().getFullYear();
+%>
+          </div>
+        </main>
+      </div>
+      <%- partial('sidebar', { side: 'right' }) %>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-divider" aria-hidden="true"></div>
+      <div class="footer-body">
+        <div class="footer-links">
+          <a href="/">© <span id="copyright-year"><%= year %></span> <%= p.name || site.title %></a>
+          <% if (seo && seo.generateRSS) { %><span aria-hidden="true">/</span><a href="<%= seo.rssPath %>">RSS</a><% } %>
+          <% if (seo && seo.generateSitemap) { %><span aria-hidden="true">/</span><a href="<%= seo.sitemapPath %>">Sitemap</a><% } %>
+        </div>
+        <div class="footer-credit">
+          <span><%= h.t("footer.powered_by", "Ngwg") %></span>
+          <span aria-hidden="true">&</span>
+          <a href="https://github.com/Ngwgers/Ngwg-firefly-theme" target="_blank" rel="noopener">Firefly</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<%- partial('back-to-top') %>
+<script src="/assets/firefly.js" defer></script>
+</body>
+</html>

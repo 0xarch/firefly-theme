@@ -1,0 +1,90 @@
+<%
+/**
+ * <head> + <body> opening + navbar + banner + content-panel/grid opening.
+ *
+ * `view` (home|post|page|archive|tag|category) and `navUrl` are passed in by
+ * each layout; because partial() merges extra data onto the root context,
+ * nested partials (navbar, banner, sidebar) see them too.
+ */
+const tc = theme.themeColor || {};
+const hue = Number.isFinite(Number(tc.hue)) ? Number(tc.hue) : 165;
+const defaultMode = tc.defaultMode || "system";
+const navbar = theme.navbar || {};
+const bannerCfg = theme.banner || {};
+const sidebarCfg = theme.sidebar || {};
+const profile = theme.profile || {};
+
+const pageTitle = page && page.meta && page.meta.title
+  ? `${page.meta.title} · ${site.title}`
+  : site.title;
+const pageDesc = (page && page.meta && (page.meta.description || page.meta.excerpt)) || site.description || "";
+const hasHomeText = bannerCfg.mode !== "none" && bannerCfg.homeText && bannerCfg.homeText.enable !== false;
+const sidebarPosition = sidebarCfg.enable === false ? "none" : (sidebarCfg.position || "both");
+
+// config carrier: JSON, "<" escaped so a "</script>" in config can never break out
+const runtimeConfig = {
+  hue,
+  defaultMode,
+  navbarMode: navbar.mode || "dynamic",
+  bannerMode: bannerCfg.mode || "banner",
+  bannerPosition: bannerCfg.position || "center",
+  bannerDim: Number.isFinite(Number(bannerCfg.dimOpacity)) ? Number(bannerCfg.dimOpacity) : 0.2,
+  bannerDesktop: bannerCfg.desktop || [],
+  bannerMobile: bannerCfg.mobile || [],
+  bannerPostInfoMode: (bannerCfg.postInfo && bannerCfg.postInfo.mode) || "description",
+  bannerSubtitles: (bannerCfg.homeText && bannerCfg.homeText.subtitle) || [],
+  typewriter: (bannerCfg.homeText && bannerCfg.homeText.typewriter) || { enable: false },
+  isHome: view === "home",
+  comments: theme.comments || { enable: false },
+  pjax: true,
+  i18n: {
+    backToTop: t.post && t.post.back_to_top,
+    toc: t.sidebar && t.sidebar.toc,
+    copy: "复制",
+    copied: "已复制",
+  },
+};
+const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
+%><!DOCTYPE html>
+<html lang="<%= langAttr %>" data-wallpaper-mode="<%= bannerCfg.mode || 'banner' %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="oklch(0.70 0.14 <%= hue %>)">
+  <title><%= pageTitle %></title>
+  <% if (typeof h.seoMeta === "function") { %><%- h.seoMeta(page, site) %>
+  <% } else { %><meta name="description" content="<%= pageDesc %>">
+  <% } %>
+  <% if (site.extra && site.extra.seo && site.extra.seo.generateRSS) { %>  <link rel="alternate" type="application/rss+xml" title="<%= site.title %>" href="<%= site.extra.seo.rssPath %>">
+  <% } %>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon/firefly-32.png">
+  <link rel="apple-touch-icon" href="/assets/images/favicon/firefly-180.png">
+  <link rel="stylesheet" href="/assets/style.css">
+  <script>
+    // set the colour scheme and hue before first paint (no flash)
+    (function () {
+      try {
+        var mode = localStorage.getItem("theme") || "<%= defaultMode %>";
+        var dark = mode === "dark" || (mode === "system" &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+        var h = localStorage.getItem("hue");
+        if (h) document.documentElement.style.setProperty("--hue", h);
+      } catch (e) {}
+    })();
+  </script>
+  <script>window.__FIREFLY__ = <%- configJson %>;</script>
+</head>
+<body class="<%= view === 'home' ? 'is-home' : '' %>" data-view="<%= view %>" data-navbar-mode="<%= navbar.mode || 'dynamic' %>" data-sidebar-position="<%= sidebarPosition %>">
+<a class="skip-link" href="#content-wrapper"><%= t.nav.home %></a>
+<div id="progress-bar" aria-hidden="true"></div>
+<%- partial('navbar') %>
+<%- partial('banner') %>
+<div id="content-panel">
+  <div id="content-panel-inner">
+    <div id="main-grid">
+      <%- partial('sidebar', { side: 'left' }) %>
+      <div id="content-column">
+        <main id="swup-container" class="transition-main" data-page-url="<%= navUrl || '/' %>">
+          <h1 class="sr-only"><%= (page && page.meta && page.meta.title) || (typeof navTitle !== "undefined" ? navTitle : site.title) %></h1>
+          <div id="content-wrapper" class="onload-animation">

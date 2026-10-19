@@ -1,0 +1,84 @@
+<%
+/**
+ * Top navigation bar + mobile drawer.
+ * Active menu item is derived from `navUrl` (passed by the layout).
+ */
+const nav = theme.navbar || {};
+const navLinks = nav.links || [];
+const logo = nav.logo || {};
+const navTitle = nav.title || site.title;
+const widthFull = nav.widthFull === true;
+const menuAlign = nav.menuAlign === "left" ? "left" : "center";
+// `name` may reference an i18n key under `nav` (theme.yaml ships the defaults)
+const label = (name) => (t.nav && Object.prototype.hasOwnProperty.call(t.nav, name) && t.nav[name]) || name;
+
+const isActive = (u) => {
+  if (!u || u === "#") return false;
+  if (u === "/") return navUrl === "/" || navUrl === "";
+  return typeof navUrl === "string" && navUrl.indexOf(u) === 0;
+};
+%><header id="navbar" data-mode="<%= nav.mode || 'dynamic' %>"<%- widthFull ? ' data-width-full="true"' : '' %>>
+  <div class="navbar-inner">
+    <a class="navbar-brand" href="/" aria-label="<%= site.title %>">
+      <% if (logo.light) { %><img class="navbar-logo logo-light" src="<%= logo.light %>" alt="" width="28" height="28" fetchpriority="high"><% } %>
+      <% if (logo.dark) { %><img class="navbar-logo logo-dark" src="<%= logo.dark %>" alt="" width="28" height="28" fetchpriority="high"><% } %>
+      <span class="navbar-title"><%= navTitle %></span>
+    </a>
+    <nav class="navbar-menu align-<%= menuAlign %>" aria-label="<%= t.nav.menu %>">
+      <% for (const l of navLinks) { %>
+        <% if (l.children && l.children.length) { %>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-item nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true">
+            <% if (l.icon) { %><%- partial('icon', { name: l.icon, size: 18 }) %><% } %>
+            <span><%= label(l.name) %></span>
+            <%- partial('icon', { name: 'chevron-down', size: 16, extraClass: 'chev' }) %>
+          </button>
+          <div class="nav-dropdown-panel float-panel">
+            <% for (const c of l.children) { %>
+            <a class="nav-dropdown-item" href="<%= c.url %>"<%- c.external ? ' target="_blank" rel="noopener noreferrer"' : '' %>>
+              <% if (c.icon) { %><%- partial('icon', { name: c.icon, size: 18 }) %><% } %>
+              <span><%= label(c.name) %></span>
+            </a>
+            <% } %>
+          </div>
+        </div>
+        <% } else { %>
+        <a class="nav-item<%= isActive(l.url) ? ' active' : '' %>" href="<%= l.url %>"<%- l.external ? ' target="_blank" rel="noopener noreferrer"' : '' %>><% if (l.icon) { %><%- partial('icon', { name: l.icon, size: 18 }) %><% } %><span><%= label(l.name) %></span></a>
+        <% } %>
+      <% } %>
+    </nav>
+    <div class="navbar-actions">
+      <button type="button" id="theme-toggle" class="btn-icon" aria-label="<%= t.theme.toggle %>" title="<%= t.theme.toggle %>">
+        <span class="theme-icon-light"><%- partial('icon', { name: 'sun', size: 20 }) %></span>
+        <span class="theme-icon-dark"><%- partial('icon', { name: 'moon', size: 20 }) %></span>
+      </button>
+      <button type="button" id="nav-menu-switch" class="btn-icon menu-btn" aria-label="<%= t.nav.menu %>" aria-controls="nav-menu-panel" aria-expanded="false">
+        <%- partial('icon', { name: 'menu', size: 22 }) %>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div id="nav-menu-panel" class="nav-drawer" aria-hidden="true">
+  <div class="nav-drawer-head">
+    <span class="nav-drawer-title"><%= navTitle %></span>
+    <button type="button" id="nav-menu-close" class="btn-icon" aria-label="<%= t.announcement.close %>">
+      <%- partial('icon', { name: 'close', size: 22 }) %>
+    </button>
+  </div>
+  <nav class="nav-drawer-links" aria-label="<%= t.nav.menu %>">
+    <% for (const l of navLinks) { %>
+      <% if (l.children && l.children.length) { %>
+        <% for (const c of l.children) { %>
+        <a class="nav-drawer-item<%= isActive(c.url) ? ' active' : '' %>" href="<%= c.url %>"<%- c.external ? ' target="_blank" rel="noopener noreferrer"' : '' %>>
+          <% if (c.icon) { %><%- partial('icon', { name: c.icon, size: 18 }) %><% } %><span><%= label(c.name) %></span>
+        </a>
+        <% } %>
+      <% } else { %>
+      <a class="nav-drawer-item<%= isActive(l.url) ? ' active' : '' %>" href="<%= l.url %>"<%- l.external ? ' target="_blank" rel="noopener noreferrer"' : '' %>>
+        <% if (l.icon) { %><%- partial('icon', { name: l.icon, size: 18 }) %><% } %><span><%= label(l.name) %></span>
+      </a>
+      <% } %>
+    <% } %>
+  </nav>
+</div>

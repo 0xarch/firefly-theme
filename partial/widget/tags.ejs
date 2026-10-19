@@ -1,0 +1,17 @@
+<%
+const tagList = h.tagCloud(site.tags || {});
+const title = t.sidebar.tags;
+const max = tagList.reduce((m, x) => Math.max(m, x.count), 1);
+%>
+<% if (tagList.length) { %>
+<section class="widget-card collapsible-card">
+  <details open>
+    <summary class="widget-title"><%- partial('icon', { name: 'tag' }) %><span><%= title %></span><%- partial('icon', { name: 'chevron-down', size: 16, extraClass: 'chev' }) %></summary>
+    <div class="tag-cloud">
+      <% for (const tag of tagList) { %>
+      <a class="tag-item" href="/tags/<%= h.slugify(tag.name) %>/" style="--tag-weight: <%= (0.4 + 0.6 * (tag.count / max)).toFixed(2) %>">#<%= tag.name %><span class="tag-count"><%= tag.count %></span></a>
+      <% } %>
+    </div>
+  </details>
+</section>
+<% } %>

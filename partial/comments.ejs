@@ -1,0 +1,29 @@
+<%
+/**
+ * Comment hook. Only giscus is wired up; the section is emitted (empty) when
+ * a provider is configured so the container exists for the loader script.
+ */
+const c = theme.comments || {};
+const g = c.giscus || {};
+const isGiscus = c.provider === "giscus" && g.repo && g.repoId;
+%>
+<% if (c.enable) { %>
+<section class="comments" id="comments">
+  <h2 class="widget-title"><%- partial('icon', { name: 'announcement' }) %><span><%= t.comments.title %></span></h2>
+  <% if (isGiscus) { %>
+  <div class="comments-body giscus"
+       data-repo="<%= g.repo %>"
+       data-repo-id="<%= g.repoId %>"
+       data-category="<%= g.category || '' %>"
+       data-category-id="<%= g.categoryId || '' %>"
+       data-mapping="<%= g.mapping || 'pathname' %>"
+       data-reactions-enabled="<%= g.reactionsEnabled === false ? '0' : '1' %>"
+       data-input-position="<%= g.inputPosition || 'bottom' %>"
+       data-theme="<%= g.theme || 'preferred_color_scheme' %>"
+       data-lang="<%= g.lang || 'zh-CN' %>"
+       data-loading="lazy"></div>
+  <% } else { %>
+  <p class="empty-note"><%= t.comments.title %></p>
+  <% } %>
+</section>
+<% } %>
