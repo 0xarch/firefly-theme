@@ -78,8 +78,8 @@ const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
 </head>
 <body class="<%= view === 'home' ? 'is-home' : '' %>" data-view="<%= view %>" data-navbar-mode="<%= navbar.mode || 'dynamic' %>" data-sidebar-position="<%= sidebarPosition %>">
 <a class="skip-link" href="#content-wrapper"><%= t.nav.home %></a>
-<div id="progress-bar" aria-hidden="true"></div>
-<%- partial('navbar') %>
+<% if (view === "post") { %><div id="progress-bar" aria-hidden="true"></div>
+<% } %><%- partial('navbar') %>
 <%- partial('banner') %>
 <div id="content-panel">
   <div id="content-panel-inner">

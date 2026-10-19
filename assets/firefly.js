@@ -91,7 +91,7 @@
       if (bar) {
         var pct = max > 0 ? (y / max) * 100 : 0;
         bar.style.width = pct + "%";
-        bar.classList.toggle("active", y > 50 && pct < 100);
+        bar.classList.toggle("active", y > 8 && pct < 100);
       }
       var top = $("#back-to-top");
       if (top) top.classList.toggle("show", y > 400);
@@ -104,6 +104,23 @@
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     update();
+  }
+
+  /* Keeps the reading progress bar in sync with pjax: it exists only on post
+     pages, so it is created/removed around a navigation. */
+  function syncProgressBar() {
+    var isPost = document.body.getAttribute("data-view") === "post";
+    var bar = document.getElementById("progress-bar");
+    if (isPost && !bar) {
+      bar = document.createElement("div");
+      bar.id = "progress-bar";
+      bar.setAttribute("aria-hidden", "true");
+      document.body.insertBefore(bar, document.body.firstChild);
+    } else if (!isPost && bar && bar.parentNode) {
+      bar.parentNode.removeChild(bar);
+      bar = null;
+    }
+    if (bar) { bar.style.width = "0"; bar.classList.remove("active"); }
   }
 
   function initBackToTop() {
@@ -448,6 +465,7 @@
     initAnnouncement();
     initCodeCopy();
     loadGiscus();
+    syncProgressBar();
     window.scrollTo(0, 0);
   }
 
