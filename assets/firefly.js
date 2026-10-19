@@ -71,6 +71,33 @@
     });
   }
 
+  /* ---------- site statistics ---------- */
+  /* The running-days / last-update rows are date driven, so they are computed
+     in the browser and refreshed after every pjax navigation. */
+  function initStats() {
+    var ss = CFG.siteStats || {};
+    var DAY = 86400000;
+    var now = Date.now();
+    if (ss.startDate) {
+      var start = new Date(ss.startDate);
+      if (!isNaN(start.getTime())) {
+        var days = Math.max(0, Math.ceil((now - start.getTime()) / DAY));
+        $$('[data-stat-id="running-days"]').forEach(function (el) { el.textContent = String(days); });
+      }
+    }
+    if (ss.lastPostDate) {
+      var last = new Date(ss.lastPostDate);
+      if (!isNaN(last.getTime())) {
+        var ago = Math.floor((now - last.getTime()) / DAY);
+        $$('[data-stat-id="last-update"]').forEach(function (el) {
+          el.textContent = ago <= 0 ? (ss.today || "today") : String(ago);
+          var suffix = $('[data-stat-suffix="last-update"]');
+          if (suffix) suffix.hidden = ago <= 0;
+        });
+      }
+    }
+  }
+
   /* ---------- navbar ---------- */
   /* The sticky sidebar columns are anchored under the navbar; when the bar
      slides away (dynamic mode) their tops must rise with it. The bar's
@@ -477,6 +504,7 @@
     initTypewriter();
     initAnnouncement();
     initCodeCopy();
+    initStats();
     loadGiscus();
     syncProgressBar();
     window.scrollTo(0, 0);
@@ -545,6 +573,7 @@
     buildToc();
     initSegments();
     initCodeCopy();
+    initStats();
     loadGiscus();
     initPjax();
   }

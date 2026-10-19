@@ -1,0 +1,83 @@
+<%
+/**
+ * Site statistics card (upstream Firefly's SiteStats).
+ *
+ * Every count is derived from SiteData at build time; the two date-driven rows
+ * (running days, days since the last post) are recomputed by the runtime so a
+ * static build does not freeze them at build time. `theme.siteStats.startDate`
+ * is the day the blog launched.
+ */
+const cfg = theme.siteStats || {};
+const enable = cfg.enable !== false;
+// `site.posts` is only the current page's slice on paginated listings
+// (index/2/…, see core/tasks.ts), so take the full list from the archive
+// groups, which always carry every visible post exactly once.
+const allPosts = Array.isArray(site.archives) && site.archives.length
+  ? site.archives.reduce((acc, g) => acc.concat(g.posts || []), [])
+  : (Array.isArray(site.posts) ? site.posts : []);
+
+const DAY = 86400000;
+const now = Date.now();
+
+// words in the raw markdown, code stripped (CJK characters + latin words)
+function countWords(md) {
+  const text = String(md || "")
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/<[^>]*>/g, " ");
+  const cjk = (text.match(/[\u3400-\u9fff]/g) || []).length;
+  const latin = (text.replace(/[\u3400-\u9fff]/g, " ").match(/[A-Za-z0-9]+/g) || []).length;
+  return cjk + latin;
+}
+const totalWords = allPosts.reduce((sum, p) => sum + countWords(p.body), 0);
+const group = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+const startDate = cfg.startDate || "2025-01-01";
+const start = new Date(startDate);
+const runningDays = isNaN(start.getTime()) ? null
+  : Math.max(0, Math.ceil((now - start.getTime()) / DAY));
+
+// last activity: the newest of every post's updated/date (like upstream)
+let lastActivity = null;
+for (const p of allPosts) {
+  const raw = p.meta && (p.meta.updated || p.meta.date);
+  if (!raw) continue;
+  const d = new Date(raw);
+  if (!isNaN(d.getTime()) && (!lastActivity || d > lastActivity)) lastActivity = d;
+}
+const daysAgo = lastActivity ? Math.floor((now - lastActivity.getTime()) / DAY) : null;
+
+const st = t.siteStats || {};
+const suffixOf = (key) => String(st[key] || "").replace("{0}", "").trim();
+const rows = [
+  { icon: "file-text", label: st.posts, value: group(allPosts.length) },
+  { icon: "folder", label: st.categories, value: group(Object.keys(site.categories || {}).length) },
+  { icon: "tag", label: st.tags, value: group(Object.keys(site.tags || {}).length) },
+  { icon: "type", label: st.words, value: group(totalWords) },
+  // the live rows always carry their suffix so the runtime can re-show it
+  {
+    icon: "calendar", label: st.running_days, live: "running-days",
+    value: runningDays === null ? "—" : String(runningDays),
+    suffix: suffixOf("days"), suffixHidden: runningDays === null,
+  },
+  {
+    icon: "clock", label: st.last_update, live: "last-update",
+    value: lastActivity ? (daysAgo <= 0 ? st.today : String(daysAgo)) : "—",
+    suffix: suffixOf("days_ago"), suffixHidden: !(lastActivity && daysAgo > 0),
+  },
+];
+%>
+<% if (enable) { %>
+<section class="widget-card stats-card" id="site-stats">
+  <h2 class="widget-title"><%- partial('icon', { name: 'chart' }) %><span><%= t.sidebar.stats %></span></h2>
+  <ul class="stats-list">
+    <% for (const r of rows) { %>
+    <li class="stats-item">
+      <span class="stats-icon"><%- partial('icon', { name: r.icon, size: 18 }) %></span>
+      <span class="stats-label"><%= r.label %></span>
+      <span class="stats-value"><span<% if (r.live) { %> data-stat-id="<%= r.live %>"<% } %>><%= r.value %></span><% if (r.suffix) { %><span class="stats-suffix"<% if (r.live) { %> data-stat-suffix="<%= r.live %>"<% } %><% if (r.suffixHidden) { %> hidden<% } %>><%= r.suffix %></span><% } %></span>
+    </li>
+    <% } %>
+  </ul>
+</section>
+<% } %>

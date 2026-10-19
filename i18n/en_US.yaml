@@ -32,7 +32,19 @@ sidebar:
   announcement: Announcement
   categories: Categories
   tags: Tags
+  stats: Site stats
   toc: Contents
+
+siteStats:
+  posts: Posts
+  categories: Categories
+  tags: Tags
+  words: Total words
+  running_days: Running days
+  last_update: Last update
+  days: "{0} days"
+  days_ago: "{0} days ago"
+  today: Today
 
 announcement:
   title: Announcement

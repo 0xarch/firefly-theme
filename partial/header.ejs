@@ -21,6 +21,21 @@ const pageDesc = (page && page.meta && (page.meta.description || page.meta.excer
 const hasHomeText = bannerCfg.mode !== "none" && bannerCfg.homeText && bannerCfg.homeText.enable !== false;
 const sidebarPosition = sidebarCfg.enable === false ? "none" : (sidebarCfg.position || "both");
 
+// newest activity across posts — drives the live "last update" stat row.
+// `site.posts` is a slice on paginated listings, so read every post from the
+// archive groups instead (see partial/widget/stats.ejs).
+const allPosts = Array.isArray(site.archives) && site.archives.length
+  ? site.archives.reduce((acc, g) => acc.concat(g.posts || []), [])
+  : (site.posts || []);
+let lastActivity = null;
+for (const post of allPosts) {
+  const raw = post.meta && (post.meta.updated || post.meta.date);
+  if (!raw) continue;
+  const d = new Date(raw);
+  if (!isNaN(d.getTime()) && (!lastActivity || d > lastActivity)) lastActivity = d;
+}
+const siteStats = theme.siteStats || {};
+
 // config carrier: JSON, "<" escaped so a "</script>" in config can never break out
 const runtimeConfig = {
   hue,
@@ -37,6 +52,11 @@ const runtimeConfig = {
   isHome: view === "home",
   comments: theme.comments || { enable: false },
   pjax: true,
+  siteStats: {
+    startDate: siteStats.startDate || "",
+    lastPostDate: lastActivity ? lastActivity.toISOString() : "",
+    today: (t.siteStats && t.siteStats.today) || "",
+  },
   i18n: {
     backToTop: t.post && t.post.back_to_top,
     toc: t.sidebar && t.sidebar.toc,

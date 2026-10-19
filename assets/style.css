@@ -499,6 +499,18 @@ html[data-wallpaper-mode="none"] #wallpaper-wrapper { display: none; }
 .profile-links { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
 .profile-link.icon-only { width: 2.5rem; height: 2.5rem; padding: 0; justify-content: center; }
 
+/* site statistics (upstream SiteStats) */
+.stats-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+.stats-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.9rem; }
+.stats-icon { display: inline-flex; color: var(--primary); }
+.stats-label { color: var(--text-75); }
+.stats-value {
+  margin-left: auto; display: inline-flex; align-items: baseline; gap: 0.2rem;
+  font-weight: 700; color: var(--deep-text); font-variant-numeric: tabular-nums;
+}
+.stats-suffix { font-size: 0.8rem; font-weight: 500; color: var(--content-meta); }
+.stats-suffix[hidden] { display: none; }
+
 .announcement-body { font-size: 0.9rem; color: var(--text-75); margin-bottom: 0.85rem; }
 .announcement-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
 .announcement-close { width: 2rem; height: 2rem; }

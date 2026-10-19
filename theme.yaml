@@ -128,9 +128,16 @@ sidebar:
   position: both
   # hide the side columns on post pages
   hideOnPostPage: false
-  # widget order; available: profile, announcement, categories, tags, toc
+  # widget order; available: profile, announcement, categories, tags, stats, toc
   left: [profile, announcement, categories, tags]
-  right: [toc]
+  right: [stats, toc]
+
+# site statistics card (posts/categories/tags/words + live running days and
+# days since the last post)
+siteStats:
+  enable: true
+  # day the blog launched; drives the "running days" row
+  startDate: "2025-01-01"
 
 postList:
   # list mode cover side: left | right

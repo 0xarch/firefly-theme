@@ -32,7 +32,19 @@ sidebar:
   announcement: 公告
   categories: 分类
   tags: 标签
+  stats: 站点统计
   toc: 目录
+
+siteStats:
+  posts: 文章
+  categories: 分类
+  tags: 标签
+  words: 总字数
+  running_days: 运行天数
+  last_update: 最后活动
+  days: "{0} 天"
+  days_ago: "{0} 天前"
+  today: 今天
 
 announcement:
   title: 公告
