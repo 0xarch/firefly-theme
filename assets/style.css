@@ -51,7 +51,8 @@
 
   --navbar-h: 4.5rem;
   --page-width: 100rem;
-  --sidebar-w: 300px;
+  /* upstream's --grid-sidebar-width (17.5rem), used at every breakpoint */
+  --sidebar-w: 17.5rem;
   --banner-height-home: 65vh;
   --banner-height-non-home: max(45vh, 380px);
   --panel-overlap: 3.5rem;
@@ -229,7 +230,7 @@ hr { border: none; border-top: 1px solid var(--line-divider); }
   pointer-events: auto;
   height: 100%; width: 100%;
   display: flex; align-items: center; gap: 0.5rem;
-  padding: 0 0.25rem 0 0.75rem;
+  padding: 0 0.75rem;
   background: var(--card-bg);
   border-radius: 0 0 var(--radius-md) var(--radius-md);
   transition: background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
@@ -439,10 +440,11 @@ html[data-wallpaper-mode="none"] #wallpaper-wrapper { display: none; }
 .sidebar-left { order: 2; }
 .sidebar-right { order: 3; }
 
-/* Desktop columns are keyed off which sidebars the page actually rendered
-   (see partial/sidebar.ejs): a listing page has no TOC, so its right column
-   collapses instead of leaving an empty gap. */
-@media (min-width: 1024px) {
+/* Tablet and desktop (upstream's md/xl: 768px / 1280px) turn the sidebars into
+   sticky columns anchored under the navbar. The column count is keyed off which
+   sidebars the page actually rendered (see partial/sidebar.ejs): a listing page
+   has no TOC, so its right column collapses instead of leaving an empty gap. */
+@media (min-width: 768px) {
   /* the sticky columns are anchored under the navbar; `top` is animated so the
      tops travel with the bar when it slides away (see body.navbar-hidden) */
   .sidebar { position: sticky; top: calc(var(--navbar-h) + 1rem); order: 0; transition: top var(--dur) var(--ease); }
@@ -456,13 +458,26 @@ html[data-wallpaper-mode="none"] #wallpaper-wrapper { display: none; }
     grid-template-columns: var(--sidebar-w) minmax(0, 1fr) var(--sidebar-w);
   }
 }
-@media (min-width: 1024px) and (max-width: 1279px) {
-  :root { --sidebar-w: 270px; }
-  /* narrow desktop: keep the reading column roomy and drop the left column */
-  #main-grid:has(> .sidebar-left:not(.is-empty)):has(> .sidebar-right:not(.is-empty)) {
+/* Tablet (768-1279px): three columns would squeeze the reading column, so
+   upstream keeps a single side — `sidebar.tabletSidebar`, left by default. The
+   hidden column is dropped from the template as well (a hidden grid item still
+   occupies its track). */
+@media (min-width: 768px) and (max-width: 1279px) {
+  body[data-sidebar-position="both"]:not([data-tablet-sidebar="right"]) #main-grid > .sidebar-right { display: none; }
+  body[data-sidebar-position="both"]:not([data-tablet-sidebar="right"]) #main-grid:has(> .sidebar-right:not(.is-empty)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body[data-sidebar-position="both"]:not([data-tablet-sidebar="right"]) #main-grid:has(> .sidebar-left:not(.is-empty)):has(> .sidebar-right:not(.is-empty)) {
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  }
+
+  body[data-sidebar-position="both"][data-tablet-sidebar="right"] #main-grid > .sidebar-left { display: none; }
+  body[data-sidebar-position="both"][data-tablet-sidebar="right"] #main-grid:has(> .sidebar-left:not(.is-empty)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body[data-sidebar-position="both"][data-tablet-sidebar="right"] #main-grid:has(> .sidebar-left:not(.is-empty)):has(> .sidebar-right:not(.is-empty)) {
     grid-template-columns: minmax(0, 1fr) var(--sidebar-w);
   }
-  #main-grid:has(> .sidebar-left:not(.is-empty)):has(> .sidebar-right:not(.is-empty)) > .sidebar-left { display: none; }
 }
 
 /* ==========================================================================

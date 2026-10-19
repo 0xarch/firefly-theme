@@ -20,6 +20,8 @@ const pageTitle = page && page.meta && page.meta.title
 const pageDesc = (page && page.meta && (page.meta.description || page.meta.excerpt)) || site.description || "";
 const hasHomeText = bannerCfg.mode !== "none" && bannerCfg.homeText && bannerCfg.homeText.enable !== false;
 const sidebarPosition = sidebarCfg.enable === false ? "none" : (sidebarCfg.position || "both");
+// which side stays when both are configured but only one fits (768-1279px)
+const tabletSidebar = sidebarCfg.tabletSidebar === "right" ? "right" : "left";
 
 // newest activity across posts — drives the live "last update" stat row.
 // `site.posts` is a slice on paginated listings, so read every post from the
@@ -96,7 +98,7 @@ const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
   </script>
   <script>window.__FIREFLY__ = <%- configJson %>;</script>
 </head>
-<body class="<%= view === 'home' ? 'is-home' : '' %>" data-view="<%= view %>" data-navbar-mode="<%= navbar.mode || 'dynamic' %>" data-sidebar-position="<%= sidebarPosition %>">
+<body class="<%= view === 'home' ? 'is-home' : '' %>" data-view="<%= view %>" data-navbar-mode="<%= navbar.mode || 'dynamic' %>" data-sidebar-position="<%= sidebarPosition %>" data-tablet-sidebar="<%= tabletSidebar %>">
 <a class="skip-link" href="#content-wrapper"><%= t.nav.home %></a>
 <% if (view === "post") { %><div id="progress-bar" aria-hidden="true"></div>
 <% } %><%- partial('navbar') %>

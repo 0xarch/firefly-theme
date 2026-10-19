@@ -126,6 +126,8 @@ sidebar:
   enable: true
   # left | right | both
   position: both
+  # when position is both, the side kept between 768px and 1279px (left | right)
+  tabletSidebar: left
   # hide the side columns on post pages
   hideOnPostPage: false
   # widget order; available: profile, announcement, categories, tags, stats, toc

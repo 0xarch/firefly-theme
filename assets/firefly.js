@@ -472,7 +472,7 @@
     });
     var body = document.body;
     body.className = doc.body.className;
-    ["data-view", "data-navbar-mode", "data-sidebar-position"].forEach(function (a) {
+    ["data-view", "data-navbar-mode", "data-sidebar-position", "data-tablet-sidebar"].forEach(function (a) {
       var v = doc.body.getAttribute(a);
       if (v === null) body.removeAttribute(a); else body.setAttribute(a, v);
     });
