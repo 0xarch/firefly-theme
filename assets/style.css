@@ -478,9 +478,21 @@ html[data-wallpaper-mode="none"] #wallpaper-wrapper { display: none; }
 .widget-title .chev { margin-left: auto; transition: transform var(--dur) var(--ease); }
 
 .profile-card { text-align: center; }
-.profile-avatar-link { display: block; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 0.85rem; }
-.profile-avatar { width: 100%; aspect-ratio: 1; object-fit: cover; transition: transform var(--dur) var(--ease); }
-.profile-avatar-link:hover .profile-avatar { transform: scale(1.04); }
+.profile-avatar-link { display: block; position: relative; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 0.85rem; transition: transform var(--dur) var(--ease); }
+.profile-avatar-link:active { transform: scale(0.95); }
+.profile-avatar { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+/* hover mask (upstream behaviour): a dark veil with an address-card icon
+   fading in, instead of scaling the avatar itself */
+.profile-avatar-overlay {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; pointer-events: none; background: transparent;
+  transition: background-color var(--dur) var(--ease);
+}
+.profile-avatar-link:hover .profile-avatar-overlay { background: rgb(0 0 0 / 0.3); }
+.profile-avatar-link:active .profile-avatar-overlay { background: rgb(0 0 0 / 0.5); }
+.profile-avatar-overlay .icon { opacity: 0; transform: scale(0.9); transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease); }
+.profile-avatar-link:hover .profile-avatar-overlay .icon { opacity: 1; transform: scale(1); }
 .profile-name { font-size: 1.25rem; font-weight: 700; }
 .profile-divider { width: 1.4rem; height: 3px; background: var(--primary); border-radius: 999px; margin: 0.5rem auto 0.75rem; }
 .profile-bio { font-size: 0.9rem; color: var(--content-meta); margin-bottom: 0.9rem; }

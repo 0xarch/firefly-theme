@@ -5,6 +5,7 @@ const links = p.links || [];
 <section class="widget-card profile-card">
   <% if (p.avatar) { %>
   <a class="profile-avatar-link" href="/about/" aria-label="<%= p.name %>">
+    <span class="profile-avatar-overlay" aria-hidden="true"><%- partial('icon', { name: 'address-card', size: 48 }) %></span>
     <img class="profile-avatar" src="<%= p.avatar %>" alt="<%= p.name %>" loading="lazy">
   </a>
   <% } %>
