@@ -1,0 +1,8 @@
+{
+  "name": "ngwg-firefly-theme",
+  "version": "0.1.0",
+  "description": "Ngwg port of the Firefly theme — clean, bright and modern",
+  "type": "module",
+  "license": "MIT",
+  "private": true
+}

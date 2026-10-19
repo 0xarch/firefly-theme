@@ -1,0 +1,167 @@
+name: firefly
+version: 0.1.0
+description: "Ngwg port of the Firefly theme — clean, bright and modern."
+# keep pages short; long posts are segmented by Ngwg-files at segment_threshold
+per_page: 10
+# used when neither ngwg.yaml `language` nor $NGWG_LANG is set
+default_language: zh_CN
+# body length above which a post is split into lazy-loaded segments
+segment_threshold: 8000
+
+# optional plugins the theme would like; the user must still declare them
+plugins:
+  optional:
+    seo: https://github.com/Ngwgers/Ngwg-ext-seo.git
+
+layouts:
+  index: index
+  post: post
+  page: page
+  archive: archive
+  tag: tag
+  category: category
+
+# ---------------------------------------------------------------------------
+# Theme configuration. Everything below is read in templates as `theme.*` and
+# can be deep-merged from the user's ngwg.yaml:
+#
+#   theme:
+#     firefly:
+#       profile:
+#         name: My Blog
+#
+# Core never interprets these keys.
+# ---------------------------------------------------------------------------
+
+themeColor:
+  # hue (0-360) of the oklch palette; 165 is Firefly's default teal
+  hue: 165
+  # light | dark | system
+  defaultMode: system
+
+profile:
+  name: Firefly
+  avatar: /assets/images/avatar.avif
+  bio: "Hello, I'm Firefly."
+  links:
+    - { name: GitHub, icon: github, url: "https://github.com/Ngwgers", showName: false }
+    - { name: RSS, icon: rss, url: "/rss.xml", showName: false }
+
+announcement:
+  enable: true
+  # empty title falls back to the i18n string "announcement"
+  title: ""
+  content: "欢迎来到我的博客！这是一则示例公告，可在 theme.announcement 中修改。"
+  closable: true
+  link:
+    enable: true
+    text: 了解更多
+    url: /about/
+    external: false
+
+navbar:
+  # empty title falls back to the site title
+  title: ""
+  widthFull: false
+  # left | center
+  menuAlign: center
+  # static (scrolls away) | fixed (always pinned) | dynamic (hides on scroll down)
+  mode: dynamic
+  logo:
+    light: /assets/images/logo/firefly-light.png
+    dark: /assets/images/logo/firefly-dark.png
+  links:
+    # `name` may be a key under `nav` in i18n/*.yaml; anything else is literal
+    - { name: home, url: "/", icon: home }
+    - { name: archives, url: "/archives/", icon: archive }
+    - { name: about, url: "/about/", icon: user }
+
+banner:
+  # banner (wallpaper header) | none (plain background)
+  mode: banner
+  # CSS object-position of the wallpaper image
+  position: "0% 20%"
+  # black overlay opacity, 0-1
+  dimOpacity: 0.2
+  # random wallpaper picked per load; a single string also works
+  desktop:
+    - /assets/images/wallpaper/d1.avif
+    - /assets/images/wallpaper/d2.avif
+    - /assets/images/wallpaper/d3.avif
+    - /assets/images/wallpaper/d4.avif
+    - /assets/images/wallpaper/d5.avif
+    - /assets/images/wallpaper/d6.avif
+  mobile:
+    - /assets/images/wallpaper/m1.avif
+    - /assets/images/wallpaper/m2.avif
+    - /assets/images/wallpaper/m3.avif
+    - /assets/images/wallpaper/m4.avif
+    - /assets/images/wallpaper/m5.avif
+    - /assets/images/wallpaper/m6.avif
+  homeText:
+    enable: true
+    title: Firefly
+    titleSize: 4.5rem
+    subtitle:
+      - In Reddened Chrysalis, I Once Rest
+      - From Shattered Sky, I Free Fall
+      - Amidst Silenced Stars, I Deep Sleep
+      - Upon Lighted Fyrefly, I Soon Gaze
+      - From Undreamt Night, I Thence Shine
+      - In Finalized Morrow, I Full Bloom
+    subtitleSize: 1.5rem
+    typewriter:
+      enable: true
+      speed: 100
+      deleteSpeed: 50
+      pauseTime: 2000
+    links:
+      - { name: GitHub, icon: github, url: "https://github.com/Ngwgers/Ngwg-firefly-theme", showName: true }
+      - { name: RSS, icon: rss, url: /rss.xml, showName: false }
+  # what a post's banner shows: description | meta
+  postInfo:
+    mode: description
+
+sidebar:
+  enable: true
+  # left | right | both
+  position: both
+  # hide the side columns on post pages
+  hideOnPostPage: false
+  # widget order; available: profile, announcement, categories, tags, toc
+  left: [profile, announcement, categories, tags]
+  right: [toc]
+
+postList:
+  # list mode cover side: left | right
+  coverPosition: right
+  # clamp the excerpt to N lines (0 = no clamp)
+  descriptionLines: 2
+  showTags: true
+  tagCount: 3
+  stats:
+    published: true
+    words: true
+    reading: true
+
+# ---- reserved integration hook points (disabled by default) ----------------
+comments:
+  enable: false
+  provider: giscus
+  giscus:
+    repo: ""
+    repoId: ""
+    category: ""
+    categoryId: ""
+    mapping: pathname
+    reactionsEnabled: true
+    inputPosition: bottom
+    theme: preferred_color_scheme
+    lang: zh-CN
+
+search:
+  enable: false
+  provider: ""
+
+music:
+  enable: false

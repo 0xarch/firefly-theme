@@ -1,0 +1,19 @@
+# NOTICE
+
+`Ngwg-firefly-theme` is an independent Ngwg port of the
+[Firefly](https://github.com/CuteLeaf/Firefly) Astro theme, itself based on
+[Fuwari](https://github.com/saicaca/fuwari).
+
+The layout, colour system and interaction design are inspired by those
+projects. The EJS templates, CSS and JavaScript in this repository are an
+original implementation for the Ngwg rendering pipeline, not a copy of the
+upstream Astro/Svelte/Starlight sources.
+
+The bundled wallpapers (`assets/images/wallpaper/*`), author avatar
+(`assets/images/avatar.avif`) and logo (`assets/images/logo/*`) are copied
+verbatim from the Firefly project and remain under their original MIT license:
+
+- Copyright (c) 2024 saicaca — fuwari
+- Copyright (c) 2025 CuteLeaf — Firefly
+
+Both are distributed under the MIT License reproduced in `LICENSE`.
