@@ -17,7 +17,7 @@ no runtime framework. Dependencies are provided by Ngwg's own plugins.
 - Post page with banner info, tag/category meta, neighbour links, licence notice
   and a comments hook
 - Left sidebar widgets: profile, announcement, categories, tags; right sidebar
-  TOC (client-rendered, scroll-spy)
+  site statistics and TOC (client-rendered, scroll-spy)
 - Light/dark/system theme switch with an accent hue you can change from one
   variable, plus a `darkreader-lock` so browser dark-mode extensions leave the
   theme alone
@@ -83,7 +83,8 @@ The main knobs (see `theme.yaml` for the full list and defaults):
 | `announcement.*` | sidebar announcement card (enable, content, link, closable) |
 | `navbar.*` | title, logo, `menuAlign`, `mode` (`static`/`fixed`/`dynamic`), links |
 | `banner.*` | `mode` (`banner`/`none`), image lists, `position`, `dimOpacity`, home title/subtitle/typewriter/links, post info |
-| `sidebar.enable/position/hideOnPostPage` + `left`/`right` | widget columns (`profile`, `announcement`, `categories`, `tags`, `toc`) |
+| `sidebar.enable/position/hideOnPostPage` + `left`/`right` | widget columns (`profile`, `announcement`, `categories`, `tags`, `stats`, `toc`) |
+| `siteStats.enable/startDate` | sidebar statistics card (posts/categories/tags/words; running days and last-activity are refreshed in the browser) |
 | `postList.*` | list layout (`data-layout`), cover side, excerpt lines, stats, tags |
 | `license.*` | end-of-post licence notice (`enable`, `name`, `url`); a post may override with `license` / `licenseUrl` frontmatter |
 | `comments.*` | giscus hook (disabled by default) |
@@ -130,6 +131,8 @@ theme can stay dependency-free while leaving room for these features:
   carousel, immersive reading) are not ported.
 - Ngwg does not generate `/tags/` or `/categories/` index pages, so the sidebar
   links only to the per-slug pages.
+- The statistics card's running days and last-activity rows are computed in the
+  browser; without JavaScript they keep the values from build time.
 
 ## Credits & license
 
