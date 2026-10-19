@@ -1,5 +1,6 @@
-# npm tooling for the icon pipeline (devDependencies only — the theme itself
-# ships no runtime dependencies, and node_modules is never part of a release)
+# npm dependencies of the theme (the iconify sets declared in package.json).
+# Ngwg installs them into the theme directory — see the README — and they are
+# never committed.
 node_modules/
 
 # Bundled demo media (wallpapers, avatar, logo, favicons) is deliberately not

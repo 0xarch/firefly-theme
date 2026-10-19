@@ -5,10 +5,7 @@
   "type": "module",
   "license": "MIT",
   "private": true,
-  "scripts": {
-    "icons": "bun scripts/build-icons.mjs"
-  },
-  "devDependencies": {
+  "dependencies": {
     "@iconify-json/fa7-brands": "^1.2.4",
     "@iconify-json/fa7-regular": "^1.2.3",
     "@iconify-json/fa7-solid": "^1.2.5",

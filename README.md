@@ -117,13 +117,14 @@ theme can stay dependency-free while leaving room for these features:
   pointing `themes.firefly` at it, or fork this repository.
 - Layouts live in `layout/` (same base names as `layouts:` in `theme.yaml`),
   reusable fragments in `partial/` (call with `partial('name', { ...extra })`).
-- Icons are inlined by `partial/icon.ejs`, which maps a short name to an
-  [iconify](https://iconify.design) icon from the packs the original theme uses
-  (`@iconify-json/material-symbols`, `@iconify-json/fa7-*`). The drawing data in
-  `partial/icon-svg.ejs` is **generated** — never edit it by hand: add or change
-  a name in the manifest in `partial/icon.ejs`, then run `bun install` (once)
-  and `bun run icons`. The generated file is committed, so using the theme still
-  needs no npm install.
+- Icons are resolved at render time by `partial/icon.ejs`, which maps a short
+  name to an [iconify](https://iconify.design) icon from the packs the original
+  theme uses — the same `@iconify-json/*` packages declared in this theme's
+  `package.json`. Ngwg installs those dependencies into the theme directory and
+  the EJS deployer exposes a theme-scoped `require`, so the drawings are never
+  copied into this repository. To add an icon, point a name at a
+  `collection:icon` reference from an installed pack (add the pack to
+  `package.json` and run `bun install` in the theme directory if needed).
 
 ## Known limitations
 
@@ -143,6 +144,11 @@ theme can stay dependency-free while leaving room for these features:
   `/assets/images/...`. A fresh clone therefore renders without those images
   until you copy your own files into the theme's `assets/images/` or into your
   site's `source/assets/images/`.
+- The theme depends on npm packages (the iconify sets) and therefore needs
+  `node_modules` in the theme directory: `ngwg update theme firefly` installs it
+  when fetching the theme into `.ngwg/themes/`, and Core runs `bun install` on
+  first build when it is missing. Layouts are EJS, because only the EJS deployer
+  exposes `require` to templates.
 
 ## Credits & license
 

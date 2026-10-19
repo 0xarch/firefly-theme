@@ -3,15 +3,17 @@
  * Icon layer — the only place that knows which iconify icon backs a name.
  *
  * Call it as `partial('icon', { name: 'home', size: 20, extraClass: 'chev' })`.
- * The drawing data is generated from the iconify packs the original Firefly
- * theme uses (see package.json) into `partial/icon-svg.ejs`:
  *
- *   bun install    # once
- *   bun run icons  # after editing ICON_MANIFEST
+ * The drawings come straight from the iconify packs this theme depends on
+ * (package.json — the same packs the original Firefly theme uses, so no icon
+ * data is vendored here). Ngwg installs those packages into the theme
+ * directory and the EJS deployer exposes a theme-scoped `require`, which is
+ * what resolves the specifiers below.
  *
  * `name` is a public knob (theme.yaml writes icons for navbar/profile links),
- * so keep existing names when you change an icon. The names below are grouped
- * the same way the upstream theme uses them.
+ * so keep existing names when you change an icon. To add one, point it at a
+ * `collection:icon` reference from the installed packs and run
+ * `bun install` in the theme directory if you added a new pack.
  */
 const ICON_MANIFEST = {
   // ---- navigation & chrome ----
@@ -48,10 +50,44 @@ const ICON_MANIFEST = {
   github: "fa7-brands:github",
   rss: "fa7-solid:rss",
 };
-const ref = Object.prototype.hasOwnProperty.call(ICON_MANIFEST, name)
-  ? ICON_MANIFEST[name]
-  : undefined;
-const s = (typeof size !== "undefined" && size) ? size : 20;
-const cls = typeof extraClass !== "undefined" ? extraClass : "";
+
+// resolve the reference into drawing data: iconify icon sets carry a pack-wide
+// grid (material-symbols: 24, font awesome: 640) that an icon may override,
+// and aliases that point at another icon in the same set
+function lookupIcon(set, id, seen) {
+  const icon = set.icons[id];
+  if (icon) return icon;
+  const alias = set.aliases && set.aliases[id];
+  if (alias && alias.parent && seen.indexOf(id) < 0) return lookupIcon(set, alias.parent, seen.concat(id));
+  return null;
+}
+
+let drawing = null;
+if (Object.prototype.hasOwnProperty.call(ICON_MANIFEST, name)) {
+  const ref = String(ICON_MANIFEST[name]);
+  const sep = ref.indexOf(":");
+  const pack = "@iconify-json/" + ref.slice(0, sep);
+  let set;
+  try {
+    set = require(pack).icons;
+  } catch (e) {
+    throw new Error(
+      `icon "${name}" needs the theme dependency ${pack}, which is not installed — ` +
+        `run "bun install" in the theme directory (Ngwg installs theme dependencies automatically). ${e.message}`,
+    );
+  }
+  const icon = lookupIcon(set, ref.slice(sep + 1), []);
+  if (icon) {
+    drawing = {
+      w: icon.width || set.width || 24,
+      h: icon.height || set.height || 24,
+      x: icon.left || 0,
+      y: icon.top || 0,
+      body: icon.body,
+    };
+  }
+}
+const px = (typeof size !== "undefined" && size) ? size : 20;
+const klass = (typeof extraClass !== "undefined" && extraClass) ? " " + extraClass : "";
 %>
-<% if (ref) { %><%- partial('icon-svg', { ref: ref, size: s, extraClass: cls }) %><% } %>
+<% if (drawing) { %><svg class="icon<%= klass %>" width="<%= px %>" height="<%= px %>" viewBox="<%= drawing.x %> <%= drawing.y %> <%= drawing.w %> <%= drawing.h %>" fill="currentColor" aria-hidden="true" focusable="false"><%- drawing.body %></svg><% } %>

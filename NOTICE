@@ -22,12 +22,13 @@ Both are distributed under the MIT License reproduced in `LICENSE`.
 
 ## Icons
 
-`partial/icon-svg.ejs` embeds icon drawings generated from the iconify packs
-that the original theme uses (see `package.json` and `scripts/build-icons.mjs`):
+`partial/icon.ejs` renders its icons at build time from the iconify packs this
+theme depends on (see `package.json`) — the same sets the original theme uses:
 
 - [Material Symbols](https://github.com/google/material-design-icons) — Apache-2.0
 - [Font Awesome Free](https://github.com/FortAwesome/Font-Awesome)
   (Regular, Solid, Brands) — CC-BY-4.0
 
-Pack versions are pinned in `bun.lock`; regenerate the drawings with
-`bun run icons` after editing the manifest in `partial/icon.ejs`.
+No icon drawings are stored in this repository: they are resolved from the
+installed packages through the theme-scoped `require` provided by the EJS
+deployer. Pack versions are pinned in `bun.lock`.
