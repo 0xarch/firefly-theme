@@ -1,0 +1,62 @@
+# Firefly theme translations — English (US)
+nav:
+  home: Home
+  archives: Archives
+  categories: Categories
+  tags: Tags
+  about: About
+  menu: Menu
+  search: Search
+
+theme:
+  toggle: Toggle theme
+  light: Light
+  dark: Dark
+  system: System
+
+pagination:
+  newer: newer
+  older: older
+  page: "Page {0} / {1}"
+
+archive:
+  title: Archives
+  subtitle: "{0} posts in total"
+
+listing:
+  post_count: "{0} posts"
+  empty: Nothing here yet.
+
+sidebar:
+  profile: About
+  announcement: Announcement
+  categories: Categories
+  tags: Tags
+  toc: Contents
+
+announcement:
+  title: Announcement
+  close: Close announcement
+
+post:
+  words: "words"
+  words_count: "{0} words"
+  reading: "min"
+  reading_time: "{0} min read"
+  published: Published
+  updated: Updated
+  prev: Newer
+  next: Older
+  toc: Contents
+  back_to_top: Back to top
+  comments: Comments
+
+footer:
+  rights: All rights reserved
+  powered_by: "Powered by {0}"
+
+comments:
+  title: Comments
+
+search:
+  placeholder: Search…
