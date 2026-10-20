@@ -1,30 +1,78 @@
 <%
+/**
+ * Pagination — upstream's Pagination.astro/PageJump.svelte shape:
+ * desktop is a centred row of 2.75rem card squares (chevrons for prev/next,
+ * a filled primary square for the current page, ellipsis buttons that turn
+ * into a jump-to-page input), below 1024px it collapses to
+ * prev | current / total | next.
+ *
+ * `page.pagination` only exists on the paginated index (see Ngwg-core
+ * tasks.ts), so tag/category/archive listings render nothing.
+ */
 const pg = page.pagination;
+const pgs = t.pagination || {};
 const pageUrl = (n) => (n <= 1 ? "/" : `/page/${n}/`);
-let nums = [];
+const navLabel = (pgs.page || "Page {0} / {1}").replace("{0}", pg ? pg.current : 1).replace("{1}", pg ? pg.total : 1);
+const pageLabel = (n) => (pgs.page_label || "Page {0}").replace("{0}", n);
+const jumpLabel = pgs.jump || "Jump to page";
+
+// upstream window: current ±2, pushed to the edges so 5 slots are used
+const HIDDEN = -1;
+const nums = [];
 if (pg) {
-  const total = pg.total, cur = pg.current;
-  const from = Math.max(1, cur - 2), to = Math.min(total, cur + 2);
-  for (let i = from; i <= to; i++) nums.push(i);
+  const last = pg.total;
+  let count = 1, l = pg.current, r = pg.current;
+  while (l - 1 > 0 && r + 1 <= last && count + 2 <= 5) { count += 2; l--; r++; }
+  while (l - 1 > 0 && count < 5) { count++; l--; }
+  while (r + 1 <= last && count < 5) { count++; r++; }
+  if (l > 1) nums.push(1);
+  if (l === 3) nums.push(2);
+  if (l > 3) nums.push(HIDDEN);
+  for (let i = l; i <= r; i++) nums.push(i);
+  if (r < last - 2) nums.push(HIDDEN);
+  if (r === last - 2) nums.push(last - 1);
+  if (r < last) nums.push(last);
 }
+const chevron = (dir) => partial('icon', { name: 'chevron-' + dir, size: 26 });
 %>
 <% if (pg && pg.total > 1) { %>
-<nav class="pagination" aria-label="<%= t.pagination.page.replace('{0}', pg.current).replace('{1}', pg.total) %>">
-  <% if (pg.prev) { %>
-  <a class="pagination-btn newer" href="<%= pg.prev %>" rel="prev"><%- partial('icon', { name: 'chevron-left', size: 16 }) %><span><%= t.pagination.newer %></span></a>
-  <% } else { %><span class="pagination-btn disabled"><%- partial('icon', { name: 'chevron-left', size: 16 }) %><span><%= t.pagination.newer %></span></span><% } %>
+<nav class="pagination" role="navigation" aria-label="<%= navLabel %>"
+     data-jump-current="<%= pg.current %>" data-jump-last="<%= pg.total %>"
+     data-jump-template="/page/{page}/" data-jump-first="/">
+  <div class="pagination-mobile">
+    <% if (pg.prev) { %><a class="pagination-btn" href="<%= pg.prev %>" rel="prev" aria-label="<%= pgs.prev %>"><%- chevron('left') %></a>
+    <% } else { %><span class="pagination-btn disabled" aria-disabled="true" aria-label="<%= pgs.prev %>"><%- chevron('left') %></span><% } %>
 
-  <span class="pagination-pages">
-    <% if (nums[0] > 1) { %><a class="pagination-num" href="/">1</a><% if (nums[0] > 2) { %><span class="pagination-gap">…</span><% } %><% } %>
+    <div class="pagination-count">
+      <button type="button" class="pagination-jump-current" data-pagination-jump data-jump-variant="current"
+              aria-label="<%= jumpLabel %>" title="<%= jumpLabel %>"><%= pg.current %></button>
+      <span class="pagination-count-sep" aria-hidden="true">/</span>
+      <span class="pagination-count-total"><%= pg.total %></span>
+    </div>
+
+    <% if (pg.next) { %><a class="pagination-btn" href="<%= pg.next %>" rel="next" aria-label="<%= pgs.next %>"><%- chevron('right') %></a>
+    <% } else { %><span class="pagination-btn disabled" aria-disabled="true" aria-label="<%= pgs.next %>"><%- chevron('right') %></span><% } %>
+  </div>
+
+  <div class="pagination-desktop">
+    <% if (pg.prev) { %><a class="pagination-btn" href="<%= pg.prev %>" rel="prev" aria-label="<%= pgs.prev %>"><%- chevron('left') %></a>
+    <% } else { %><span class="pagination-btn disabled" aria-disabled="true" aria-label="<%= pgs.prev %>"><%- chevron('left') %></span><% } %>
+
     <% for (const n of nums) { %>
-      <% if (n === pg.current) { %><span class="pagination-num current" aria-current="page"><%= n %></span>
-      <% } else { %><a class="pagination-num" href="<%= pageUrl(n) %>"><%= n %></a><% } %>
+      <% if (n === HIDDEN) { %>
+      <button type="button" class="pagination-jump" data-pagination-jump data-jump-variant="ellipsis"
+              aria-label="<%= jumpLabel %>" title="<%= jumpLabel %>">
+        <svg class="pagination-dots" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+      </button>
+      <% } else if (n === pg.current) { %>
+      <span class="pagination-num current" aria-current="page"><%= n %></span>
+      <% } else { %>
+      <a class="pagination-num" href="<%= pageUrl(n) %>" aria-label="<%= pageLabel(n) %>"><%= n %></a>
+      <% } %>
     <% } %>
-    <% if (nums[nums.length - 1] < pg.total) { %><% if (nums[nums.length - 1] < pg.total - 1) { %><span class="pagination-gap">…</span><% } %><a class="pagination-num" href="<%= pageUrl(pg.total) %>"><%= pg.total %></a><% } %>
-  </span>
 
-  <% if (pg.next) { %>
-  <a class="pagination-btn older" href="<%= pg.next %>" rel="next"><span><%= t.pagination.older %></span><%- partial('icon', { name: 'chevron-right', size: 16 }) %></a>
-  <% } else { %><span class="pagination-btn disabled"><span><%= t.pagination.older %></span><%- partial('icon', { name: 'chevron-right', size: 16 }) %></span><% } %>
+    <% if (pg.next) { %><a class="pagination-btn" href="<%= pg.next %>" rel="next" aria-label="<%= pgs.next %>"><%- chevron('right') %></a>
+    <% } else { %><span class="pagination-btn disabled" aria-disabled="true" aria-label="<%= pgs.next %>"><%- chevron('right') %></span><% } %>
+  </div>
 </nav>
 <% } %>

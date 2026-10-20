@@ -15,9 +15,11 @@ theme:
   system: System
 
 pagination:
-  newer: newer
-  older: older
+  prev: Previous
+  next: Next
   page: "Page {0} / {1}"
+  page_label: "Page {0}"
+  jump: Jump to page
 
 archive:
   title: Archives

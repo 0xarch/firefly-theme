@@ -15,9 +15,11 @@ theme:
   system: 跟随系统
 
 pagination:
-  newer: 较新
-  older: 较旧
+  prev: 上一页
+  next: 下一页
   page: "第 {0} / {1} 页"
+  page_label: "第 {0} 页"
+  jump: 跳转到指定页
 
 archive:
   title: 归档
