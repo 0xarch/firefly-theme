@@ -26,18 +26,20 @@ const hiddenTagCount = tags.length - shownTags.length;
 const stats = pl.stats || {};
 const descLines = Number.isFinite(Number(pl.descriptionLines)) ? Number(pl.descriptionLines) : 2;
 const desc = post.excerptHtml ? null : h.excerpt(post, 200);
+// upstream wraps every meta icon in a tinted 2rem square (`.meta-icon`)
+const metaIcon = (name) => `<span class="meta-icon">${partial('icon', { name, size: 20 })}</span>`;
 %>
 <article class="post-card<%= cover ? ' has-cover ' + coverSide : ' no-cover' %>">
   <div class="post-card-content">
     <a class="post-card-title" href="<%= post.url %>"><%= meta.title %></a>
     <div class="post-card-meta">
       <% if (stats.published !== false && meta.date) { %>
-      <span class="meta-item"><%- partial('icon', { name: 'calendar', size: 15 }) %><time datetime="<%= meta.date %>"><%= h.formatDate(meta.date, "YYYY-MM-DD") %></time></span>
+      <span class="meta-item"><%- metaIcon('calendar') %><time datetime="<%= meta.date %>"><%= h.formatDate(meta.date, "YYYY-MM-DD") %></time></span>
       <% } %>
-      <% if (stats.words !== false) { %><span class="meta-item"><%- partial('icon', { name: 'file-text', size: 15 }) %><%= h.t("post.words_count", words) %></span><% } %>
-      <% if (stats.reading !== false) { %><span class="meta-item"><%- partial('icon', { name: 'clock', size: 15 }) %><%= h.t("post.reading_time", minutes) %></span><% } %>
+      <% if (stats.words !== false) { %><span class="meta-item"><%- metaIcon('file-text') %><%= h.t("post.words_count", words) %></span><% } %>
+      <% if (stats.reading !== false) { %><span class="meta-item"><%- metaIcon('clock') %><%= h.t("post.reading_time", minutes) %></span><% } %>
       <% if (cats.length) { %>
-      <span class="meta-item"><%- partial('icon', { name: 'folder', size: 15 }) %><% for (const c of cats) { %><a class="meta-link" href="/categories/<%= h.slugify(c) %>/"><%= c %></a><% } %></span>
+      <span class="meta-item"><%- metaIcon('folder') %><% for (const c of cats) { %><a class="meta-link" href="/categories/<%= h.slugify(c) %>/"><%= c %></a><% } %></span>
       <% } %>
     </div>
     <% if (post.excerptHtml) { %>
