@@ -295,6 +295,8 @@ html[data-wallpaper-mode="banner"] .navbar-inner {
 
 .nav-dropdown { position: relative; }
 .nav-dropdown-toggle .chev { transition: transform var(--dur) var(--ease); }
+.nav-dropdown.open .nav-dropdown-toggle .chev,
+.nav-dropdown:focus-within .nav-dropdown-toggle .chev { transform: rotate(180deg); }
 .nav-dropdown-panel {
   position: absolute; top: calc(100% + 0.4rem); left: 50%; transform: translateX(-50%) translateY(-6px);
   min-width: 11rem; padding: 0.4rem; border-radius: var(--radius-md);
@@ -360,6 +362,17 @@ body[data-navbar-mode="dynamic"] #navbar.hidden-up { transform: translate(-50%, 
 }
 .nav-drawer-item:hover { background: var(--btn-plain-bg-hover); }
 .nav-drawer-item.active { color: var(--primary); font-weight: 600; }
+/* grouped links: the parent is a summary that expands its children inline */
+.nav-drawer-group > summary { list-style: none; cursor: pointer; }
+.nav-drawer-group > summary::-webkit-details-marker { display: none; }
+.nav-drawer-toggle .chev { margin-left: auto; transition: transform var(--dur) var(--ease); }
+.nav-drawer-group[open] .nav-drawer-toggle .chev { transform: rotate(180deg); }
+.nav-drawer-sub {
+  display: flex; flex-direction: column; gap: 0.15rem;
+  margin: 0.15rem 0 0.15rem 0.9rem; padding-left: 0.5rem;
+  border-left: 2px solid var(--line-divider);
+}
+.nav-drawer-sub .nav-drawer-item { padding: 0.6rem 0.75rem; font-size: 0.95rem; }
 
 /* ==========================================================================
    Wallpaper / banner

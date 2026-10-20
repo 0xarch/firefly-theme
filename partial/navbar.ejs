@@ -76,11 +76,22 @@ const isActive = (u) => {
   <nav class="nav-drawer-links" aria-label="<%= t.nav.menu %>">
     <% for (const l of navLinks) { %>
       <% if (l.children && l.children.length) { %>
-        <% for (const c of l.children) { %>
-        <a class="nav-drawer-item<%= isActive(c.url) ? ' active' : '' %>" href="<%= c.url %>"<%- c.external ? ' target="_blank" rel="noopener noreferrer"' : '' %>>
-          <% if (c.icon) { %><%- partial('icon', { name: c.icon, size: 18 }) %><% } %><span><%= label(c.name) %></span>
-        </a>
-        <% } %>
+        <%# the parent keeps its label and expands its children in place, like
+            upstream's mobile submenu (rather than flattening the group away) %>
+        <details class="nav-drawer-group">
+          <summary class="nav-drawer-item nav-drawer-toggle">
+            <% if (l.icon) { %><%- partial('icon', { name: l.icon, size: 18 }) %><% } %>
+            <span><%= label(l.name) %></span>
+            <%- partial('icon', { name: 'chevron-down', size: 18, extraClass: 'chev' }) %>
+          </summary>
+          <div class="nav-drawer-sub">
+            <% for (const c of l.children) { %>
+            <a class="nav-drawer-item<%= isActive(c.url) ? ' active' : '' %>" href="<%= c.url %>"<%- c.external ? ' target="_blank" rel="noopener noreferrer"' : '' %>>
+              <% if (c.icon) { %><%- partial('icon', { name: c.icon, size: 18 }) %><% } %><span><%= label(c.name) %></span>
+            </a>
+            <% } %>
+          </div>
+        </details>
       <% } else { %>
       <a class="nav-drawer-item<%= isActive(l.url) ? ' active' : '' %>" href="<%= l.url %>"<%- l.external ? ' target="_blank" rel="noopener noreferrer"' : '' %>>
         <% if (l.icon) { %><%- partial('icon', { name: l.icon, size: 18 }) %><% } %><span><%= label(l.name) %></span>

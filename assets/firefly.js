@@ -231,6 +231,8 @@
       if (e.key !== "Escape") return;
       $$(".theme-mode.open, .nav-dropdown.open").forEach(function (el) {
         el.classList.remove("open");
+        var t = $("[aria-expanded='true']", el);
+        if (t) t.setAttribute("aria-expanded", "false");
       });
       var b = $("#theme-toggle");
       if (b) b.setAttribute("aria-expanded", "false");
