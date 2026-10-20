@@ -19,9 +19,14 @@ This theme uses EJS + CSS + ES (Vanilla).
   and a comments hook
 - Left sidebar widgets: profile, announcement, categories, tags; right sidebar
   site statistics and TOC (client-rendered, scroll-spy)
-- Light/dark/system theme switch with an accent hue you can change from one
-  variable, plus a `darkreader-lock` so browser dark-mode extensions leave the
-  theme alone
+- Light/dark/system theme switch, plus a display-settings panel with a live
+  accent-hue slider (both stored in `localStorage`) and a `darkreader-lock` so
+  browser dark-mode extensions leave the theme alone
+- Client-side search, opened from the navbar or with Ctrl/Cmd+K (opt-in)
+- Navbar links with dropdown menus (the same groups become accordions in the
+  mobile drawer)
+- Tag/category widgets that collapse to 7.5rem with a more/collapse toggle once
+  they grow past their threshold
 - Pjax navigation, a reading progress bar (post pages only), back-to-top and
   code copy buttons
 - Long-post segmented lazy loading (provided by Ngwg-files)
@@ -77,15 +82,19 @@ The main knobs (see `theme.yaml` for the full list and defaults):
 | Key | Meaning |
 | --- | --- |
 | `themeColor.hue` / `defaultMode` | accent hue (0-360) and initial colour scheme |
+| `themeColor.displaySettings` | show the navbar display-settings panel (hue slider); `false` hides it |
 | `profile.*` | sidebar avatar, name, bio and links |
 | `announcement.*` | sidebar announcement card (enable, content, link, closable) |
-| `navbar.*` | title, logo, `menuAlign`, `mode` (`static`/`fixed`/`dynamic`), links |
+| `navbar.*` | title, logo, `menuAlign` (`left` puts the links beside the title, upstream-style), `mode` (`static`/`fixed`/`dynamic`), links |
+| `navbar.links[].children` | turns a link into a dropdown menu (hover/click on desktop, accordion in the drawer) |
 | `banner.*` | `mode` (`banner`/`none`), image lists, `position`, `dimOpacity`, home title/subtitle/typewriter/links, post info |
 | `sidebar.enable/position/tabletSidebar/hideOnPostPage` + `left`/`right` | widget columns (`profile`, `announcement`, `categories`, `tags`, `stats`, `toc`); `tabletSidebar` picks the single side kept between 768px and 1279px |
+| `sidebar.collapse.categories` / `.tags` | entry count past which a widget is clipped to 7.5rem behind a more/collapse toggle (0 disables; upstream uses 5 and 10) |
 | `siteStats.enable/startDate` | sidebar statistics card (posts/categories/tags/words; running days and last-activity are refreshed in the browser) |
 | `postList.layout` / `postList.mobileLayout` | card layout above / below 780px: `list` (wide cards with the cover beside the text) or `grid` (auto-filled columns) |
 | `postList.*` | cover side, excerpt lines, stats, tags |
 | `license.*` | end-of-post licence notice (`enable`, `name`, `url`); a post may override with `license` / `licenseUrl` frontmatter |
+| `search.enable` / `limit` / `excerptLength` / `hotkey` | client-side search over an index rendered beside the navbar |
 | `comments.*` | giscus hook (disabled by default) |
 
 Local assets are addressed as `/assets/...` (the theme's `assets/` directory is
@@ -106,6 +115,18 @@ The listing also switches to `postList.mobileLayout` (grid) below 780px, so a
 phone shows one card per row while the ~660-780px band fits two; from 780px up
 the wide `list` cards are used.
 
+### Search
+
+`search.enable: true` renders a JSON index of every post (URL, title, date, tags,
+categories and the `<!-- more -->` excerpt) beside the navbar and puts a
+magnifier in the navbar actions; Ctrl/Cmd+K opens the panel too. Filtering runs
+in the browser, so there is no service to run and no build step: every query
+token must match, title hits rank first, then tags/categories, then the excerpt.
+The arrow keys walk the results and Enter opens one (through pjax when it is
+active). `limit` caps the result count, `excerptLength` the stored excerpt and
+`hotkey: false` drops the shortcut. Because only the `<!-- more -->` slice is
+indexed, a listing page never carries the rest of the article into its HTML.
+
 ### i18n support
 
 `i18n/<language>.yaml` holds the UI strings; the language is resolved by Ngwg
@@ -114,14 +135,14 @@ may use an i18n key (`home`, `archives`, …) or a literal label.
 
 ## Integration hooks
 
-`comments`, `search` and `music` are reserved, off-by-default hook points, so the
-theme can stay dependency-free while leaving room for these features:
+`comments` and `music` are reserved, off-by-default hook points, so the theme can
+stay dependency-free while leaving room for these features:
 
 - **Comments** — only giscus is wired up. Set
   `comments: { enable: true, provider: giscus, giscus: { repo, repoId, category, categoryId } }`;
   the loader script injects `https://giscus.app/client.js` on demand and follows
   the light/dark switch.
-- **Search** / **Music** — no implementation yet; add a widget partial under
+- **Music** — no implementation yet; add a widget partial under
   `partial/widget/` and register it in `sidebar.left`/`right`.
 
 ## Customising
@@ -149,7 +170,8 @@ theme can stay dependency-free while leaving room for these features:
 - Capability tiers beyond the core blog experience (live2d, music player, photo
   carousel, immersive reading) are not ported.
 - Ngwg does not generate `/tags/` or `/categories/` index pages, so the sidebar
-  links only to the per-slug pages.
+  links only to the per-slug pages. Upstream's tag widget turns its "more"
+  button into a link to that index; here both widgets expand in place instead.
 - The statistics card's running days and last-activity rows are computed in the
   browser; without JavaScript they keep the values from build time.
 - On non-home desktop pages the banner is a 45vh band whose wallpaper is cropped
