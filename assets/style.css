@@ -792,6 +792,12 @@ details:not([open]) > summary .chev { transform: rotate(-90deg); }
 /* ==========================================================================
    Post licence notice — a tinted block inside the article card (upstream's
    `license-container`, `--license-block-bg`)
+
+   The notice is plain HTML (`h2`, `dl`/`dt`/`dd`, `a`), so the browser's own
+   rules would otherwise leak in: heading margins, the 40px `dd` indent and the
+   underlined link. Each element starts from `all: initial` and re-declares
+   only what it needs — the title needs an explicit `display: block` because
+   the initial `display` is `inline`.
    ========================================================================== */
 .post-license {
   position: relative; overflow: hidden; margin-top: 2rem;
@@ -803,21 +809,42 @@ details:not([open]) > summary .chev { transform: rotate(-90deg); }
   color: var(--primary); opacity: 0.08; pointer-events: none;
 }
 :root.dark .license-watermark { opacity: 0.12; }
-.license-title { font-size: 1.15rem; font-weight: 700; color: var(--deep-text); }
-.license-url {
-  display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.35rem;
-  font-size: 0.85rem; color: var(--content-meta); word-break: break-all;
+
+.post-license .license-title,
+.post-license .license-url,
+.post-license .license-fields,
+.post-license .license-field,
+.post-license .license-field dt,
+.post-license .license-field dd {
+  all: initial;
+  box-sizing: border-box;
+  display: block;
+  font-family: inherit;
+  color: var(--deep-text);
 }
-.license-url:hover { color: var(--primary); }
-.license-fields {
-  position: relative; display: grid; gap: 0.5rem; margin-top: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+.post-license .license-title { font-size: 1.15rem; font-weight: 700; line-height: 1.4; }
+.post-license .license-url {
+  display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.5rem;
+  font-size: 0.85rem; color: var(--content-meta); word-break: break-all; cursor: pointer;
 }
-.license-field { display: flex; flex-direction: column; gap: 0.15rem; }
-.license-field dt { font-size: 0.78rem; color: var(--content-meta); }
-.license-field dd { font-size: 0.95rem; font-weight: 600; color: var(--deep-text); }
-.license-field dd a { color: var(--primary); }
-.license-field dd a:hover { text-decoration: underline; }
+.post-license .license-url:hover { color: var(--primary); }
+.post-license .license-url span { display: inline; }
+.post-license .license-fields {
+  display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;
+}
+/* upstream lays the three fields out in a row from sm up */
+@media (min-width: 640px) {
+  .post-license .license-fields { flex-direction: row; gap: 1.5rem; }
+  .post-license .license-field { flex: 1 1 0; min-width: 0; }
+}
+.post-license .license-field { display: flex; flex-direction: column; gap: 0.15rem; }
+.post-license .license-field dt { font-size: 0.78rem; color: var(--content-meta); }
+.post-license .license-field dd { font-size: 0.95rem; font-weight: 600; }
+.post-license .license-field dd a {
+  all: initial;
+  font: inherit; font-weight: 600; color: var(--primary); cursor: pointer;
+}
+.post-license .license-field dd a:hover { text-decoration: underline; }
 
 /* ==========================================================================
    Pagination
