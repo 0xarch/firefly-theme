@@ -44,8 +44,8 @@ const minutes = Math.max(1, Math.round(cjk / 400 + latin / 220));
     <% if (view === "home") { %>
       <% if (homeText.enable !== false) { %>
       <div class="banner-home-text">
-        <div class="banner-home-title" style="font-size: <%= homeText.titleSize || '4.5rem' %>"><%= homeText.title || site.title %></div>
-        <div class="banner-home-subtitle" id="banner-subtitle" style="font-size: <%= homeText.subtitleSize || '1.5rem' %>; min-height: 2.2em">
+        <div class="banner-home-title" style="--banner-title-size: <%= homeText.titleSize || '4.5rem' %>"><%= homeText.title || site.title %></div>
+        <div class="banner-home-subtitle" id="banner-subtitle" style="--banner-subtitle-size: <%= homeText.subtitleSize || '1.5rem' %>; min-height: 2.2em">
           <span id="banner-subtitle-text"><% const subs = homeText.subtitle || []; %><%= Array.isArray(subs) && subs.length ? subs[0] : "" %></span><span class="typewriter-caret" aria-hidden="true"></span>
         </div>
         <% if (homeText.links && homeText.links.length) { %>

@@ -368,6 +368,10 @@ body[data-navbar-mode="dynamic"] #navbar.hidden-up { transform: translate(-50%, 
 }
 html[data-wallpaper-mode="none"] #wallpaper-wrapper { display: none; }
 
+/* The hero keeps upstream's 65vh home height at every page size; every other
+   page only uses the 45vh band (mobile non-home pages drop the banner). */
+body.is-home { --banner-h: var(--banner-height-home); }
+
 .banner-media { display: block; width: 100%; height: 100%; }
 .banner-media-plain { background: linear-gradient(160deg, oklch(0.7 0.12 var(--hue)), oklch(0.55 0.15 calc(var(--hue) + 40))); }
 .banner-img { width: 100%; height: 100%; object-fit: cover; }
@@ -380,9 +384,37 @@ html[data-wallpaper-mode="none"] #wallpaper-wrapper { display: none; }
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   text-align: center; padding: 0 1.5rem; color: #fff;
 }
-.banner-home-text { display: flex; flex-direction: column; align-items: center; gap: 1rem; text-shadow: 0 2px 12px rgb(0 0 0 / 0.35); }
-.banner-home-title { font-weight: 800; line-height: 1.1; letter-spacing: 0.02em; }
-.banner-home-subtitle { font-weight: 500; opacity: 0.92; }
+.banner-home-text { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 75%; text-shadow: 0 2px 12px rgb(0 0 0 / 0.35); }
+.banner-home-title { font-weight: 800; line-height: 1.1; letter-spacing: 0.02em; font-size: var(--banner-title-size, 4.5rem); overflow-wrap: break-word; }
+.banner-home-subtitle { font-weight: 500; opacity: 0.92; font-size: var(--banner-subtitle-size, 1.5rem); }
+
+/* Upstream's per-tier hero sizes: the title is capped against the viewport and
+   the text block widens as the screen narrows, so a long title cannot wrap
+   down into the content panel that overlaps the banner from below (the panel
+   keeps pointer-events off the banner area, see the content-panel rules). */
+@media (max-width: 1023px) {
+  .banner-home-text { width: 85%; }
+  .banner-home-title { font-size: min(var(--banner-title-size, 4.5rem), 7vw); }
+  .banner-home-subtitle { font-size: min(var(--banner-subtitle-size, 1.5rem), 1.5rem); }
+}
+@media (max-width: 767px) {
+  .banner-home-text { width: 88%; }
+  .banner-home-title { font-size: min(var(--banner-title-size, 4.5rem), 8vw); }
+  .banner-home-subtitle { font-size: min(var(--banner-subtitle-size, 1.5rem), 1.25rem); }
+}
+@media (max-width: 640px) {
+  .banner-home-text { width: 90%; }
+  .banner-home-title { font-size: min(var(--banner-title-size, 4.5rem), 10vw); }
+  .banner-home-subtitle { font-size: min(var(--banner-subtitle-size, 1.5rem), 1.125rem); }
+}
+@media (max-width: 480px) {
+  .banner-home-text { width: 95%; }
+  .banner-home-subtitle { font-size: min(var(--banner-subtitle-size, 1.5rem), 1rem); }
+}
+@media (max-width: 1023px) and (orientation: landscape) {
+  .banner-home-title { font-size: min(var(--banner-title-size, 4.5rem), 6vw); }
+  .banner-home-subtitle { font-size: min(var(--banner-subtitle-size, 1.5rem), 0.9rem); }
+}
 .typewriter-caret { display: inline-block; width: 2px; height: 1em; margin-left: 2px; background: currentColor; vertical-align: text-bottom; animation: caret 1s step-end infinite; }
 @keyframes caret { 50% { opacity: 0; } }
 .banner-home-links { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; pointer-events: auto; }
@@ -418,6 +450,12 @@ html[data-wallpaper-mode="none"] #wallpaper-wrapper { display: none; }
   margin-top: calc(var(--banner-h) - var(--panel-overlap));
   padding-bottom: 1rem;
 }
+/* On the home page the panel slides up over the hero: let clicks fall through
+   to the banner text and its links, and re-enable them where the panel really
+   starts (the grid and the footer). Upstream: body.is-home.enable-banner. */
+html[data-wallpaper-mode="banner"] body.is-home #content-panel > #content-panel-inner { pointer-events: none; }
+html[data-wallpaper-mode="banner"] body.is-home #content-panel #main-grid,
+html[data-wallpaper-mode="banner"] body.is-home #content-panel .site-footer { pointer-events: auto; }
 #content-panel-inner {
   width: 100%; max-width: var(--page-width); margin: 0 auto; padding: 0 1rem;
 }
@@ -812,7 +850,6 @@ details:not([open]) > summary .chev { transform: rotate(-90deg); }
 #content-panel.pjax-leaving { opacity: 0; transition: opacity 150ms var(--ease); }
 
 @media (max-width: 1023px) {
-  #wallpaper-wrapper { height: var(--banner-height-home); }
   body:not(.is-home) #wallpaper-wrapper { display: none; }
   body:not(.is-home) #content-panel { margin-top: var(--navbar-h); }
   html[data-wallpaper-mode="none"] #content-panel { margin-top: var(--navbar-h); }
