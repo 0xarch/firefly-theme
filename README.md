@@ -1,12 +1,11 @@
-# Ngwg-firefly-theme
+# Vdys
 
-Clean, bright and modern theme for the [Ngwg](https://github.com/Ngwgers/Ngwg-core)
-static site generator — a port of the [Firefly](https://github.com/CuteLeaf/Firefly)
-Astro theme (itself based on [Fuwari](https://github.com/saicaca/fuwari)) to the
-Ngwg theme contract.
+Clean, bright and modern theme for the [Ngwg](https://github.com/Ngwgers/Ngwg-core) static site generator.
 
-Everything is plain **EJS + CSS + vanilla JS**: no npm packages, no build step,
-no runtime framework. Dependencies are provided by Ngwg's own plugins.
+As for now this is a port of the [Firefly](https://github.com/CuteLeaf/Firefly) Astro theme (itself based on [Fuwari](https://github.com/saicaca/fuwari))
+to the Ngwg theme contract.
+
+This theme uses EJS + CSS + ES (Vanilla).
 
 ## Features
 
@@ -14,6 +13,8 @@ no runtime framework. Dependencies are provided by Ngwg's own plugins.
   a typewriter subtitle on the home page
 - Post cards with optional cover, excerpt clamping and tag list
 - Archive (grouped by year), tag and category listing pages
+- Home pagination with the original theme's square page buttons and a
+  jump-to-page box, on upstream's 768/780/1280px breakpoints
 - Post page with banner info, tag/category meta, neighbour links, licence notice
   and a comments hook
 - Left sidebar widgets: profile, announcement, categories, tags; right sidebar
@@ -46,16 +47,13 @@ Declare the theme and the plugins in `ngwg.yaml`:
 theme: firefly
 
 themes:
-  firefly: https://github.com/Ngwgers/Ngwg-firefly-theme.git
+  firefly: https://github.com/0xarch/firefly-theme.git
 
 plugins:
   files: {}
   feature: {}
-  seo: {}          # optional
+  seo: https://github.com/Ngwgers/Ngwg-ext-seo # optional
 ```
-
-`files`/`feature` may be declared with only `option` (an empty value), in which
-case Ngwg uses the official source. Then run `ngwg build`.
 
 ## Configuration
 
@@ -83,9 +81,10 @@ The main knobs (see `theme.yaml` for the full list and defaults):
 | `announcement.*` | sidebar announcement card (enable, content, link, closable) |
 | `navbar.*` | title, logo, `menuAlign`, `mode` (`static`/`fixed`/`dynamic`), links |
 | `banner.*` | `mode` (`banner`/`none`), image lists, `position`, `dimOpacity`, home title/subtitle/typewriter/links, post info |
-| `sidebar.enable/position/hideOnPostPage` + `left`/`right` | widget columns (`profile`, `announcement`, `categories`, `tags`, `stats`, `toc`) |
+| `sidebar.enable/position/tabletSidebar/hideOnPostPage` + `left`/`right` | widget columns (`profile`, `announcement`, `categories`, `tags`, `stats`, `toc`); `tabletSidebar` picks the single side kept between 768px and 1279px |
 | `siteStats.enable/startDate` | sidebar statistics card (posts/categories/tags/words; running days and last-activity are refreshed in the browser) |
-| `postList.*` | list layout (`data-layout`), cover side, excerpt lines, stats, tags |
+| `postList.layout` / `postList.mobileLayout` | card layout above / below 780px: `list` (wide cards with the cover beside the text) or `grid` (auto-filled columns) |
+| `postList.*` | cover side, excerpt lines, stats, tags |
 | `license.*` | end-of-post licence notice (`enable`, `name`, `url`); a post may override with `license` / `licenseUrl` frontmatter |
 | `comments.*` | giscus hook (disabled by default) |
 
@@ -93,7 +92,21 @@ Local assets are addressed as `/assets/...` (the theme's `assets/` directory is
 deployed verbatim). Point `profile.avatar`, `banner.desktop` etc. at your own
 files placed under `source/assets/` or at remote URLs.
 
-### i18n
+### Responsive layout
+
+The breakpoints follow the original theme:
+
+| Width | Layout |
+| --- | --- |
+| < 768px | no side columns; the sidebar widgets stack below the content |
+| 768-1279px | one sticky side column under the navbar — `sidebar.tabletSidebar` (left by default) when `sidebar.position` is `both` |
+| >= 1280px | every configured column |
+
+The listing also switches to `postList.mobileLayout` (grid) below 780px, so a
+phone shows one card per row while the ~660-780px band fits two; from 780px up
+the wide `list` cards are used.
+
+### i18n support
 
 `i18n/<language>.yaml` holds the UI strings; the language is resolved by Ngwg
 (`language` in `ngwg.yaml` → `$NGWG_LANG` → theme `default_language`). Nav items
@@ -139,6 +152,9 @@ theme can stay dependency-free while leaving room for these features:
   links only to the per-slug pages.
 - The statistics card's running days and last-activity rows are computed in the
   browser; without JavaScript they keep the values from build time.
+- On non-home desktop pages the banner is a 45vh band whose wallpaper is cropped
+  to that band; upstream instead shifts a 65vh wrapper up behind the panel. The
+  visible height and the text centring match, only the crop of the image differs.
 - No media is shipped with the theme: `assets/images/` (wallpapers, avatar,
   logo, favicons) is git-ignored, while the default `theme.yaml` still points at
   `/assets/images/...`. A fresh clone therefore renders without those images
