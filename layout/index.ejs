@@ -1,5 +1,8 @@
+<%
+const pl = theme.postList || {};
+%>
 <%- partial('header', { view: 'home', navUrl: '/', navTitle: site.title }) %>
-<section class="post-list" data-layout="<%= (theme.postList || {}).layout || 'list' %>">
+<section class="post-list" data-layout="<%= pl.layout || 'list' %>" data-mobile-layout="<%= pl.mobileLayout || 'grid' %>">
   <% if (page.posts && page.posts.length) { %>
     <% for (const post of page.posts) { %><%- partial('post-card', { post }) %><% } %>
   <% } else { %>

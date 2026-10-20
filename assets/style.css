@@ -622,8 +622,16 @@ details:not([open]) > summary .chev { transform: rotate(-90deg); }
 /* ==========================================================================
    Post list
    ========================================================================== */
-.post-list { display: flex; flex-direction: column; gap: 1rem; }
-.post-list[data-layout="grid"] { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.post-list { display: flex; flex-direction: column; gap: 1rem; --post-card-min-width: 20rem; }
+/* Grid mode: auto-filled columns, each at least as wide as upstream's
+   postListLayout.grid.columnWidth (320px). */
+.post-list[data-layout="grid"] { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--post-card-min-width), 1fr)); }
+/* Upstream switches to `postListLayout.mobileDefaultMode` (grid) below 780px:
+   one column on a phone, two in the ~660-780px band — the extra tier between
+   the phone and the 780px+ list layout. */
+@media (max-width: 779px) {
+  .post-list[data-mobile-layout="grid"] { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--post-card-min-width), 1fr)); }
+}
 
 .post-card {
   position: relative; display: flex; flex-direction: column-reverse;
@@ -657,7 +665,9 @@ details:not([open]) > summary .chev { transform: rotate(-90deg); }
 .post-card-enter:active { background: var(--btn-regular-bg-active); transform: scale(0.95); }
 .post-card.no-cover { padding-right: 4.5rem; }
 
-@media (min-width: 768px) {
+/* The wide list cards only exist from 780px up: below that upstream is in its
+   mobile mode (grid by default), where the card keeps the stacked cover. */
+@media (min-width: 780px) {
   .post-list[data-layout="list"] .post-card.has-cover { flex-direction: row; align-items: stretch; padding: 1.4rem; gap: 1.4rem; }
   .post-list[data-layout="list"] .post-card.has-cover .post-card-content { order: 0; }
   .post-list[data-layout="list"] .post-card.cover-left { flex-direction: row-reverse; }

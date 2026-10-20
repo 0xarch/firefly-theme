@@ -142,6 +142,11 @@ siteStats:
   startDate: "2025-01-01"
 
 postList:
+  # layout: list (wide cards, cover beside the text) | grid (auto-filled columns)
+  layout: list
+  # layout below 780px; upstream defaults to grid, which puts two columns in
+  # the ~660-780px band and one on a phone
+  mobileLayout: grid
   # list mode cover side: left | right
   coverPosition: right
   # clamp the excerpt to N lines (0 = no clamp)

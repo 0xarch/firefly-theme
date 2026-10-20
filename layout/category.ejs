@@ -1,9 +1,12 @@
+<%
+const pl = theme.postList || {};
+%>
 <%- partial('header', { view: 'category', navUrl: `/categories/${h.slugify(page.category)}/`, navTitle: page.category, bannerTitle: page.category }) %>
 <div class="listing-head">
   <h2 class="listing-title"><%= page.category %></h2>
   <p class="listing-subtitle"><%= h.t("listing.post_count", page.posts.length) %></p>
 </div>
-<section class="post-list" data-layout="<%= (theme.postList || {}).layout || 'list' %>">
+<section class="post-list" data-layout="<%= pl.layout || 'list' %>" data-mobile-layout="<%= pl.mobileLayout || 'grid' %>">
   <% for (const post of page.posts) { %><%- partial('post-card', { post }) %><% } %>
 </section>
 <%- partial('footer', { view: 'category', navUrl: `/categories/${h.slugify(page.category)}/` }) %>
