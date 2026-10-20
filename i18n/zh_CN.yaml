@@ -83,4 +83,8 @@ comments:
   title: 评论
 
 search:
-  placeholder: 搜索…
+  title: 搜索
+  placeholder: 搜索文章…
+  hint: 输入关键词筛选标题、标签、分类与摘要
+  empty: 没有匹配的文章
+  close: 关闭搜索

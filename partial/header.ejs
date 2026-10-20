@@ -53,6 +53,8 @@ const runtimeConfig = {
   typewriter: (bannerCfg.homeText && bannerCfg.homeText.typewriter) || { enable: false },
   isHome: view === "home",
   comments: theme.comments || { enable: false },
+  searchLimit: (theme.search && Number(theme.search.limit)) || 12,
+  searchHotkey: !(theme.search && theme.search.hotkey === false),
   pjax: true,
   siteStats: {
     startDate: siteStats.startDate || "",

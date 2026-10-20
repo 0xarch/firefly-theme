@@ -12,6 +12,27 @@ const menuAlign = nav.menuAlign === "left" ? "left" : "center";
 // `name` may reference an i18n key under `nav` (theme.yaml ships the defaults)
 const label = (name) => (t.nav && Object.prototype.hasOwnProperty.call(t.nav, name) && t.nav[name]) || name;
 
+// client-side search: a tiny JSON index of every post, rendered next to the
+// navbar and filtered by assets/firefly.js. `site.posts` is already sliced on
+// listing pages, so build it from the archive groups instead.
+const searchCfg = theme.search || {};
+const searchOn = searchCfg.enable === true;
+const searchExcerpt = Number.isFinite(Number(searchCfg.excerptLength)) ? Number(searchCfg.excerptLength) : 120;
+const allPosts = (site.archives && site.archives.length)
+  ? site.archives.reduce((acc, g) => acc.concat(g.posts || []), [])
+  : (site.posts || []);
+const searchJson = searchOn ? JSON.stringify(allPosts.map((p) => {
+  const m = p.meta || {};
+  return {
+    u: p.url || "",
+    t: m.title || "",
+    d: m.date ? h.formatDate(m.date, "YYYY-MM-DD") : "",
+    g: Array.isArray(m.tags) ? m.tags : [],
+    c: Array.isArray(m.categories) ? m.categories : [],
+    x: h.excerpt(p.excerptHtml ? { html: p.excerptHtml } : p, searchExcerpt),
+  };
+})).replace(/</g, "\\u003c") : "";
+
 const isActive = (u) => {
   if (!u || u === "#") return false;
   if (u === "/") return navUrl === "/" || navUrl === "";
@@ -48,6 +69,11 @@ const isActive = (u) => {
       <% } %>
     </nav>
     <div class="navbar-actions">
+      <% if (searchOn) { %>
+      <button type="button" id="search-open" class="btn-icon" aria-label="<%= t.search.title %>" title="<%= t.search.title %>" aria-controls="search-panel" aria-expanded="false">
+        <%- partial('icon', { name: 'search', size: 20 }) %>
+      </button>
+      <% } %>
       <div class="theme-mode">
         <button type="button" id="theme-toggle" class="btn-icon" aria-label="<%= t.theme.toggle %>" title="<%= t.theme.toggle %>" aria-haspopup="menu" aria-controls="theme-mode-panel" aria-expanded="false">
           <span class="theme-icon-light"><%- partial('icon', { name: 'sun', size: 20 }) %></span>
@@ -100,3 +126,26 @@ const isActive = (u) => {
     <% } %>
   </nav>
 </div>
+
+<% if (searchOn) { %>
+<%# search panel: opened from the navbar / Ctrl+K, filtered in the browser %>
+<div id="search-panel" class="search-overlay" aria-hidden="true">
+  <div class="search-dialog" role="dialog" aria-modal="true" aria-labelledby="search-title">
+    <div class="search-head">
+      <h2 id="search-title" class="search-title"><%- partial('icon', { name: 'search', size: 18 }) %><span><%= t.search.title %></span></h2>
+      <button type="button" id="search-close" class="btn-icon" aria-label="<%= t.search.close %>">
+        <%- partial('icon', { name: 'close', size: 20 }) %>
+      </button>
+    </div>
+    <div class="search-field">
+      <%- partial('icon', { name: 'search', size: 20 }) %>
+      <input id="search-input" type="search" placeholder="<%= t.search.placeholder %>" autocomplete="off" spellcheck="false" aria-controls="search-results" aria-describedby="search-hint">
+      <kbd class="search-kbd" aria-hidden="true">Esc</kbd>
+    </div>
+    <p id="search-hint" class="search-hint"><%= t.search.hint %></p>
+    <ul id="search-results" class="search-results" role="listbox" aria-label="<%= t.search.title %>"></ul>
+    <p id="search-empty" class="search-empty" hidden><%= t.search.empty %></p>
+  </div>
+</div>
+<script type="application/json" id="search-index"><%- searchJson %></script>
+<% } %>

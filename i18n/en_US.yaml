@@ -83,4 +83,8 @@ comments:
   title: Comments
 
 search:
-  placeholder: Search…
+  title: Search
+  placeholder: Search posts…
+  hint: Filter by title, tag, category or excerpt
+  empty: No matching posts
+  close: Close search

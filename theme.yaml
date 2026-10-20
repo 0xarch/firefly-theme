@@ -186,8 +186,16 @@ comments:
     lang: zh-CN
 
 search:
+  # client-side search over a JSON index rendered beside the navbar (there is
+  # no search service to run); upstream uses Pagefind, which Ngwg has no
+  # equivalent of, so the index is built from the post list at render time
   enable: false
-  provider: ""
+  # maximum number of results shown
+  limit: 12
+  # characters of plain-text excerpt kept per post in the index
+  excerptLength: 120
+  # Ctrl/Cmd+K opens the panel
+  hotkey: true
 
 music:
   enable: false
