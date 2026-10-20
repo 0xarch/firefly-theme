@@ -133,6 +133,11 @@ sidebar:
   # widget order; available: profile, announcement, categories, tags, stats, toc
   left: [profile, announcement, categories, tags]
   right: [stats, toc]
+  # clip a widget to 7.5rem and show a "more" toggle once it holds more entries
+  # than this (upstream: 5 categories, 10 tags); 0 disables the collapse
+  collapse:
+    categories: 5
+    tags: 10
 
 # site statistics card (posts/categories/tags/words + live running days and
 # days since the last post)

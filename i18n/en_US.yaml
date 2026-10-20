@@ -48,6 +48,10 @@ siteStats:
   days_ago: "{0} days ago"
   today: Today
 
+widget:
+  more: More
+  collapse: Collapse
+
 announcement:
   title: Announcement
   close: Close announcement

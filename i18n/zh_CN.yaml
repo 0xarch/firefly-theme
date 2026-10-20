@@ -48,6 +48,10 @@ siteStats:
   days_ago: "{0} 天前"
   today: 今天
 
+widget:
+  more: 更多
+  collapse: 收起
+
 announcement:
   title: 公告
   close: 关闭公告

@@ -298,6 +298,35 @@
     }
   }
 
+  /* ---------- collapsible widgets ---------- */
+  /* A tag/category list longer than the configured threshold starts clipped to
+     7.5rem; the button under it expands it in place (upstream's WidgetLayout).
+     pjax swaps the sidebar, so this is re-run from applyPage(). */
+  function initWidgetCollapse() {
+    $$(".widget-expand").forEach(function (btn) {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", function () {
+        var card = btn.closest(".widget-card");
+        var box = card && card.querySelector(".widget-collapse");
+        if (!box) return;
+        var expanded = btn.getAttribute("data-expanded") !== "true";
+        btn.setAttribute("data-expanded", expanded ? "true" : "false");
+        btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+        box.classList.toggle("collapsed", !expanded);
+        var label = expanded ? btn.dataset.less : btn.dataset.more;
+        btn.setAttribute("aria-label", label || "");
+        btn.title = label || "";
+        var text = btn.querySelector(".widget-expand-text");
+        if (text) text.textContent = label || "";
+        var more = btn.querySelector(".widget-expand-more");
+        var less = btn.querySelector(".widget-expand-less");
+        if (more) more.hidden = expanded;
+        if (less) less.hidden = !expanded;
+      });
+    });
+  }
+
   /* ---------- TOC ---------- */
   var spyHeads = [];
   function buildToc() {
@@ -568,6 +597,7 @@
     initSegments();
     initTypewriter();
     initAnnouncement();
+    initWidgetCollapse();
     initCodeCopy();
     initStats();
     loadGiscus();
@@ -636,6 +666,7 @@
     initNavActive();
     initTypewriter();
     initAnnouncement();
+    initWidgetCollapse();
     initTocToggle();
     buildToc();
     initSegments();

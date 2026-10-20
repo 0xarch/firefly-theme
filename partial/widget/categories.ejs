@@ -1,16 +1,34 @@
 <%
+/**
+ * Category list widget. Clipped to `sidebar.collapse.categories` entries with a
+ * "more" toggle, mirroring upstream's Categories widget (which collapses
+ * beyond 5 entries); 0 disables the collapse.
+ */
 const cats = h.categoryTree(site.categories || {});
 const title = t.sidebar.categories;
+const threshold = Number((theme.sidebar && theme.sidebar.collapse && theme.sidebar.collapse.categories) || 0);
+const collapsible = threshold > 0 && cats.length > threshold;
+const more = (t.widget && t.widget.more) || "more";
+const less = (t.widget && t.widget.collapse) || "collapse";
 %>
 <% if (cats.length) { %>
 <section class="widget-card collapsible-card">
   <details open>
     <summary class="widget-title"><%- partial('icon', { name: 'folder' }) %><span><%= title %></span><%- partial('icon', { name: 'chevron-down', size: 16, extraClass: 'chev' }) %></summary>
-    <ul class="widget-list">
-      <% for (const c of cats) { %>
-      <li><a href="/categories/<%= h.slugify(c.name) %>/"><span class="widget-list-name"><%= c.name %></span><span class="count"><%= c.count %></span></a></li>
-      <% } %>
-    </ul>
+    <div class="widget-collapse<%= collapsible ? ' collapsed' : '' %>">
+      <ul class="widget-list">
+        <% for (const c of cats) { %>
+        <li><a href="/categories/<%= h.slugify(c.name) %>/"><span class="widget-list-name"><%= c.name %></span><span class="count"><%= c.count %></span></a></li>
+        <% } %>
+      </ul>
+    </div>
+    <% if (collapsible) { %>
+    <button type="button" class="widget-expand" data-more="<%= more %>" data-less="<%= less %>" data-expanded="false" aria-expanded="false" aria-label="<%= more %>" title="<%= more %>">
+      <span class="widget-expand-more"><%- partial('icon', { name: 'more', size: 24 }) %></span>
+      <span class="widget-expand-less" hidden><%- partial('icon', { name: 'arrow-up', size: 24 }) %></span>
+      <span class="widget-expand-text"><%= more %></span>
+    </button>
+    <% } %>
   </details>
 </section>
 <% } %>
