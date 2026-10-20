@@ -71,6 +71,76 @@
     });
   }
 
+  /* ---------- display settings (accent hue) ---------- */
+  /* Upstream's "Display Settings" panel exposes many switches; only the accent
+     hue is ported. It is stored next to the light/dark choice and written to
+     `--hue` on <html>, which every oklch token derives from, so the whole
+     palette — both modes — follows in place. */
+  function initDisplaySettings() {
+    var wrap = $(".display-settings");
+    var panel = $("#display-setting");
+    var btn = $("#display-settings-switch");
+    var slider = $("#colorSlider");
+    var value = $("#hue-value");
+    var reset = $("#hue-reset");
+    if (!wrap || !panel || !btn || !slider || wrap.dataset.bound) return;
+    wrap.dataset.bound = "1";
+
+    var def = Number(CFG.hue);
+    if (!Number.isFinite(def)) def = 165;
+    var stored = null;
+    try { stored = localStorage.getItem("hue"); } catch (e) {}
+    var hue = stored !== null && Number.isFinite(Number(stored)) && Number(stored) >= 0
+      ? Math.round(Number(stored))
+      : def;
+
+    function paint(next) {
+      hue = next;
+      document.documentElement.style.setProperty("--hue", String(next));
+      if (value) value.textContent = String(next);
+      if (reset) reset.hidden = next === def;
+      slider.value = String(next);
+    }
+    function save(next) {
+      try { localStorage.setItem("hue", String(next)); } catch (e) {}
+    }
+    function open() {
+      paint(hue);
+      wrap.classList.add("open");
+      panel.setAttribute("aria-hidden", "false");
+      btn.setAttribute("aria-expanded", "true");
+    }
+    function close() {
+      wrap.classList.remove("open");
+      panel.setAttribute("aria-hidden", "true");
+      btn.setAttribute("aria-expanded", "false");
+    }
+
+    btn.addEventListener("click", function () {
+      if (wrap.classList.contains("open")) close(); else open();
+    });
+    slider.addEventListener("input", function () {
+      var next = Math.round(Number(slider.value));
+      if (!Number.isFinite(next)) return;
+      paint(next);
+      save(next);
+    });
+    if (reset) {
+      reset.addEventListener("click", function () {
+        paint(def);
+        save(def);
+      });
+    }
+    document.addEventListener("click", function (e) {
+      if (!wrap.contains(e.target)) close();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") close();
+    });
+
+    paint(hue);
+  }
+
   /* ---------- site statistics ---------- */
   /* The running-days / last-update rows are date driven, so they are computed
      in the browser and refreshed after every pjax navigation. */
@@ -863,6 +933,7 @@
   function init() {
     initThemeToggle();
     initSystemThemeWatch();
+    initDisplaySettings();
     initNavbar();
     initBackToTop();
     initDrawer();

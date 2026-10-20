@@ -9,6 +9,11 @@ const logo = nav.logo || {};
 const navTitle = nav.title || site.title;
 const widthFull = nav.widthFull === true;
 const menuAlign = nav.menuAlign === "left" ? "left" : "center";
+// the hue slider is the only display setting (upstream's "Display Settings");
+// its default comes from themeColor.hue, the live value from localStorage
+const themeColorCfg = theme.themeColor || {};
+const displaySettings = themeColorCfg.displaySettings !== false;
+const defaultHue = Number.isFinite(Number(themeColorCfg.hue)) ? Number(themeColorCfg.hue) : 165;
 // `name` may reference an i18n key under `nav` (theme.yaml ships the defaults)
 const label = (name) => (t.nav && Object.prototype.hasOwnProperty.call(t.nav, name) && t.nav[name]) || name;
 
@@ -73,6 +78,25 @@ const isActive = (u) => {
       <button type="button" id="search-open" class="btn-icon" aria-label="<%= t.search.title %>" title="<%= t.search.title %>" aria-controls="search-panel" aria-expanded="false">
         <%- partial('icon', { name: 'search', size: 20 }) %>
       </button>
+      <% } %>
+      <% if (displaySettings) { %>
+      <div class="display-settings">
+        <button type="button" id="display-settings-switch" class="btn-icon" aria-label="<%= t.theme.display %>" title="<%= t.theme.display %>" aria-controls="display-setting" aria-expanded="false">
+          <%- partial('icon', { name: 'palette', size: 20 }) %>
+        </button>
+        <div id="display-setting" class="display-settings-panel" role="group" aria-label="<%= t.theme.display %>" aria-hidden="true">
+          <div class="settings-title">
+            <span><%= t.theme.color %></span>
+            <button type="button" id="hue-reset" class="settings-reset" aria-label="<%= t.theme.reset %>" title="<%= t.theme.reset %>" hidden>
+              <%- partial('icon', { name: 'reset', size: 14 }) %>
+            </button>
+            <span id="hue-value" class="settings-value"><%= defaultHue %></span>
+          </div>
+          <div class="hue-slider-shell">
+            <input id="colorSlider" class="hue-slider" type="range" min="0" max="360" step="5" value="<%= defaultHue %>" aria-label="<%= t.theme.color %>">
+          </div>
+        </div>
+      </div>
       <% } %>
       <div class="theme-mode">
         <button type="button" id="theme-toggle" class="btn-icon" aria-label="<%= t.theme.toggle %>" title="<%= t.theme.toggle %>" aria-haspopup="menu" aria-controls="theme-mode-panel" aria-expanded="false">

@@ -13,6 +13,9 @@ theme:
   light: Light
   dark: Dark
   system: System
+  display: Display settings
+  color: Theme colour
+  reset: Reset to default
 
 pagination:
   prev: Previous

@@ -38,6 +38,9 @@ themeColor:
   hue: 165
   # light | dark | system
   defaultMode: system
+  # show the navbar "display settings" button: a live hue slider whose value is
+  # kept in localStorage next to the light/dark choice (false hides it)
+  displaySettings: true
 
 profile:
   name: Firefly
