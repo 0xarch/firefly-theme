@@ -30,6 +30,10 @@ This theme uses EJS + CSS + ES (Vanilla).
 - Pjax navigation, a reading progress bar (post pages only), back-to-top and
   code copy buttons
 - Long-post segmented lazy loading (provided by Ngwg-files)
+- Markdown admonitions (`!!! tip … !!!`, all 15 types the parser knows) with the
+  type's tint, icon and label — ported from the
+  [Nextario](https://github.com/0xarch/fewu-theme-next) theme, which shares the
+  markdown dialect (see known limitations for the one deviation)
 - i18n (ships `zh_CN` and `en_US`)
 - SEO/RSS/sitemap through [Ngwg-ext-seo](https://github.com/Ngwgers/Ngwg-ext-seo)
 
@@ -194,6 +198,10 @@ stay dependency-free while leaving room for these features:
   when fetching the theme into `.ngwg/themes/`, and Core runs `bun install` on
   first build when it is missing. Layouts are EJS, because only the EJS deployer
   exposes `require` to templates.
+- Admonition titles take the type's accent colour and its icon, while the body
+  keeps the normal text colour. Upstream Firefly colours the title only (as
+  here); Nextario also tints the body text, which would drop a light-mode
+  `warning` body to roughly 2.7:1 contrast, so that part is not copied.
 
 ## Credits & license
 
