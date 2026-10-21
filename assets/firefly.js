@@ -275,10 +275,25 @@
       dd.dataset.bound = "1";
       var toggle = $(".nav-dropdown-toggle", dd);
       if (!toggle) return;
+      function setOpen(open) {
+        dd.classList.toggle("open", open);
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      }
       toggle.addEventListener("click", function (e) {
         e.preventDefault();
-        var open = dd.classList.toggle("open");
-        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        setOpen(!dd.classList.contains("open"));
+      });
+      // A menu item is a navigation target, not a request to pin the menu open.
+      // Closing here also releases the focus that a click (or Enter) leaves on
+      // the link, so the panel disappears once the pointer leaves.
+      dd.addEventListener("click", function (e) {
+        if (e.target.closest && e.target.closest(".nav-dropdown-item")) setOpen(false);
+      });
+      // Keyboard users open the menu with Enter; closing when focus leaves
+      // keeps `.open` from outliving the visit the way `:focus-within` did.
+      dd.addEventListener("focusout", function (e) {
+        if (e.relatedTarget && dd.contains(e.relatedTarget)) return;
+        setOpen(false);
       });
     });
     document.addEventListener("click", function (e) {

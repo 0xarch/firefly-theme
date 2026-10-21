@@ -310,8 +310,7 @@ html[data-wallpaper-mode="banner"] .navbar-inner {
 
 .nav-dropdown { position: relative; }
 .nav-dropdown-toggle .chev { transition: transform var(--dur) var(--ease); }
-.nav-dropdown.open .nav-dropdown-toggle .chev,
-.nav-dropdown:focus-within .nav-dropdown-toggle .chev { transform: rotate(180deg); }
+.nav-dropdown.open .nav-dropdown-toggle .chev { transform: rotate(180deg); }
 .nav-dropdown-panel {
   position: absolute; top: calc(100% + 0.4rem); left: 50%; transform: translateX(-50%) translateY(-6px);
   min-width: 11rem; padding: 0.4rem; border-radius: var(--radius-md);
@@ -321,7 +320,6 @@ html[data-wallpaper-mode="banner"] .navbar-inner {
   transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility var(--dur);
 }
 .nav-dropdown:hover .nav-dropdown-panel,
-.nav-dropdown:focus-within .nav-dropdown-panel,
 .nav-dropdown.open .nav-dropdown-panel {
   opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0);
 }
