@@ -1128,6 +1128,9 @@ details:not([open]) > summary .chev { transform: rotate(-90deg); }
 
 @media (max-width: 1023px) {
   body:not(.is-home) #wallpaper-wrapper { display: none; }
-  body:not(.is-home) #content-panel { margin-top: var(--navbar-h); }
-  html[data-wallpaper-mode="none"] #content-panel { margin-top: var(--navbar-h); }
+  /* without the banner the panel has to clear the bar itself — 1rem of air on
+     top of the bar (upstream's --content-top: 5.5rem = bar + 1rem), otherwise
+     the first card sits on the bar's bottom edge */
+  body:not(.is-home) #content-panel { margin-top: calc(var(--navbar-h) + 1rem); }
+  html[data-wallpaper-mode="none"] #content-panel { margin-top: calc(var(--navbar-h) + 1rem); }
 }
