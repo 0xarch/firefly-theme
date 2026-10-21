@@ -11,9 +11,16 @@
  * what resolves the specifiers below.
  *
  * `name` is a public knob (theme.yaml writes icons for navbar/profile links),
- * so keep existing names when you change an icon. To add one, point it at a
- * `collection:icon` reference from the installed packs and run
- * `bun install` in the theme directory if you added a new pack.
+ * so keep existing names when you change an icon.
+ *
+ * Resolution order for `name`:
+ *   1. a full `collection:icon` reference is used as is (any installed pack);
+ *   2. otherwise a short name is looked up in ICON_MANIFEST;
+ *   3. otherwise it is searched in the theme's packs, in order (ICON_PACKS).
+ * A name only the fallback can resolve is reported at verbose level (it works,
+ * but pinning it in ICON_MANIFEST is the stable choice); a name nothing can
+ * resolve warns, and renders as an empty placeholder instead of failing the
+ * build. Messages print once per name per build, through the build log.
  */
 const ICON_MANIFEST = {
   // ---- navigation & chrome ----
@@ -64,30 +71,112 @@ function lookupIcon(set, id, seen) {
   return null;
 }
 
-let drawing = null;
-if (Object.prototype.hasOwnProperty.call(ICON_MANIFEST, name)) {
-  const ref = String(ICON_MANIFEST[name]);
-  const sep = ref.indexOf(":");
-  const pack = "@iconify-json/" + ref.slice(0, sep);
-  let set;
+// the packs a full reference is loaded from, and a bare (manifest-less) name is
+// searched in — in this order, so the first pack that has the id wins
+const ICON_PACKS = ["fa7-brands", "fa7-regular", "fa7-solid", "material-symbols"];
+
+// A partial renders once per page, so the same message would print 70+ times in
+// one build; keep one per level and text for the life of the process.
+// `warn`/`debug` are the deployer's sinks, which route through the build log
+// (they only exist when the template runs inside Ngwg — else use the console).
+const reported = (globalThis.__ngwgIconReports = globalThis.__ngwgIconReports || new Set());
+const sinks = {
+  warn: typeof warn === "function" ? warn : function (msg) { console.warn(msg); },
+  // verbose-only channel: notes that are worth knowing but need no action
+  verbose: typeof debug === "function" ? debug : function (msg) { console.debug(msg); },
+};
+function report(level, msg) {
+  const key = level + ": " + msg;
+  if (reported.has(key)) return;
+  reported.add(key);
+  sinks[level]("theme icon: " + msg);
+}
+
+// load a pack's icon set; null when the package cannot be required
+function loadPack(collection) {
   try {
-    set = require(pack).icons;
+    return require("@iconify-json/" + collection).icons;
   } catch (e) {
-    throw new Error(
-      `icon "${name}" needs the theme dependency ${pack}, which is not installed — ` +
-        `run "bun install" in the theme directory (Ngwg installs theme dependencies automatically). ${e.message}`,
+    return null;
+  }
+}
+
+function toDrawing(set, icon) {
+  return {
+    w: icon.width || set.width || 24,
+    h: icon.height || set.height || 24,
+    x: icon.left || 0,
+    y: icon.top || 0,
+    body: icon.body,
+  };
+}
+
+// "collection:icon" → drawing data (null + a warning when the pack is missing
+// or the pack has no such icon)
+function resolveRef(ref) {
+  const sep = ref.indexOf(":");
+  const collection = ref.slice(0, sep);
+  const id = ref.slice(sep + 1);
+  const set = loadPack(collection);
+  if (!set) {
+    report(
+      "warn",
+      `"${ref}" needs the pack @iconify-json/${collection}, which is not installed — ` +
+        `add it to Ngwg-firefly-theme/package.json and run "bun install" in the theme directory ` +
+        `(Ngwg installs theme dependencies automatically). Rendering an empty placeholder.`,
     );
+    return null;
   }
-  const icon = lookupIcon(set, ref.slice(sep + 1), []);
-  if (icon) {
-    drawing = {
-      w: icon.width || set.width || 24,
-      h: icon.height || set.height || 24,
-      x: icon.left || 0,
-      y: icon.top || 0,
-      body: icon.body,
-    };
+  const icon = lookupIcon(set, id, []);
+  if (!icon) {
+    report(
+      "warn",
+      `"${ref}" is not an icon in @iconify-json/${collection} — check the name at https://iconify.design ` +
+        `(the pack's aliases count too). Rendering an empty placeholder.`,
+    );
+    return null;
   }
+  return toDrawing(set, icon);
+}
+
+// bare name with no manifest entry: note it (verbose — the fallback is allowed),
+// then try the packs in order
+function resolveBare(id) {
+  report(
+    "verbose",
+    `"${id}" is not in ICON_MANIFEST — searched the theme's packs (${ICON_PACKS.join(" > ")}) as a fallback.`,
+  );
+  for (const collection of ICON_PACKS) {
+    const set = loadPack(collection);
+    if (!set) continue;
+    const icon = lookupIcon(set, id, []);
+    if (icon) {
+      report(
+        "verbose",
+        `"${id}" resolved as ${collection}:${id} — add "${id}: ${collection}:${id}" to ICON_MANIFEST ` +
+          `to pin the pack.`,
+      );
+      return toDrawing(set, icon);
+    }
+  }
+  report(
+    "warn",
+    `no theme pack has an icon called "${id}" — check the name at https://iconify.design, ` +
+      `or pass a full "collection:icon" reference. Rendering an empty placeholder.`,
+  );
+  return null;
+}
+
+const REF_RE = /^[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+$/;
+const rawName = typeof name === "undefined" ? "" : String(name);
+let drawing = null;
+if (REF_RE.test(rawName)) {
+  // a full reference is taken as given
+  drawing = resolveRef(rawName);
+} else if (Object.prototype.hasOwnProperty.call(ICON_MANIFEST, name)) {
+  drawing = resolveRef(String(ICON_MANIFEST[name]));
+} else {
+  drawing = resolveBare(rawName);
 }
 const px = (typeof size !== "undefined" && size) ? size : 20;
 const klass = (typeof extraClass !== "undefined" && extraClass) ? " " + extraClass : "";

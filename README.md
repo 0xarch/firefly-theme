@@ -156,9 +156,16 @@ stay dependency-free while leaving room for these features:
   theme uses — the same `@iconify-json/*` packages declared in this theme's
   `package.json`. Ngwg installs those dependencies into the theme directory and
   the EJS deployer exposes a theme-scoped `require`, so the drawings are never
-  copied into this repository. To add an icon, point a name at a
-  `collection:icon` reference from an installed pack (add the pack to
-  `package.json` and run `bun install` in the theme directory if needed).
+  copied into this repository.
+  An `icon:` value resolves in this order: a full `collection:icon` reference
+  is used as given (any pack you install works, so `icon: fa7-brands:codeberg`
+  needs no theme change); otherwise the short name is looked up in
+  `ICON_MANIFEST`; otherwise it is searched in the theme's packs, in order
+  (`fa7-brands` > `fa7-regular` > `fa7-solid` > `material-symbols`). A name
+  only the fallback can resolve works but is reported at verbose level
+  (`--verbose`), suggesting the `ICON_MANIFEST` entry that pins it; a name
+  nothing can resolve warns (naming the missing pack or icon) and renders as an
+  empty placeholder instead of failing the build.
 
 ## Known limitations
 
