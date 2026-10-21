@@ -330,6 +330,13 @@ html[data-wallpaper-mode="banner"] .navbar-inner {
   padding: 0.5rem 0.7rem; border-radius: var(--radius-sm); white-space: nowrap;
 }
 .nav-dropdown-item:hover { background: var(--btn-plain-bg-hover); }
+/* The panel floats 0.4rem below the toggle, so the pointer would leave the
+   dropdown on its way down and the hover-opened menu would close before it can
+   be reached. This invisible strip bridges the gap (the panel's own
+   `pointer-events` still gates it while closed). */
+.nav-dropdown-panel::before {
+  content: ""; position: absolute; left: 0; right: 0; top: -0.6rem; height: 0.6rem;
+}
 
 /* ---------- theme mode switch (light / dark / system) ---------- */
 .theme-mode { position: relative; display: inline-flex; }
