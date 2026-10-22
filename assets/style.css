@@ -979,11 +979,10 @@ details:not([open]) > summary .chev { transform: rotate(-90deg); }
   margin: 0 0 1.2em; font-size: 0.88rem; line-height: 1.6;
 }
 .markdown pre code { background: transparent; color: inherit; padding: 0; font-size: inherit; }
-.markdown table { width: 100%; border-collapse: collapse; margin: 0 0 1.2em; font-size: 0.92rem; }
-/* the parser wraps every table in this container: on a narrow screen the table
-   scrolls inside the column instead of widening the page. Header cells keep
-   their text on one line so the columns are sized by their headings instead of
-   collapsing to a single character. */
+.markdown table { border-collapse: collapse; margin: 0 0 1.2em; font-size: 0.92rem; }
+/* The parser wraps every table in `.table-container`: a wide table scrolls
+   inside the text column instead of widening the page, and its cells keep
+   their natural width (capped) instead of shrinking to one character. */
 .markdown .table-container { max-width: 100%; overflow-x: auto; margin: 0 0 1.2em; -webkit-overflow-scrolling: touch; }
 .markdown .table-container > table { margin: 0; width: max-content; min-width: 100%; }
 .markdown .table-container > table th,
