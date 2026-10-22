@@ -619,38 +619,40 @@
   var spyHeads = [];
   function buildToc() {
     var body = $("#post-body");
-    var list = $(".toc-list");
+    var lists = $$(".toc-list");
     var card = $("#toc");
-    if (!body || !list) return;
+    if (!body || !lists.length) return;
     var heads = $$("h2, h3, h4", body);
-    var aside = card && card.closest ? card.closest(".sidebar") : null;
-    list.textContent = "";
+    lists.forEach(function (list) { list.textContent = ""; });
     if (!heads.length) {
       if (card) card.style.display = "none";
-      if (aside) aside.classList.add("is-empty");
       spyHeads = [];
+      updateTocFab();
       return;
     }
     if (card) card.style.display = "";
-    if (aside) aside.classList.remove("is-empty");
     heads.forEach(function (hh, idx) {
       if (!hh.id) hh.id = "h-" + idx + "-" + (hh.textContent || "").trim().slice(0, 12).replace(/\s+/g, "-");
-      var a = document.createElement("a");
-      a.className = "toc-item level-" + hh.tagName.charAt(1);
-      a.href = "#" + hh.id;
-      var span = document.createElement("span");
-      span.className = "toc-label";
-      span.textContent = hh.textContent;
-      a.appendChild(span);
-      a.addEventListener("click", function (e) {
-        e.preventDefault();
-        hh.scrollIntoView({ behavior: "smooth", block: "start" });
-        history.replaceState(null, "", "#" + hh.id);
+      // the sidebar card and the floating panel share the same heading list
+      lists.forEach(function (list) {
+        var a = document.createElement("a");
+        a.className = "toc-item level-" + hh.tagName.charAt(1);
+        a.href = "#" + hh.id;
+        var span = document.createElement("span");
+        span.className = "toc-label";
+        span.textContent = hh.textContent;
+        a.appendChild(span);
+        a.addEventListener("click", function (e) {
+          e.preventDefault();
+          hh.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.replaceState(null, "", "#" + hh.id);
+        });
+        list.appendChild(a);
       });
-      list.appendChild(a);
     });
     spyHeads = heads;
     spy(window.pageYOffset);
+    updateTocFab();
   }
   function spy(y) {
     if (!spyHeads.length) return;
@@ -673,6 +675,72 @@
       var collapsed = card.classList.toggle("collapsed");
       btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
     });
+  }
+
+  /* ---------- floating TOC (narrow viewports) ---------- */
+  var tocFabBound = false;
+  function tocFab() {
+    var wrap = document.getElementById("toc-fab");
+    return wrap ? { wrap: wrap, btn: $(".toc-fab", wrap), panel: document.getElementById("toc-fab-panel") } : null;
+  }
+  function closeTocFab() {
+    var f = tocFab();
+    if (!f || !f.wrap.classList.contains("open")) return;
+    f.wrap.classList.remove("open");
+    f.btn.setAttribute("aria-expanded", "false");
+  }
+  function toggleTocFab(open) {
+    var f = tocFab();
+    if (!f) return;
+    f.wrap.classList.toggle("open", open);
+    f.btn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  /* Upstream's rule: the button stands in for the card only while the card is
+     out of view. Reading the geometry instead of a breakpoint keeps single
+     side layouts honest (the card can be on screen at any width). */
+  function updateTocFab() {
+    var card = $("#toc");
+    var f = tocFab();
+    var items = $$(".toc-list .toc-item").length;
+    var aside = card && card.closest ? card.closest(".sidebar") : null;
+    var rect = card ? card.getBoundingClientRect() : null;
+    var cardShown = !!rect && rect.width > 0 && rect.height > 0;
+    var narrow = !!(window.matchMedia && window.matchMedia("(max-width: 1279px)").matches);
+    // when the card is the column's only widget, the column goes with it —
+    // .is-empty is what the grid rules already key off
+    if (aside) aside.classList.toggle("is-empty", items === 0 || (narrow && aside.children.length === 1));
+    if (!f) return;
+    f.wrap.hidden = document.body.getAttribute("data-view") !== "post" || items === 0 || cardShown;
+    if (f.wrap.hidden) closeTocFab();
+  }
+  function initTocFab() {
+    var f = tocFab();
+    if (!f) return;
+    if (!tocFabBound) {
+      tocFabBound = true;
+      document.addEventListener("click", function (e) {
+        var wrap = document.getElementById("toc-fab");
+        if (wrap && wrap.classList.contains("open") && !wrap.contains(e.target)) closeTocFab();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" || e.key === "Esc") closeTocFab();
+      });
+      window.addEventListener("resize", function () { updateTocFab(); });
+    }
+    if (!f.btn.dataset.bound) {
+      f.btn.dataset.bound = "1";
+      f.btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        toggleTocFab(!f.wrap.classList.contains("open"));
+      });
+      f.panel.addEventListener("click", function (e) {
+        // a link navigates to the heading and closes the panel; anything else
+        // inside the panel must not count as an outside click
+        if (e.target.closest && e.target.closest("a")) closeTocFab();
+        else e.stopPropagation();
+      });
+    }
+    updateTocFab();
   }
 
   /* ---------- long-post segments ---------- */
@@ -882,6 +950,7 @@
     initNavActive();
     initTocToggle();
     buildToc();
+    initTocFab();
     initSegments();
     initTypewriter();
     initAnnouncement();
@@ -960,6 +1029,7 @@
     initSearch();
     initTocToggle();
     buildToc();
+    initTocFab();
     initSegments();
     initCodeCopy();
     initStats();

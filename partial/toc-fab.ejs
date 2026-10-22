@@ -1,0 +1,29 @@
+<%
+/**
+ * Floating table of contents for narrow viewports, where the right sidebar —
+ * and with it the TOC card — is not rendered (upstream Firefly does the same).
+ *
+ * The list is *not* duplicated on the server: the client fills every
+ * `.toc-list` on the page (card and panel) from the rendered headings, so the
+ * two views stay in sync and the scroll spy highlights both.
+ *
+ * The same heading check as partial/widget/toc.ejs keeps the button out of
+ * posts without headings; `hidden` is cleared by the client once it knows the
+ * card is out of view. Included from the post layout only, so no view check.
+ */
+const title = t.sidebar.toc;
+const body = String((page && page.body) || "");
+const hasHeadings = /(^|\n)#{2,4}[ \t]+\S/.test(body);
+%>
+<% if (hasHeadings) { %>
+<div class="toc-fab-wrap" id="toc-fab" hidden>
+  <button type="button" class="toc-fab" aria-expanded="false" aria-controls="toc-fab-panel" aria-label="<%= title %>" title="<%= title %>">
+    <span class="toc-fab-icon-open"><%- partial('icon', { name: 'list', size: 22 }) %></span>
+    <span class="toc-fab-icon-close"><%- partial('icon', { name: 'close', size: 20 }) %></span>
+  </button>
+  <div class="toc-fab-panel" id="toc-fab-panel" role="dialog" aria-label="<%= title %>">
+    <div class="toc-fab-title"><%- partial('icon', { name: 'list', size: 16 }) %><span><%= title %></span></div>
+    <div class="toc-list" role="list" aria-live="polite"></div>
+  </div>
+</div>
+<% } %>

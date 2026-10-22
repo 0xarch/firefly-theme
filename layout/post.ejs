@@ -29,6 +29,7 @@ const updatedAt = meta.updated && h.formatDate(meta.updated, "YYYY-MM-DD") !== h
         the neighbours are their own cards below it. */ %>
   <%- partial('license') %>
 </article>
+<%- partial('toc-fab') %>
 <nav class="post-neighbors">
   <% if (meta._next && meta._next.meta && meta._next.meta.title) { %>
   <a class="neighbor older" href="<%= meta._next.url %>"><span class="neighbor-label"><%- partial('icon', { name: 'chevron-left', size: 16 }) %><%= t.post.next %></span><span class="neighbor-title"><%= meta._next.meta.title %></span></a>
