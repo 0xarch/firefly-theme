@@ -17,7 +17,7 @@ const hasHeadings = /(^|\n)#{2,4}[ \t]+\S/.test(body);
 %>
 <% if (hasHeadings) { %>
 <div class="toc-fab-wrap" id="toc-fab" hidden>
-  <button type="button" class="toc-fab" aria-expanded="false" aria-controls="toc-fab-panel" aria-label="<%= title %>" title="<%= title %>">
+  <button type="button" class="fab toc-fab" aria-expanded="false" aria-controls="toc-fab-panel" aria-label="<%= title %>" title="<%= title %>">
     <span class="toc-fab-icon-open"><%- partial('icon', { name: 'list', size: 22 }) %></span>
     <span class="toc-fab-icon-close"><%- partial('icon', { name: 'close', size: 20 }) %></span>
   </button>
