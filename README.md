@@ -16,7 +16,8 @@ This theme uses EJS + CSS + ES (Vanilla).
 - Home pagination with the original theme's square page buttons and a
   jump-to-page box, on upstream's 768/780/1280px breakpoints
 - Post page with banner info, tag/category meta, neighbour links, licence notice
-  and a comments hook
+  and a comments hook; an `updated:` frontmatter adds a last-updated date next
+  to the publish date (hidden when both are the same day)
 - Left sidebar widgets: profile, announcement, categories, tags; right sidebar
   site statistics and TOC (client-rendered, scroll-spy)
 - Light/dark/system theme switch, plus a display-settings panel with a live

@@ -27,6 +27,12 @@ const cjk = (plain.match(/[\u3400-\u9fff]/g) || []).length;
 const latin = (plain.replace(/[\u3400-\u9fff]/g, " ").match(/[A-Za-z0-9]+/g) || []).length;
 const words = cjk + latin;
 const minutes = Math.max(1, Math.round(cjk / 400 + latin / 220));
+
+// last updated (see layout/post.ejs): only when it differs from the date
+const pm = (page && page.meta) || {};
+const updatedAt = pm.updated && h.formatDate(pm.updated, "YYYY-MM-DD") !== h.formatDate(pm.date, "YYYY-MM-DD")
+  ? h.formatDate(pm.updated, "YYYY-MM-DD")
+  : "";
 %>
 <% if (mode !== "none") { %>
 <div id="wallpaper-wrapper" data-mode="<%= cache %>" style="--banner-dim: <%= dim %>">
@@ -66,6 +72,7 @@ const minutes = Math.max(1, Math.round(cjk / 400 + latin / 220));
         <% if (bcfg.postInfo && bcfg.postInfo.mode === "meta") { %>
         <div class="banner-post-meta">
           <span class="meta-item"><%- partial('icon', { name: 'calendar', size: 16 }) %><time datetime="<%= page.meta.date %>"><%= h.formatDate(page.meta.date, "YYYY-MM-DD") %></time></span>
+          <% if (updatedAt) { %><span class="meta-item"><%- partial('icon', { name: 'edit-calendar', size: 16 }) %><%= h.t("post.updated") %> <time datetime="<%= updatedAt %>"><%= updatedAt %></time></span><% } %>
           <span class="meta-item"><%- partial('icon', { name: 'file-text', size: 16 }) %><%= h.t("post.words_count", words) %></span>
           <span class="meta-item"><%- partial('icon', { name: 'clock', size: 16 }) %><%= h.t("post.reading_time", minutes) %></span>
         </div>
