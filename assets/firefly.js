@@ -202,7 +202,7 @@
       }
       var top = $("#back-to-top");
       if (top) top.classList.toggle("show", y > 400);
-      spy(y);
+      spy();
       lastY = y;
       ticking = false;
     }
@@ -646,20 +646,24 @@
       lists.forEach(function (list) { list.appendChild(tocLink(hh)); });
     });
     spyHeads = heads;
-    spy(window.pageYOffset);
+    spy();
     syncTocFab();
   }
-  function spy(y) {
+  function spy() {
     if (!spyHeads.length) return;
-    var items = $$(".toc-list .toc-item");
-    if (!items.length) return;
+    var lists = $$(".toc-list");
+    if (!lists.length) return;
     var offset = 120;
     var current = -1;
     for (var i = 0; i < spyHeads.length; i++) {
       if (spyHeads[i].getBoundingClientRect().top - offset <= 0) current = i;
       else break;
     }
-    items.forEach(function (it, i) { it.classList.toggle("visible", i === current); });
+    // the card and the floating panel hold the same headings in the same order,
+    // so each list marks its own copy of the active one
+    lists.forEach(function (list) {
+      $$(".toc-item", list).forEach(function (it, i) { it.classList.toggle("visible", i === current); });
+    });
   }
   function initTocToggle() {
     var card = $("#toc");
