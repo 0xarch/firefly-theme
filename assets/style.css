@@ -147,7 +147,12 @@ body {
   font-size: 15px;
   line-height: 1.7;
   transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  /* `clip` and not just `hidden`: `overflow-x: hidden` makes the body a scroll
+     container, and mobile Safari then scrolls its `position: fixed` children
+     (the reading progress bar) out of the viewport with the page. `hidden`
+     stays as the fallback for engines without `clip`. */
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 ::selection { background: var(--selection-bg); }
