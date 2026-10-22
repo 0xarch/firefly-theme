@@ -2,11 +2,6 @@
 const meta = page.meta || {};
 const tags = Array.isArray(meta.tags) ? meta.tags : [];
 const cats = Array.isArray(meta.categories) ? meta.categories : [];
-// last updated: `updated:` in the frontmatter, shown only when it actually
-// differs from the publish date (upstream hides an identical pair)
-const updatedAt = meta.updated && h.formatDate(meta.updated, "YYYY-MM-DD") !== h.formatDate(meta.date, "YYYY-MM-DD")
-  ? h.formatDate(meta.updated, "YYYY-MM-DD")
-  : "";
 %>
 <%- partial('header', { view: 'post', navUrl: page.url, navTitle: meta.title }) %>
 <article class="post-article">
@@ -14,7 +9,7 @@ const updatedAt = meta.updated && h.formatDate(meta.updated, "YYYY-MM-DD") !== h
     <h2 class="post-title"><%= meta.title %></h2>
     <div class="post-header-meta">
       <% if (meta.date) { %><span class="meta-item"><%- partial('icon', { name: 'calendar', size: 16 }) %><time datetime="<%= meta.date %>"><%= h.formatDate(meta.date, "YYYY-MM-DD") %></time></span><% } %>
-      <% if (updatedAt) { %><span class="meta-item post-updated"><%- partial('icon', { name: 'edit-calendar', size: 16 }) %><%= t.post.updated %> <time datetime="<%= updatedAt %>"><%= updatedAt %></time></span><% } %>
+      <%- partial('post-updated') %>
       <% if (tags.length) { %><span class="meta-item post-tags"><%- partial('icon', { name: 'tag', size: 16 }) %><% for (const tag of tags) { %><a class="tag-item" href="/tags/<%= h.slugify(tag) %>/">#<%= tag %></a><% } %></span><% } %>
       <% if (cats.length) { %><span class="meta-item post-cats"><%- partial('icon', { name: 'folder', size: 16 }) %><% for (const c of cats) { %><a class="meta-link" href="/categories/<%= h.slugify(c) %>/"><%= c %></a><% } %></span><% } %>
     </div>

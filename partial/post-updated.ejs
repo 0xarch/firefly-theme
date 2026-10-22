@@ -1,0 +1,12 @@
+<%
+/**
+ * Optional last-updated date, read from the post's `updated:` frontmatter and
+ * shown next to the publish date by the post header and the banner meta line.
+ * A pair of equal dates means "never edited", so nothing is rendered.
+ */
+const meta = (page && page.meta) || {};
+const day = (v) => (v ? h.formatDate(v, "YYYY-MM-DD") : "");
+const updated = day(meta.updated);
+const show = updated && updated !== day(meta.date);
+%>
+<% if (show) { %><span class="meta-item"><%- partial('icon', { name: 'edit-calendar', size: 16 }) %><%= t.post.updated %> <time datetime="<%= updated %>"><%= updated %></time></span><% } %>
