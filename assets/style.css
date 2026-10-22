@@ -147,10 +147,9 @@ body {
   font-size: 15px;
   line-height: 1.7;
   transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
-  /* `clip` and not just `hidden`: `overflow-x: hidden` makes the body a scroll
-     container, and mobile Safari then scrolls its `position: fixed` children
-     (the reading progress bar) out of the viewport with the page. `hidden`
-     stays as the fallback for engines without `clip`. */
+  /* `clip` where supported: a hidden overflow makes the body a scroll container,
+     and mobile Safari then scrolls fixed children (the progress bar) away with
+     the page; `hidden` stays as the fallback. */
   overflow-x: hidden;
   overflow-x: clip;
 }
@@ -551,10 +550,8 @@ body.is-home { --banner-h: var(--banner-height-home); }
 .banner-media-plain { background: linear-gradient(160deg, oklch(0.7 0.12 var(--hue)), oklch(0.55 0.15 calc(var(--hue) + 40))); }
 .banner-img { width: 100%; height: 100%; object-fit: cover; object-position: var(--banner-pos, center); }
 
-/* Below the desktop breakpoint the banner is a narrow, tall window and the
-   mobile wallpaper (a portrait crop of the scene) already frames its subject,
-   so the focal point stays centred instead of inheriting the desktop offset —
-   `0% 20%` would cut the subject off at the left edge. */
+/* The mobile wallpaper is a portrait crop with its subject centred, so narrow
+   banners ignore the desktop offset (`0% 20%` would cut the subject off). */
 @media (max-width: 1023px) {
   .banner-img { object-position: center; }
 }
@@ -1219,9 +1216,8 @@ details:not([open]) > summary .chev { transform: rotate(-90deg); }
 /* ==========================================================================
    Animation + transitions
    ========================================================================== */
-/* `backwards`, not `both`: a filled animation keeps the interpolated identity
-   matrix on the element, and any transform — even an identity one — makes it a
-   containing block for `position: fixed` descendants (the floating TOC). */
+/* `backwards`, not `both`: a filled animation keeps an identity transform on
+   the element, which would capture `position: fixed` descendants (the TOC). */
 .onload-animation { animation: fade-up 500ms var(--ease) backwards; }
 @keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 

@@ -1,19 +1,13 @@
 <%
 /**
- * Floating table of contents for narrow viewports, where the right sidebar —
- * and with it the TOC card — is not rendered (upstream Firefly does the same).
- *
- * The list is *not* duplicated on the server: the client fills every
- * `.toc-list` on the page (card and panel) from the rendered headings, so the
- * two views stay in sync and the scroll spy highlights both.
- *
- * The same heading check as partial/widget/toc.ejs keeps the button out of
- * posts without headings; `hidden` is cleared by the client once it knows the
- * card is out of view. Included from the post layout only, so no view check.
+ * Floating TOC for narrow viewports, where the sidebar (and its card) is not
+ * rendered. The client fills every `.toc-list` from the rendered headings, so
+ * the card and the panel always match; the button only appears while the card
+ * is out of view, so the markup ships `hidden` until the client checks.
  */
 const title = t.sidebar.toc;
-const body = String((page && page.body) || "");
-const hasHeadings = /(^|\n)#{2,4}[ \t]+\S/.test(body);
+// same heading test as the card (partial/widget/toc.ejs); post layout only
+const hasHeadings = /(^|\n)#{2,4}[ \t]+\S/.test(String((page && page.body) || ""));
 %>
 <% if (hasHeadings) { %>
 <div class="toc-fab-wrap" id="toc-fab" hidden>

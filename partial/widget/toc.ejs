@@ -1,13 +1,10 @@
 <%
 /**
- * Table of contents widget. The list is filled in by the client from the
- * rendered <h2>/<h3>/<h4> in #post-body (so lazily loaded segments extend it
- * as they arrive).
- *
- * The widget is emitted only on post pages that actually contain headings —
- * `page.body` is the full raw markdown (segmentation only shortens `page.html`),
- * so the check covers headings that live in later segments. Without this the
- * right column would be reserved but empty.
+ * Table of contents widget. The client fills the list from the rendered
+ * <h2>/<h3>/<h4> in #post-body, so lazily loaded segments extend it as they
+ * arrive. The check reads `page.body` (the full markdown; segmentation only
+ * shortens `page.html`) so headings in later segments still count — otherwise
+ * the right column would be reserved but empty.
  */
 const title = t.sidebar.toc;
 const body = String((page && page.body) || "");
