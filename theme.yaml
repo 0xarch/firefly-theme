@@ -82,7 +82,8 @@ navbar:
 banner:
   # banner (wallpaper header) | none (plain background)
   mode: banner
-  # CSS object-position of the wallpaper image
+  # CSS object-position of the wallpaper image (desktop; mobile banners stay
+  # centred so a narrow window still frames the subject)
   position: "0% 20%"
   # black overlay opacity, 0-1
   dimOpacity: 0.2

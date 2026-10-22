@@ -534,7 +534,15 @@ body.is-home { --banner-h: var(--banner-height-home); }
 
 .banner-media { display: block; width: 100%; height: 100%; }
 .banner-media-plain { background: linear-gradient(160deg, oklch(0.7 0.12 var(--hue)), oklch(0.55 0.15 calc(var(--hue) + 40))); }
-.banner-img { width: 100%; height: 100%; object-fit: cover; }
+.banner-img { width: 100%; height: 100%; object-fit: cover; object-position: var(--banner-pos, center); }
+
+/* Below the desktop breakpoint the banner is a narrow, tall window and the
+   mobile wallpaper (a portrait crop of the scene) already frames its subject,
+   so the focal point stays centred instead of inheriting the desktop offset —
+   `0% 20%` would cut the subject off at the left edge. */
+@media (max-width: 1023px) {
+  .banner-img { object-position: center; }
+}
 
 .banner-dim {
   position: absolute; inset: 0; background: rgb(0 0 0 / var(--banner-dim, 0.2));

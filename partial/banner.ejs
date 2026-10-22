@@ -33,7 +33,7 @@ const minutes = Math.max(1, Math.round(cjk / 400 + latin / 220));
   <% if (desktopImg) { %>
   <picture class="banner-media">
     <% if (mobileImg) { %><source media="(max-width: 1023px)" srcset="<%= mobileImg %>"><% } %>
-    <img class="banner-img" src="<%= desktopImg %>" alt="" fetchpriority="high" style="object-position: <%= bcfg.position || 'center' %>">
+    <img class="banner-img" src="<%= desktopImg %>" alt="" fetchpriority="high" style="--banner-pos: <%= bcfg.position || 'center' %>">
   </picture>
   <% } else { %>
   <div class="banner-media banner-media-plain"></div>
