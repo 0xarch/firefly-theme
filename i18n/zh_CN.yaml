@@ -4,6 +4,7 @@ nav:
   archives: 归档
   categories: 分类
   tags: 标签
+  dynamic: 动态
   about: 关于
   menu: 菜单
   search: 搜索
@@ -95,3 +96,15 @@ search:
 
 recent:
   heatmap_week: "{0} 月第 {1} 周 · {2} 篇文章"
+
+dynamic:
+  title: 动态
+  description: 随手记下此刻的想法与日常。
+  count: "{0} 条动态"
+  search: 搜索动态…
+  all_years: 全部年份
+  empty: 还没有发布动态
+  no_results: 没有找到匹配的动态
+  pinned: 置顶
+  permalink: 此动态的固定链接
+  profile: "查看 {0} 的资料"

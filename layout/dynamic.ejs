@@ -1,0 +1,100 @@
+<%
+/**
+ * "Dynamic" (moments) page. The convention is directory-based: this layout is
+ * used by `source/dynamic/index.md` (frontmatter `layout: dynamic`), and every
+ * other markdown file under the same source directory is one moment. Each
+ * moment is also a normal page at its own URL (`/dynamic/<slug>/`), which is
+ * what an item's time and permalink link to.
+ */
+const meta = page.meta || {};
+const cfg = theme.dynamic || {};
+const profile = theme.profile || {};
+const title = meta.title || cfg.title || t.dynamic.title;
+const description = meta.description || cfg.description || t.dynamic.description;
+const profileUrl = cfg.profileUrl || "/about/";
+const profileLabel = h.t("dynamic.profile", profile.name || "");
+
+// the aggregator's own directory: drop the file name from relPath ("dynamic")
+const dir = String(page.relPath || "").replace(/\/?[^/]*$/, "");
+const prefix = dir ? dir + "/" : "";
+const pages = Array.isArray(site.pages) ? site.pages : [];
+const timeOf = (p) => {
+  const t = new Date((p.meta && p.meta.date) || "").getTime();
+  return Number.isNaN(t) ? 0 : t;
+};
+const isPinned = (p) => !!(p.meta && p.meta.pinned);
+const yearOf = (p) => {
+  const m = /^(\d{4})/.exec(String((p.meta && p.meta.date) || ""));
+  return m ? m[1] : "";
+};
+// a frontmatter timestamp carries the actual time; a filename date does not,
+// so do not print a made-up 12:00 for it
+const hasTime = (raw) => /T|\s\d{1,2}:\d{2}/.test(String(raw || ""));
+const dateText = (raw) => h.formatDate(raw, hasTime(raw) ? "YYYY-MM-DD HH:mm" : "YYYY-MM-DD");
+
+const items = !dir ? [] : pages
+  .filter((p) => p.relPath !== page.relPath && String(p.relPath || "").startsWith(prefix))
+  .sort((a, b) => (isPinned(b) ? 1 : 0) - (isPinned(a) ? 1 : 0) || timeOf(b) - timeOf(a));
+const years = [];
+for (const item of items) {
+  const y = yearOf(item);
+  if (y && years.indexOf(y) === -1) years.push(y);
+}
+years.sort((a, b) => Number(b) - Number(a));
+%>
+<%- partial('header', { view: 'page', navUrl: page.url, navTitle: title, bannerTitle: title }) %>
+<div class="dynamic-page" data-dynamic-page>
+  <div class="listing-head dynamic-head">
+    <h2 class="listing-title"><%- partial('icon', { name: 'edit-note', size: 22 }) %><span><%= title %></span></h2>
+    <p class="listing-subtitle"><%= description %></p>
+    <% if (items.length) { %>
+    <div class="dynamic-toolbar">
+      <label class="dynamic-search">
+        <%- partial('icon', { name: 'search', size: 18 }) %>
+        <input type="search" data-dynamic-search placeholder="<%= t.dynamic.search %>" aria-label="<%= t.dynamic.search %>">
+      </label>
+      <label class="dynamic-year">
+        <%- partial('icon', { name: 'calendar', size: 16 }) %>
+        <select data-dynamic-year aria-label="<%= t.dynamic.all_years %>">
+          <option value="all"><%= t.dynamic.all_years %></option>
+          <% for (const y of years) { %><option value="<%= y %>"><%= y %></option><% } %>
+        </select>
+        <%- partial('icon', { name: 'chevron-down', size: 16 }) %>
+      </label>
+      <span class="dynamic-count"><%= h.t("dynamic.count", items.length) %></span>
+    </div>
+    <% } %>
+  </div>
+
+  <% if (!items.length) { %>
+  <p class="empty-note"><%= t.dynamic.empty %></p>
+  <% } else { %>
+  <div class="dynamic-feed">
+    <% for (const item of items) { const im = item.meta || {}; %>
+    <article class="dynamic-item" data-dynamic-item data-year="<%= yearOf(item) %>">
+      <header class="dynamic-item-head">
+        <a class="dynamic-avatar" href="<%= profileUrl %>" aria-label="<%= profileLabel %>">
+          <% if (profile.avatar) { %><img src="<%= profile.avatar %>" alt="" loading="lazy"><% } %>
+        </a>
+        <div class="dynamic-identity">
+          <a class="dynamic-author" href="<%= profileUrl %>" aria-label="<%= profileLabel %>"><strong><%= profile.name || "" %></strong></a>
+          <div class="dynamic-meta">
+            <a class="dynamic-time" href="<%= item.url %>"><time datetime="<%= im.date %>"><%= dateText(im.date) %></time></a>
+            <% if (im.location) { %>
+            <span class="dynamic-location" title="<%= im.location %>"><%- partial('icon', { name: 'location', size: 14 }) %><span><%= im.location %></span></span>
+            <% } %>
+          </div>
+        </div>
+        <% if (isPinned(item)) { %>
+        <span class="dynamic-pinned"><%- partial('icon', { name: 'pin', size: 11 }) %><span><%= t.dynamic.pinned %></span></span>
+        <% } %>
+        <a class="btn-icon dynamic-permalink" href="<%= item.url %>" aria-label="<%= t.dynamic.permalink %>" title="<%= t.dynamic.permalink %>"><%- partial('icon', { name: 'link', size: 16 }) %></a>
+      </header>
+      <div class="markdown dynamic-content"><%- item.html %></div>
+    </article>
+    <% } %>
+  </div>
+  <p class="empty-note dynamic-no-results" data-dynamic-empty hidden><%= t.dynamic.no_results %></p>
+  <% } %>
+</div>
+<%- partial('footer', { view: 'page', navUrl: page.url, navTitle: title }) %>

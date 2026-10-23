@@ -25,6 +25,9 @@ This theme uses EJS + CSS + ES (Vanilla).
 - "Recent" card: the newest `updated:`/published posts above a month × week
   heatmap (no month labels) whose cells carry a tooltip and, when
   `recent.heatmap.clickable` is on, filter the list to that week
+- Dynamic (moments) page: a directory of short markdown pages rendered as a feed
+  with avatar/name/time/location/pinned header, plus in-page text search and a
+  year filter
 - Light/dark/system theme switch, plus a display-settings panel with a live
   accent-hue slider (both stored in `localStorage`) and a `darkreader-lock` so
   browser dark-mode extensions leave the theme alone
@@ -102,6 +105,7 @@ The main knobs (see `theme.yaml` for the full list and defaults):
 | `sidebar.collapse.categories` / `.tags` | entry count past which a widget is clipped to 7.5rem behind a more/collapse toggle (0 disables; upstream uses 5 and 10) |
 | `siteStats.enable/startDate` | sidebar statistics card (posts/categories/tags/words; running days and last-activity are refreshed in the browser) |
 | `recent.count` / `recent.heatmap.enabled` / `recent.heatmap.clickable` | sidebar "recent" card: list length, whether the heatmap is drawn, whether a click filters the list |
+| `dynamic.title` / `description` / `profileUrl` | moments page fallbacks (empty title/description use i18n) and the avatar/name link target |
 | `postList.layout` / `postList.mobileLayout` | card layout above / below 780px: `list` (wide cards with the cover beside the text) or `grid` (auto-filled columns) |
 | `postList.*` | cover side, excerpt lines, stats, tags |
 | `license.*` | end-of-post licence notice (`enable`, `name`, `url`); a post may override with `license` / `licenseUrl` frontmatter |
@@ -157,6 +161,30 @@ still reads without JavaScript — only the filtering needs it.
 The heatmap counts publication dates while the list sorts by activity, so a post
 published in January but updated this week is listed first and appears in the
 January cell.
+
+### Dynamic page
+
+A moments feed is a source directory with one markdown file per moment:
+
+```text
+source/dynamic/
+  index.md                  # frontmatter: layout: dynamic
+  2026-09-12-night-walk.md  # title/date/location/pinned frontmatter
+```
+
+`index.md` renders the feed; its own `title`/`description` win, followed by
+`dynamic.title`/`dynamic.description` and then the i18n strings. Every other
+`.md` in the directory is listed pinned-first, then newest first. An item shows
+the profile avatar and name (linking to `dynamic.profileUrl`), its date,
+`location:` and a pinned badge, followed by the rendered markdown. The header
+renders the item count, a text search and a year filter; both filter the
+already-rendered items in the browser.
+
+Each item is also a normal page at its own URL (`/dynamic/<slug>/`), which the
+time and the link button point at. Set `title:` on an item to control that
+page's heading and browser title (otherwise its first paragraph is used). Add
+`/dynamic/` to `navbar.links` yourself — the theme does not assume the page
+exists.
 
 ### i18n support
 
@@ -225,6 +253,9 @@ stay dependency-free while leaving room for these features:
   when fetching the theme into `.ngwg/themes/`, and Core runs `bun install` on
   first build when it is missing. Layouts are EJS, because only the EJS deployer
   exposes `require` to templates.
+- The dynamic feed renders every moment on one page (no pagination); images stay
+  inline instead of upstream's gallery/lightbox, and there is no inline comment
+  or Memos data source. Search and the year filter run in the browser.
 - The recent card's heatmap covers one year (the newest publication year), so
   older years cannot be selected; clicking a cell is client-side only.
 - Admonition titles take the type's accent colour and its icon, while the body

@@ -161,6 +161,15 @@ recent:
     # clicking a cell filters the list above to that week's posts
     clickable: true
 
+# "dynamic" (moments) page: source/dynamic/index.md with `layout: dynamic`;
+# every other markdown file under source/dynamic/ is one moment
+dynamic:
+  # empty values fall back to the i18n strings
+  title: ""
+  description: ""
+  # where an item's avatar and name link to
+  profileUrl: "/about/"
+
 postList:
   # layout: list (wide cards, cover beside the text) | grid (auto-filled columns)
   layout: list

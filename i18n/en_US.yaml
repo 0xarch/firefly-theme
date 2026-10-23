@@ -4,6 +4,7 @@ nav:
   archives: Archives
   categories: Categories
   tags: Tags
+  dynamic: Moments
   about: About
   menu: Menu
   search: Search
@@ -95,3 +96,15 @@ search:
 
 recent:
   heatmap_week: "Week {1} of month {0} · {2} posts"
+
+dynamic:
+  title: Moments
+  description: Short thoughts and everyday moments.
+  count: "{0} moments"
+  search: Search moments…
+  all_years: All years
+  empty: No moments have been posted yet
+  no_results: No matching moments found
+  pinned: Pinned
+  permalink: Permalink to this moment
+  profile: "View {0}'s profile"
