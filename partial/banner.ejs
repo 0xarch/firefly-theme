@@ -20,13 +20,10 @@ const dim = Number.isFinite(Number(bcfg.dimOpacity)) ? Number(bcfg.dimOpacity) :
 const homeText = bcfg.homeText || {};
 const cache = bcfg.mode === "none" ? "none" : "banner";
 
-// word / reading-time estimate for post banners
-const src = (page && page.html) || "";
-const plain = src.replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ");
-const cjk = (plain.match(/[\u3400-\u9fff]/g) || []).length;
-const latin = (plain.replace(/[\u3400-\u9fff]/g, " ").match(/[A-Za-z0-9]+/g) || []).length;
-const words = cjk + latin;
-const minutes = Math.max(1, Math.round(cjk / 400 + latin / 220));
+// word / reading-time estimate for post banners (counted from the raw body:
+// the deployer has already shortened `page.html` to the first segment)
+const words = h.wordCount(page);
+const minutes = h.readingTime(page);
 %>
 <% if (mode !== "none") { %>
 <div id="wallpaper-wrapper" data-mode="<%= cache %>" style="--banner-dim: <%= dim %>">

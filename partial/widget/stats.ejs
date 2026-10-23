@@ -20,16 +20,7 @@ const DAY = 86400000;
 const now = Date.now();
 
 // words in the raw markdown, code stripped (CJK characters + latin words)
-function countWords(md) {
-  const text = String(md || "")
-    .replace(/```[\s\S]*?```/g, " ")
-    .replace(/`[^`]*`/g, " ")
-    .replace(/<[^>]*>/g, " ");
-  const cjk = (text.match(/[\u3400-\u9fff]/g) || []).length;
-  const latin = (text.replace(/[\u3400-\u9fff]/g, " ").match(/[A-Za-z0-9]+/g) || []).length;
-  return cjk + latin;
-}
-const totalWords = allPosts.reduce((sum, p) => sum + countWords(p.body), 0);
+const totalWords = allPosts.reduce((sum, p) => sum + h.wordCount(p), 0);
 const group = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 const startDate = cfg.startDate || "2025-01-01";
