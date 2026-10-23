@@ -68,7 +68,7 @@ const minutes = h.readingTime(page);
           <span class="meta-item"><%- partial('icon', { name: 'clock', size: 16 }) %><%= h.t("post.reading_time", minutes) %></span>
         </div>
         <% } else { %>
-        <p class="banner-post-desc"><%= (page && page.meta && (page.meta.description || h.excerpt(page, 160))) || "" %></p>
+        <p class="banner-post-desc"><%= (page && h.excerpt(page, 200)) || "" %></p>
         <% } %>
       </div>
     <% } else { %>
