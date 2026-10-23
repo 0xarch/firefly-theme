@@ -38,6 +38,7 @@ sidebar:
   categories: Categories
   tags: Tags
   stats: Site stats
+  recent: Recent
   toc: Contents
 
 siteStats:
@@ -91,3 +92,6 @@ search:
   hint: Filter by title, tag, category or excerpt
   empty: No matching posts
   close: Close search
+
+recent:
+  heatmap_week: "Week {1} of month {0} · {2} posts"

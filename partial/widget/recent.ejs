@@ -1,0 +1,107 @@
+<%
+/**
+ * "Recent" sidebar card: the most recently updated posts above a heatmap of
+ * post activity.
+ *
+ * The grid has one column per month and one row per week of the month (days
+ * 1-7, 8-14, 15-21, 22+), the same buckets as upstream's Calendar widget. With
+ * `recent.heatmap.clickable` a cell with posts filters the list above to that
+ * week (the runtime rebuilds the rows from the embedded JSON); clicking the
+ * selected cell again restores the recent list. The list and grid are rendered
+ * at build time, so the card still works without JavaScript.
+ */
+const cfg = theme.recent || {};
+const heat = cfg.heatmap || {};
+const listCount = Math.max(0, Number(cfg.count == null ? 5 : cfg.count) || 0);
+const heatEnabled = heat.enabled !== false;
+const clickable = heat.clickable !== false;
+
+// `site.posts` is only the current page's slice on paginated listings, so take
+// the full list from the archive groups (same as the stats card)
+const allPosts = Array.isArray(site.archives) && site.archives.length
+  ? site.archives.reduce((acc, g) => acc.concat(g.posts || []), [])
+  : (Array.isArray(site.posts) ? site.posts : []);
+
+// plain calendar dates: a filename date, a frontmatter timestamp and an ISO
+// string all yield the same year/month/day regardless of the machine timezone
+const ymd = (raw) => {
+  const m = /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/.exec(String(raw || ""));
+  return m ? { y: Number(m[1]), m: Number(m[2]), d: Number(m[3]) } : null;
+};
+const timeOf = (raw) => {
+  const t = new Date(raw || 0).getTime();
+  return Number.isNaN(t) ? 0 : t;
+};
+const activityOf = (p) => (p.meta && (p.meta.updated || p.meta.date)) || "";
+
+const recentPosts = allPosts
+  .filter((p) => activityOf(p))
+  .sort((a, b) => timeOf(activityOf(b)) - timeOf(activityOf(a)))
+  .slice(0, listCount);
+
+// grid year: the newest publication year, so a static build never shows an
+// empty grid for a blog that stopped posting
+let newestYear = 0;
+for (const p of allPosts) {
+  const d = ymd(p.meta && p.meta.date);
+  if (d && d.y > newestYear) newestYear = d.y;
+}
+const year = newestYear || new Date().getFullYear();
+
+const cells = [];
+for (let w = 0; w < 4; w++) {
+  for (let m = 0; m < 12; m++) cells.push({ m, w, count: 0 });
+}
+const heatPosts = [];
+for (const p of allPosts) {
+  const d = ymd(p.meta && p.meta.date);
+  if (!d || d.y !== year) continue;
+  const m = d.m - 1;
+  const w = Math.min(Math.floor((d.d - 1) / 7), 3);
+  cells[w * 12 + m].count += 1;
+  heatPosts.push({
+    u: p.url,
+    t: (p.meta && p.meta.title) || "",
+    d: `${String(m + 1).padStart(2, "0")}-${String(d.d).padStart(2, "0")}`,
+    m,
+    w,
+    s: timeOf(p.meta.date),
+  });
+}
+heatPosts.sort((a, b) => b.s - a.s);
+
+const levelOf = (n) => Math.min(n, 4);
+const showCard = recentPosts.length > 0 || (heatEnabled && heatPosts.length > 0);
+// filtering needs the grid, the list and data to rebuild it from
+const canFilter = heatEnabled && clickable && recentPosts.length > 0 && heatPosts.length > 0;
+const heatData = heatPosts.map((p) => ({ u: p.u, t: p.t, d: p.d, m: p.m, w: p.w }));
+const weekLabel = (c) => h.t("recent.heatmap_week", c.m + 1, c.w + 1, c.count);
+%>
+<% if (showCard) { %>
+<section class="widget-card recent-card" data-recent data-clickable="<%= canFilter ? 'true' : 'false' %>">
+  <h2 class="widget-title"><%- partial('icon', { name: 'history' }) %><span><%= t.sidebar.recent %></span></h2>
+  <% if (recentPosts.length) { %>
+  <div class="recent-list" data-recent-list>
+    <% for (const post of recentPosts) { %>
+    <a class="recent-item" href="<%= post.url %>">
+      <span class="recent-title"><%= post.meta.title %></span>
+      <time class="recent-date" datetime="<%= activityOf(post) %>"><%= h.formatDate(activityOf(post), "MM-DD") %></time>
+    </a>
+    <% } %>
+  </div>
+  <% } %>
+  <% if (heatEnabled && heatPosts.length) { %>
+  <% if (recentPosts.length) { %><div class="recent-divider" role="separator"></div><% } %>
+  <div class="recent-heatmap" role="group" aria-label="<%= t.sidebar.recent %>">
+    <% for (const c of cells) { const label = weekLabel(c); %>
+    <% if (canFilter && c.count > 0) { %>
+    <button type="button" class="heatmap-cell" data-level="<%= levelOf(c.count) %>" data-month="<%= c.m %>" data-week="<%= c.w %>" aria-label="<%= label %>" aria-pressed="false"></button>
+    <% } else { %>
+    <span class="heatmap-cell" data-level="<%= levelOf(c.count) %>" role="img" aria-label="<%= label %>"></span>
+    <% } %>
+    <% } %>
+  </div>
+  <script type="application/json" data-recent-data><%- JSON.stringify(heatData).replace(/</g, "\\u003c") %></script>
+  <% } %>
+</section>
+<% } %>

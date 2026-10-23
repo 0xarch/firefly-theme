@@ -133,9 +133,10 @@ sidebar:
   tabletSidebar: left
   # hide the side columns on post pages
   hideOnPostPage: false
-  # widget order; available: profile, announcement, categories, tags, stats, toc
+  # widget order; available: profile, announcement, categories, tags, stats,
+  # recent, toc
   left: [profile, announcement, categories, tags]
-  right: [stats, toc]
+  right: [stats, recent, toc]
   # clip a widget to 7.5rem and show a "more" toggle once it holds more entries
   # than this (upstream: 5 categories, 10 tags); 0 disables the collapse
   collapse:
@@ -148,6 +149,17 @@ siteStats:
   enable: true
   # day the blog launched; drives the "running days" row
   startDate: "2025-01-01"
+
+# "recent" sidebar card: the most recently updated posts above a heatmap of
+# post activity (one column per month, one row per week of that month)
+recent:
+  # how many posts the list holds; 0 hides the list and leaves the heatmap
+  count: 5
+  heatmap:
+    # draw the grid for the year of the newest post
+    enabled: true
+    # clicking a cell filters the list above to that week's posts
+    clickable: true
 
 postList:
   # layout: list (wide cards, cover beside the text) | grid (auto-filled columns)

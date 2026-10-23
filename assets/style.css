@@ -747,6 +747,49 @@ html[data-wallpaper-mode="banner"] body.is-home #content-panel .site-footer { po
 .stats-suffix { font-size: 0.8rem; font-weight: 500; color: var(--content-meta); }
 .stats-suffix[hidden] { display: none; }
 
+/* "recent" card: recently updated posts above a month × week heatmap */
+.recent-list { display: flex; flex-direction: column; gap: 0.1rem; }
+.recent-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+  padding: 0.4rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.9rem;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.recent-item:hover { background: var(--btn-plain-bg-hover); color: var(--primary); }
+.recent-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recent-date {
+  flex: none; font-size: 0.75rem; font-variant-numeric: tabular-nums;
+  color: var(--content-meta);
+}
+.recent-item:hover .recent-date { color: inherit; }
+.recent-divider { border-top: 1px solid var(--line-divider); margin: 0.75rem 0; }
+.recent-heatmap {
+  display: grid; grid-template-columns: repeat(12, 1fr); gap: 0.18rem;
+  padding: 0.1rem 0 0.2rem;
+}
+.heatmap-cell {
+  width: 100%; aspect-ratio: 1; padding: 0; border: 0; border-radius: 2px;
+  background: var(--btn-plain-bg-hover);
+}
+.heatmap-cell[data-level="1"] { background: color-mix(in oklch, var(--primary) 45%, transparent); }
+.heatmap-cell[data-level="2"] { background: color-mix(in oklch, var(--primary) 65%, transparent); }
+.heatmap-cell[data-level="3"] { background: color-mix(in oklch, var(--primary) 85%, transparent); }
+.heatmap-cell[data-level="4"] { background: var(--primary); }
+button.heatmap-cell { cursor: pointer; }
+button.heatmap-cell:focus-visible,
+.heatmap-cell.is-selected { outline: 2px solid var(--primary); outline-offset: 1px; }
+/* one shared tooltip element: the grid sits inside a card, so a CSS-positioned
+   bubble would be clipped by the sidebar edge */
+.heatmap-tooltip {
+  position: fixed; z-index: calc(var(--z-drawer) + 2); pointer-events: none;
+  padding: 0.3rem 0.55rem; border-radius: var(--radius-sm);
+  background: rgb(0 0 0 / 0.82); color: #fff;
+  font-size: 0.75rem; line-height: 1.3; white-space: nowrap;
+  transform: translate(-50%, -100%) translateY(-6px);
+}
+/* the top row sits directly under the navbar: flip the bubble below the cell */
+.heatmap-tooltip.below { transform: translate(-50%, 0) translateY(6px); }
+.heatmap-tooltip[hidden] { display: none; }
+
 .announcement-body { font-size: 0.9rem; color: var(--text-75); margin-bottom: 0.85rem; }
 .announcement-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
 .announcement-close { width: 2rem; height: 2rem; }

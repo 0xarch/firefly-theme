@@ -19,8 +19,12 @@ This theme uses EJS + CSS + ES (Vanilla).
   and a comments hook; an `updated:` frontmatter adds a last-updated date beside
   the publish date, skipped when it equals the publish day
 - Left sidebar widgets: profile, announcement, categories, tags; right sidebar
-  site statistics and TOC (client-rendered, scroll-spy); below the desktop
-  breakpoint the TOC card gives way to a floating button with the same list
+  site statistics, a recent-activity card and the TOC (client-rendered,
+  scroll-spy); below the desktop breakpoint the TOC card gives way to a floating
+  button with the same list
+- "Recent" card: the newest `updated:`/published posts above a month × week
+  heatmap (no month labels) whose cells carry a tooltip and, when
+  `recent.heatmap.clickable` is on, filter the list to that week
 - Light/dark/system theme switch, plus a display-settings panel with a live
   accent-hue slider (both stored in `localStorage`) and a `darkreader-lock` so
   browser dark-mode extensions leave the theme alone
@@ -94,9 +98,10 @@ The main knobs (see `theme.yaml` for the full list and defaults):
 | `navbar.*` | title, logo, `menuAlign` (`left` puts the links beside the title, upstream-style), `mode` (`static`/`fixed`/`dynamic`), links |
 | `navbar.links[].children` | turns a link into a dropdown menu (hover/click on desktop, accordion in the drawer) |
 | `banner.*` | `mode` (`banner`/`none`), image lists, `position`, `dimOpacity`, home title/subtitle/typewriter/links, post info |
-| `sidebar.enable/position/tabletSidebar/hideOnPostPage` + `left`/`right` | widget columns (`profile`, `announcement`, `categories`, `tags`, `stats`, `toc`); `tabletSidebar` picks the single side kept between 768px and 1279px |
+| `sidebar.enable/position/tabletSidebar/hideOnPostPage` + `left`/`right` | widget columns (`profile`, `announcement`, `categories`, `tags`, `stats`, `recent`, `toc`); `tabletSidebar` picks the single side kept between 768px and 1279px |
 | `sidebar.collapse.categories` / `.tags` | entry count past which a widget is clipped to 7.5rem behind a more/collapse toggle (0 disables; upstream uses 5 and 10) |
 | `siteStats.enable/startDate` | sidebar statistics card (posts/categories/tags/words; running days and last-activity are refreshed in the browser) |
+| `recent.count` / `recent.heatmap.enabled` / `recent.heatmap.clickable` | sidebar "recent" card: list length, whether the heatmap is drawn, whether a click filters the list |
 | `postList.layout` / `postList.mobileLayout` | card layout above / below 780px: `list` (wide cards with the cover beside the text) or `grid` (auto-filled columns) |
 | `postList.*` | cover side, excerpt lines, stats, tags |
 | `license.*` | end-of-post licence notice (`enable`, `name`, `url`); a post may override with `license` / `licenseUrl` frontmatter |
@@ -132,6 +137,26 @@ The arrow keys walk the results and Enter opens one (through pjax when it is
 active). `limit` caps the result count, `excerptLength` the stored excerpt and
 `hotkey: false` drops the shortcut. Because only the `<!-- more -->` slice is
 indexed, a listing page never carries the rest of the article into its HTML.
+
+### Recent card
+
+`partial/widget/recent.ejs` lists the `recent.count` posts with the newest
+activity first (`updated:` when present, otherwise `date:`) and draws the
+heatmap below a divider. The grid has one column per month and one row per week
+of the month (days 1-7, 8-14, 15-21, 22+); the year is the newest publication
+year, so a static build never shows an empty grid. Unlike upstream there are no
+month labels: each cell carries a tooltip built from `recent.heatmap_week`
+(`7 月第 3 周 · 1 篇文章`).
+
+With `recent.heatmap.clickable` (default on) a cell that holds posts replaces
+the list with that week's posts, using the same row design; clicking the
+selected cell again restores the recent list. Cells without posts only show the
+tooltip. The recent list and the grid are rendered at build time, so the card
+still reads without JavaScript — only the filtering needs it.
+
+The heatmap counts publication dates while the list sorts by activity, so a post
+published in January but updated this week is listed first and appears in the
+January cell.
 
 ### i18n support
 
@@ -200,6 +225,8 @@ stay dependency-free while leaving room for these features:
   when fetching the theme into `.ngwg/themes/`, and Core runs `bun install` on
   first build when it is missing. Layouts are EJS, because only the EJS deployer
   exposes `require` to templates.
+- The recent card's heatmap covers one year (the newest publication year), so
+  older years cannot be selected; clicking a cell is client-side only.
 - Admonition titles take the type's accent colour and its icon, while the body
   keeps the normal text colour. Upstream Firefly colours the title only (as
   here); Nextario also tints the body text, which would drop a light-mode

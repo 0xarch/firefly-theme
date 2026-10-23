@@ -38,6 +38,7 @@ sidebar:
   categories: 分类
   tags: 标签
   stats: 站点统计
+  recent: 最近
   toc: 目录
 
 siteStats:
@@ -91,3 +92,6 @@ search:
   hint: 输入关键词筛选标题、标签、分类与摘要
   empty: 没有匹配的文章
   close: 关闭搜索
+
+recent:
+  heatmap_week: "{0} 月第 {1} 周 · {2} 篇文章"

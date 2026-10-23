@@ -14,7 +14,7 @@ const position = sb.position || "both";
 const enabled = sb.enable !== false &&
   (position === "both" || position === side) &&
   !(sb.hideOnPostPage === true && view === "post");
-const WIDGETS = ["profile", "announcement", "categories", "tags", "stats", "toc"];
+const WIDGETS = ["profile", "announcement", "categories", "tags", "stats", "recent", "toc"];
 const list = ((side === "left" ? sb.left : sb.right) || []).filter((w) => WIDGETS.includes(w));
 const inner = enabled ? list.map((w) => partial(w)).join("").trim() : "";
 %>
