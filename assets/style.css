@@ -134,6 +134,9 @@ html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--navbar-h) + 1rem);
+  /* the theme draws its own hover/pressed states, so the UA tap flash only
+     smears the rounded controls and links; it inherits into the whole page */
+  -webkit-tap-highlight-color: transparent;
 }
 html.dark { color-scheme: dark; }
 
