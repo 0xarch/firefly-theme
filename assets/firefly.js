@@ -733,55 +733,126 @@
   }
 
   /* ---------- long-post segments ---------- */
+  //
+  // The deployer ships the first segment plus a marker listing every remaining
+  // fragment (`data-segments`); fragments written by an older deployer only
+  // name their successor (`data-next`), which is still supported. Fragments are
+  // fetched a few at a time and spliced in index order, so one that arrives
+  // early waits in a buffer and the article never reorders.
   var segScrollHandler = null;
-  function initSegments() {
+  var segGeneration = 0;
+  var SEG_LOOKAHEAD = 3;
+
+  function initSegments(pageUrl) {
     var body = $("#post-body");
     var loader = $(".seg-loading");
+    var gen = ++segGeneration;
     if (segScrollHandler) { window.removeEventListener("scroll", segScrollHandler); segScrollHandler = null; }
-    if (!body) return;
-    if (!body.querySelector(".post-seg-end[data-next]")) {
-      if (loader) loader.remove();
-      return;
+    var marker = body && body.querySelector(".post-seg-end[data-next]");
+    if (!marker) { if (loader) loader.remove(); return; }
+
+    var base = pageUrl || location.href;
+    function resolve(u) {
+      try { return u ? new URL(u, base).href : null; } catch (e) { return null; }
     }
-    var loading = false;
-    function near(el) {
-      var r = el.getBoundingClientRect();
-      return r.top < window.innerHeight + 400;
+
+    // the first marker may list every fragment (new deployer); otherwise the
+    // chain is the only source of urls and only one request can be in flight
+    var listed = (marker.getAttribute("data-segments") || "").trim().split(/\s+/).filter(Boolean);
+    var complete = listed.length > 0;
+    var urls = [];
+    (complete ? listed : [marker.getAttribute("data-next")]).forEach(function (u) {
+      var abs = resolve(u);
+      if (abs) urls.push(abs);
+    });
+    if (!urls.length) { if (loader) loader.remove(); return; }
+
+    var buffered = [];    // index → html waiting for its turn
+    var cursor = 0;       // index of the next fragment to splice in
+    var nextRequest = 0;  // index of the next url to fetch
+    var inflight = 0;
+    var paused = false;   // a fetch failed: retry on the next scroll tick
+    var sentinel = marker; // stays at the end of the loaded content
+
+    function alive() { return gen === segGeneration; }
+    function showLoader(on) {
+      if (loader) loader.hidden = !on;
     }
-    function loadNext() {
-      var marker = body.querySelector(".post-seg-end[data-next]");
-      if (!marker || loading || !near(marker)) return;
-      loading = true;
-      if (loader) loader.hidden = false;
-      var url;
-      try { url = new URL(marker.getAttribute("data-next"), location.href).href; }
-      catch (e) { loading = false; return; }
-      fetch(url).then(function (r) {
+    function nearEnd() {
+      // the marker itself is display:none, so measure the loaded article end
+      return body.getBoundingClientRect().bottom < window.innerHeight + 400;
+    }
+
+    function pump(force) {
+      if (!alive() || paused) return;
+      if (!force && !nearEnd()) return;
+      while (inflight < SEG_LOOKAHEAD && nextRequest < urls.length) {
+        request(nextRequest++);
+      }
+      showLoader(inflight > 0);
+    }
+
+    function request(index) {
+      inflight++;
+      fetch(urls[index]).then(function (r) {
         if (!r.ok) throw new Error(String(r.status));
         return r.text();
       }).then(function (text) {
-        // splice the fragment in where the marker sits so that any markers or
-        // headings it carries land inside #post-body (TOC + next step see them)
-        marker.insertAdjacentHTML("beforebegin", text);
-        marker.remove();
-        loading = false;
-        if (loader) loader.hidden = true;
-        buildToc();
-        if (!body.querySelector(".post-seg-end[data-next]") && loader) {
-          loader.remove();
-          window.removeEventListener("scroll", segScrollHandler);
-          segScrollHandler = null;
-        } else {
-          setTimeout(loadNext, 0);
-        }
+        buffered[index] = text;
       }).catch(function () {
-        loading = false;
-        if (loader) loader.hidden = true;
+        // keep the index so the retry does not skip a fragment
+        nextRequest = index;
+        paused = true;
+        showLoader(false);
+      }).then(function () {
+        inflight--;
+        drain();
       });
     }
-    segScrollHandler = loadNext;
+
+    // splice every fragment whose predecessors are already in place
+    function drain() {
+      if (!alive()) return;
+      var inserted = false;
+      while (cursor < urls.length && typeof buffered[cursor] === "string") {
+        splice(buffered[cursor]);
+        buffered[cursor] = null;
+        cursor++;
+        inserted = true;
+      }
+      if (inserted) buildToc();
+      if (cursor >= urls.length && inflight === 0) {
+        sentinel.remove();
+        if (loader) loader.remove();
+        if (segScrollHandler) {
+          window.removeEventListener("scroll", segScrollHandler);
+          segScrollHandler = null;
+        }
+        return;
+      }
+      pump(false);
+    }
+
+    function splice(html) {
+      var tpl = document.createElement("template");
+      tpl.innerHTML = html;
+      var frag = tpl.content;
+      if (!complete) {
+        // chained fallback: this fragment knows where the next one lives
+        var next = frag.querySelector(".post-seg-end[data-next]");
+        var url = next && resolve(next.getAttribute("data-next"));
+        if (url) urls.push(url);
+      }
+      frag.querySelectorAll(".post-seg-end").forEach(function (node) { node.remove(); });
+      sentinel.parentNode.insertBefore(frag, sentinel);
+    }
+
+    segScrollHandler = function () {
+      paused = false;
+      pump(false);
+    };
     window.addEventListener("scroll", segScrollHandler, { passive: true });
-    loadNext();
+    pump(false);
   }
 
   /* ---------- code copy ---------- */
@@ -1065,7 +1136,6 @@
     initTocToggle();
     buildToc();
     initTocFab();
-    initSegments();
     initTypewriter();
     initAnnouncement();
     initWidgetCollapse();
@@ -1079,6 +1149,7 @@
     hideHeatTip();
     syncProgressBar();
     window.scrollTo(0, 0);
+    initSegments(url);
   }
 
   function navigate(url, push) {
@@ -1148,7 +1219,7 @@
     buildToc();
     initTocFab();
     bindTocFabDismiss();
-    initSegments();
+    initSegments(location.href);
     initCodeCopy();
     initStats();
     loadGiscus();
