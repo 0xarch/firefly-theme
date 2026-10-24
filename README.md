@@ -38,7 +38,9 @@ This theme uses EJS + CSS + ES (Vanilla).
   they grow past their threshold
 - Pjax navigation, a reading progress bar (post pages only), back-to-top and
   code copy buttons
-- Long-post segmented lazy loading (provided by Ngwg-files)
+- Long-post segmented loading (provided by Ngwg-files): every fragment is
+  fetched on page load and spliced in order, so the article is complete
+  without scrolling first
 - Markdown admonitions (`!!! tip … !!!`, all 15 types the parser knows) with the
   type's tint, icon and label — ported from the
   [Nextario](https://github.com/0xarch/fewu-theme-next) theme, which shares the

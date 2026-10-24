@@ -736,16 +736,15 @@
   //
   // The deployer ships the first segment plus a marker listing every remaining
   // fragment (`data-segments`); fragments written by an older deployer only
-  // name their successor (`data-next`), which is still supported. Fragments are
-  // fetched a few at a time and spliced in index order, so one that arrives
-  // early waits in a buffer and the article never reorders.
+  // name their successor (`data-next`), which is still supported. Every
+  // fragment is requested as soon as the page opens and spliced in index
+  // order, so one that arrives early waits in a buffer and the article never
+  // reorders — no scroll position is required to get the rest.
   //
   // A `#anchor` may live in a fragment the initial DOM does not contain; the
-  // browser then resolves nothing, so the loader remembers the id, keeps
-  // fetching until the fragment carrying it is in, and scrolls to it.
-  var segScrollHandler = null;
+  // browser then resolves nothing, so the loader remembers the id and scrolls
+  // to it once the fragment carrying it is in.
   var segGeneration = 0;
-  var SEG_LOOKAHEAD = 3;
 
   function segmentHash(url) {
     var i = String(url || "").indexOf("#");
@@ -772,7 +771,6 @@
     var body = $("#post-body");
     var loader = $(".seg-loading");
     var gen = ++segGeneration;
-    if (segScrollHandler) { window.removeEventListener("scroll", segScrollHandler); segScrollHandler = null; }
     var marker = body && body.querySelector(".post-seg-end[data-next]");
     if (!marker) { if (loader) loader.remove(); return; }
 
@@ -803,24 +801,18 @@
     var cursor = 0;       // index of the next fragment to splice in
     var nextRequest = 0;  // index of the next url to fetch
     var inflight = 0;
-    var paused = false;   // a fetch failed: retry on the next scroll tick
+    var retried = [];     // index → the one automatic retry was already used
     var sentinel = marker; // stays at the end of the loaded content
 
     function alive() { return gen === segGeneration; }
     function showLoader(on) {
       if (loader) loader.hidden = !on;
     }
-    function nearEnd() {
-      // the marker itself is display:none, so measure the loaded article end
-      return body.getBoundingClientRect().bottom < window.innerHeight + 400;
-    }
 
-    function pump(force) {
-      if (!alive() || paused) return;
-      if (!force && !nearEnd()) return;
-      while (inflight < SEG_LOOKAHEAD && nextRequest < urls.length) {
-        request(nextRequest++);
-      }
+    // every known fragment goes out now; the chain fallback adds the next url
+    // only when a fragment arrives, so it stays sequential by nature
+    function pump() {
+      while (nextRequest < urls.length) request(nextRequest++);
       showLoader(inflight > 0);
     }
 
@@ -831,13 +823,15 @@
         return r.text();
       }).then(function (text) {
         buffered[index] = text;
-      }).catch(function () {
-        // keep the index so the retry does not skip a fragment
-        nextRequest = index;
-        paused = true;
-        showLoader(false);
-      }).then(function () {
         inflight--;
+        drain();
+      }).catch(function () {
+        inflight--;
+        // one retry covers a transient failure; after that keep what we have
+        if (!retried[index]) {
+          retried[index] = true;
+          setTimeout(function () { if (alive()) request(index); }, 1200);
+        }
         drain();
       });
     }
@@ -856,13 +850,9 @@
       if (cursor >= urls.length && inflight === 0) {
         sentinel.remove();
         if (loader) loader.remove();
-        if (segScrollHandler) {
-          window.removeEventListener("scroll", segScrollHandler);
-          segScrollHandler = null;
-        }
         return;
       }
-      pump(!!wanted);
+      pump();
     }
 
     function splice(html) {
@@ -884,13 +874,7 @@
       }
     }
 
-    segScrollHandler = function () {
-      paused = false;
-      pump(false);
-    };
-    window.addEventListener("scroll", segScrollHandler, { passive: true });
-    // an unresolved anchor cannot wait for the scroll: pull until it shows up
-    pump(!!wanted);
+    pump();
   }
 
   /* ---------- code copy ---------- */
