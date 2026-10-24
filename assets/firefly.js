@@ -776,7 +776,10 @@
     var marker = body && body.querySelector(".post-seg-end[data-next]");
     if (!marker) { if (loader) loader.remove(); return; }
 
+    // fragment urls are relative to the page that owns them; callers may hand
+    // us a relative page url, which cannot serve as a base on its own
     var base = pageUrl || location.href;
+    try { base = new URL(base, location.href).href; } catch (e) { base = location.href; }
     function resolve(u) {
       try { return u ? new URL(u, base).href : null; } catch (e) { return null; }
     }
