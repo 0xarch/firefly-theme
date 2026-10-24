@@ -739,9 +739,34 @@
   // name their successor (`data-next`), which is still supported. Fragments are
   // fetched a few at a time and spliced in index order, so one that arrives
   // early waits in a buffer and the article never reorders.
+  //
+  // A `#anchor` may live in a fragment the initial DOM does not contain; the
+  // browser then resolves nothing, so the loader remembers the id, keeps
+  // fetching until the fragment carrying it is in, and scrolls to it.
   var segScrollHandler = null;
   var segGeneration = 0;
   var SEG_LOOKAHEAD = 3;
+
+  function segmentHash(url) {
+    var i = String(url || "").indexOf("#");
+    if (i < 0) return "";
+    var raw = String(url).slice(i + 1);
+    try { return decodeURIComponent(raw); } catch (e) { return raw; }
+  }
+
+  // fragment navigation resolves an id first, then a legacy <a name>
+  function findAnchor(id) {
+    var el = document.getElementById(id);
+    if (el) return el;
+    var named = document.getElementsByName(id);
+    return named && named.length ? named[0] : null;
+  }
+
+  function findAnchorIn(root, id) {
+    var els = root.querySelectorAll("[id]");
+    for (var i = 0; i < els.length; i++) if (els[i].id === id) return els[i];
+    return null;
+  }
 
   function initSegments(pageUrl) {
     var body = $("#post-body");
@@ -766,6 +791,10 @@
       if (abs) urls.push(abs);
     });
     if (!urls.length) { if (loader) loader.remove(); return; }
+
+    // an anchor outside the first segment is replayed when its fragment lands
+    var hash = segmentHash(base);
+    var wanted = hash && !findAnchor(hash) ? hash : null;
 
     var buffered = [];    // index → html waiting for its turn
     var cursor = 0;       // index of the next fragment to splice in
@@ -830,7 +859,7 @@
         }
         return;
       }
-      pump(false);
+      pump(!!wanted);
     }
 
     function splice(html) {
@@ -843,8 +872,13 @@
         var url = next && resolve(next.getAttribute("data-next"));
         if (url) urls.push(url);
       }
+      var target = wanted ? findAnchorIn(frag, wanted) : null;
       frag.querySelectorAll(".post-seg-end").forEach(function (node) { node.remove(); });
       sentinel.parentNode.insertBefore(frag, sentinel);
+      if (target) {
+        wanted = null;
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
 
     segScrollHandler = function () {
@@ -852,7 +886,8 @@
       pump(false);
     };
     window.addEventListener("scroll", segScrollHandler, { passive: true });
-    pump(false);
+    // an unresolved anchor cannot wait for the scroll: pull until it shows up
+    pump(!!wanted);
   }
 
   /* ---------- code copy ---------- */
@@ -1149,6 +1184,13 @@
     hideHeatTip();
     syncProgressBar();
     window.scrollTo(0, 0);
+    // a swap does not replay the browser's hash navigation: land on the target
+    // now, or let the segment loader carry the link into a later fragment
+    var hash = segmentHash(url);
+    if (hash) {
+      var target = findAnchor(hash);
+      if (target) target.scrollIntoView({ behavior: "instant", block: "start" });
+    }
     initSegments(url);
   }
 
