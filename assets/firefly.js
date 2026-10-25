@@ -615,6 +615,40 @@
     });
   }
 
+  /* ---------- in-page anchors ---------- */
+  // Fragment links (TOC items, footnotes, heading permalinks, …) scroll
+  // smoothly and rewrite the url hash without adding a history entry. A target
+  // that sits in a long-post fragment not spliced in yet is handed to the
+  // segment loader, which scrolls once that fragment arrives.
+  var anchorWait = null;
+  function jumpToAnchor(id) {
+    if (!id) return;
+    var target = findAnchor(id);
+    if (target) {
+      anchorWait = null;
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      anchorWait = id;
+    }
+    history.replaceState(history.state, "", "#" + id);
+  }
+
+  function initAnchors() {
+    document.addEventListener("click", function (e) {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var a = e.target.closest && e.target.closest("a");
+      if (!a || a.target || a.hasAttribute("download")) return;
+      // the skip link must keep moving keyboard focus; a scroll does not
+      if (a.classList.contains("skip-link")) return;
+      var href = a.getAttribute("href") || "";
+      if (href.charAt(0) !== "#") return;
+      var id = segmentHash(href);
+      if (!id) return;
+      e.preventDefault();
+      jumpToAnchor(id);
+    });
+  }
+
   /* ---------- TOC ---------- */
   var spyHeads = [];
   function tocLink(heading) {
@@ -625,11 +659,6 @@
     label.className = "toc-label";
     label.textContent = heading.textContent;
     a.appendChild(label);
-    a.addEventListener("click", function (e) {
-      e.preventDefault();
-      heading.scrollIntoView({ behavior: "smooth", block: "start" });
-      history.replaceState(null, "", "#" + heading.id);
-    });
     return a;
   }
   function buildToc() {
@@ -772,6 +801,7 @@
     var loader = $(".seg-loading");
     var gen = ++segGeneration;
     var marker = body && body.querySelector(".post-seg-end[data-next]");
+    anchorWait = null;
     if (!marker) { if (loader) loader.remove(); return; }
 
     // fragment urls are relative to the page that owns them; callers may hand
@@ -795,7 +825,7 @@
 
     // an anchor outside the first segment is replayed when its fragment lands
     var hash = segmentHash(base);
-    var wanted = hash && !findAnchor(hash) ? hash : null;
+    if (hash && !findAnchor(hash)) anchorWait = hash;
 
     var buffered = [];    // index → html waiting for its turn
     var cursor = 0;       // index of the next fragment to splice in
@@ -865,11 +895,11 @@
         var url = next && resolve(next.getAttribute("data-next"));
         if (url) urls.push(url);
       }
-      var target = wanted ? findAnchorIn(frag, wanted) : null;
+      var target = anchorWait ? findAnchorIn(frag, anchorWait) : null;
       frag.querySelectorAll(".post-seg-end").forEach(function (node) { node.remove(); });
       sentinel.parentNode.insertBefore(frag, sentinel);
       if (target) {
-        wanted = null;
+        anchorWait = null;
         target.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
@@ -1195,6 +1225,7 @@
         var doc = new DOMParser().parseFromString(text, "text/html");
         applyPage(doc, url);
         if (push) history.pushState({ pjax: true }, "", url);
+        pjaxKey = pageKey(url);
       })
       .catch(function () { window.location.href = url; });
   }
@@ -1215,9 +1246,18 @@
     return true;
   }
 
+  // pathname+search identifies a page; the hash is a position inside it
+  function pageKey(url) {
+    var u = new URL(url, location.href);
+    return u.pathname + u.search;
+  }
+
+  var pjaxKey = null;
+
   function initPjax() {
     if (!CFG.pjax) return;
     window.__fireflyNavigate = navigate;
+    pjaxKey = pageKey(location.href);
     document.addEventListener("click", function (e) {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       var a = e.target.closest && e.target.closest("a");
@@ -1226,6 +1266,14 @@
       navigate(a.href, true);
     });
     window.addEventListener("popstate", function () {
+      // a fragment entry changes only the hash: the browser has already moved
+      // to the anchor, so re-fetching the page would rebuild the article and
+      // throw the reader back to the top
+      if (pageKey(location.href) === pjaxKey) {
+        var hash = segmentHash(location.href);
+        if (hash && !findAnchor(hash)) anchorWait = hash;
+        return;
+      }
       navigate(location.href, false);
     });
   }
@@ -1245,6 +1293,7 @@
     initWidgetCollapse();
     initSearch();
     initTocToggle();
+    initAnchors();
     buildToc();
     initTocFab();
     bindTocFabDismiss();

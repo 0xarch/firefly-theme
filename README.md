@@ -37,7 +37,7 @@ This theme uses EJS + CSS + ES (Vanilla).
 - Tag/category widgets that collapse to 7.5rem with a more/collapse toggle once
   they grow past their threshold
 - Pjax navigation, a reading progress bar (post pages only), back-to-top and
-  code copy buttons
+  code copy buttons; in-page anchors (TOC items, footnotes) scroll in place
 - Long-post segmented loading (provided by Ngwg-files): every fragment is
   fetched on page load and spliced in order, so the article is complete
   without scrolling first
