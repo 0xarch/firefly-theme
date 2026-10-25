@@ -9,7 +9,7 @@ function initPagination() {
     if (nav.dataset.bound) return;
     nav.dataset.bound = "1";
     nav.addEventListener("click", function (e) {
-      var trigger = e.target.closest && e.target.closest("[data-pagination-jump]");
+      const trigger = e.target.closest && e.target.closest("[data-pagination-jump]");
       if (!trigger) return;
       e.preventDefault();
       openJump(nav, trigger);
@@ -17,11 +17,11 @@ function initPagination() {
   });
 }
 function openJump(nav, trigger) {
-  var last = parseInt(nav.getAttribute("data-jump-last"), 10) || 1;
-  var current = parseInt(nav.getAttribute("data-jump-current"), 10) || 1;
-  var digits = String(last).length;
-  var variant = trigger.getAttribute("data-jump-variant");
-  var input = document.createElement("input");
+  const last = parseInt(nav.getAttribute("data-jump-last"), 10) || 1;
+  const current = parseInt(nav.getAttribute("data-jump-current"), 10) || 1;
+  const digits = String(last).length;
+  const variant = trigger.getAttribute("data-jump-variant");
+  const input = document.createElement("input");
   input.type = "text";
   input.inputMode = "numeric";
   input.maxLength = digits;
@@ -31,22 +31,22 @@ function openJump(nav, trigger) {
   // fit the digits; the desktop one replaces a square and is sized by CSS
   if (variant === "current") input.style.width = (digits + 0.5) + "ch";
 
-  var done = false;
+  let done = false;
   function close() {
     if (done) return;
     done = true;
     input.replaceWith(trigger);
   }
   function submit() {
-    var parsed = parseInt(input.value, 10);
+    const parsed = parseInt(input.value, 10);
     close();
     if (isNaN(parsed)) return;
     // out-of-range values are clamped, not dropped (upstream behaviour)
-    var target = Math.min(Math.max(parsed, 1), last);
+    const target = Math.min(Math.max(parsed, 1), last);
     if (target === current) return;
-    var first = nav.getAttribute("data-jump-first") || "/";
-    var template = nav.getAttribute("data-jump-template") || "/page/{page}/";
-    var url = target === 1 ? first : template.replace("{page}", String(target));
+    const first = nav.getAttribute("data-jump-first") || "/";
+    const template = nav.getAttribute("data-jump-template") || "/page/{page}/";
+    const url = target === 1 ? first : template.replace("{page}", String(target));
     if (window.__fireflyNavigate) window.__fireflyNavigate(url, true);
     else window.location.href = url;
   }

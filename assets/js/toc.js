@@ -2,23 +2,23 @@
 // drive the floating panel on narrow viewports.
 import { $, $$ } from "./core.js";
 
-var spyHeads = [];
+let spyHeads = [];
 function tocLink(heading) {
-  var a = document.createElement("a");
+  const a = document.createElement("a");
   a.className = "toc-item level-" + heading.tagName.charAt(1);
   a.href = "#" + heading.id;
-  var label = document.createElement("span");
+  const label = document.createElement("span");
   label.className = "toc-label";
   label.textContent = heading.textContent;
   a.appendChild(label);
   return a;
 }
 function buildToc() {
-  var body = $("#post-body");
-  var lists = $$(".toc-list");
-  var card = $("#toc");
+  const body = $("#post-body");
+  const lists = $$(".toc-list");
+  const card = $("#toc");
   if (!body || !lists.length) return;
-  var heads = $$("h2, h3, h4", body);
+  const heads = $$("h2, h3, h4", body);
   lists.forEach(function (list) { list.textContent = ""; });
   if (card) card.style.display = heads.length ? "" : "none";
   heads.forEach(function (hh, idx) {
@@ -32,11 +32,11 @@ function buildToc() {
 }
 function spy() {
   if (!spyHeads.length) return;
-  var lists = $$(".toc-list");
+  const lists = $$(".toc-list");
   if (!lists.length) return;
-  var offset = 120;
-  var current = -1;
-  for (var i = 0; i < spyHeads.length; i++) {
+  const offset = 120;
+  let current = -1;
+  for (let i = 0; i < spyHeads.length; i++) {
     if (spyHeads[i].getBoundingClientRect().top - offset <= 0) current = i;
     else break;
   }
@@ -47,23 +47,23 @@ function spy() {
   });
 }
 function initTocToggle() {
-  var card = $("#toc");
-  var btn = card && $(".toc-toggle", card);
+  const card = $("#toc");
+  const btn = card && $(".toc-toggle", card);
   if (!btn || btn.dataset.bound) return;
   btn.dataset.bound = "1";
   btn.addEventListener("click", function () {
-    var collapsed = card.classList.toggle("collapsed");
+    const collapsed = card.classList.toggle("collapsed");
     btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
   });
 }
 
 /* ---------- floating TOC (narrow viewports) ---------- */
 function tocFabEls() {
-  var wrap = document.getElementById("toc-fab");
+  const wrap = document.getElementById("toc-fab");
   return wrap ? { wrap: wrap, btn: $(".toc-fab", wrap), panel: document.getElementById("toc-fab-panel") } : null;
 }
 function setTocFabOpen(open) {
-  var f = tocFabEls();
+  const f = tocFabEls();
   if (!f) return;
   f.wrap.classList.toggle("open", open);
   f.btn.setAttribute("aria-expanded", open ? "true" : "false");
@@ -72,20 +72,20 @@ function setTocFabOpen(open) {
    upstream's rule, read from the geometry so single-side layouts stay
    honest. The column folds away when the card was its only widget. */
 function syncTocFab() {
-  var card = $("#toc");
-  var items = $$(".toc-list .toc-item").length;
-  var aside = card && card.closest ? card.closest(".sidebar") : null;
-  var rect = card ? card.getBoundingClientRect() : null;
-  var narrow = !!(window.matchMedia && window.matchMedia("(max-width: 1279px)").matches);
+  const card = $("#toc");
+  const items = $$(".toc-list .toc-item").length;
+  const aside = card && card.closest ? card.closest(".sidebar") : null;
+  const rect = card ? card.getBoundingClientRect() : null;
+  const narrow = !!(window.matchMedia && window.matchMedia("(max-width: 1279px)").matches);
   if (aside) aside.classList.toggle("is-empty", items === 0 || (narrow && aside.children.length === 1));
-  var f = tocFabEls();
+  const f = tocFabEls();
   if (!f) return;
   f.wrap.hidden = document.body.getAttribute("data-view") !== "post" || !items ||
     (!!rect && rect.width > 0 && rect.height > 0);
   if (f.wrap.hidden) setTocFabOpen(false);
 }
 function initTocFab() {
-  var f = tocFabEls();
+  const f = tocFabEls();
   if (!f) return;
   if (!f.btn.dataset.bound) {
     f.btn.dataset.bound = "1";
@@ -104,7 +104,7 @@ function initTocFab() {
 /* dismissal handlers: bound once, they outlive pjax swaps */
 function bindTocFabDismiss() {
   document.addEventListener("click", function (e) {
-    var wrap = document.getElementById("toc-fab");
+    const wrap = document.getElementById("toc-fab");
     if (wrap && wrap.classList.contains("open") && !wrap.contains(e.target)) setTocFabOpen(false);
   });
   document.addEventListener("keydown", function (e) {

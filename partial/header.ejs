@@ -100,11 +100,11 @@ const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
     // set the colour scheme and hue before first paint (no flash)
     (function () {
       try {
-        var mode = localStorage.getItem("theme") || "<%= defaultMode %>";
-        var dark = mode === "dark" || (mode === "system" &&
+        const mode = localStorage.getItem("theme") || "<%= defaultMode %>";
+        const dark = mode === "dark" || (mode === "system" &&
           window.matchMedia("(prefers-color-scheme: dark)").matches);
         document.documentElement.classList.toggle("dark", dark);
-        var h = localStorage.getItem("hue");
+        const h = localStorage.getItem("hue");
         if (h) document.documentElement.style.setProperty("--hue", h);
       } catch (e) {}
     })();

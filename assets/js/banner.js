@@ -1,22 +1,22 @@
 // Banner typewriter subtitle.
 import { CFG, $ } from "./core.js";
 
-var twTimer = null;
+let twTimer = null;
 function initTypewriter() {
-  var el = $("#banner-subtitle-text");
+  const el = $("#banner-subtitle-text");
   if (twTimer) { clearTimeout(twTimer); twTimer = null; }
   if (!el) return;
-  var subs = CFG.bannerSubtitles || [];
+  const subs = CFG.bannerSubtitles || [];
   if (!subs.length) return;
-  var tw = CFG.typewriter || {};
+  const tw = CFG.typewriter || {};
   if (tw.enable === false) {
     el.textContent = subs[Math.floor(Math.random() * subs.length)];
     return;
   }
-  var speed = tw.speed || 100, del = tw.deleteSpeed || 50, pause = tw.pauseTime || 2000;
-  var i = 0, ch = 0, deleting = false;
+  const speed = tw.speed || 100, del = tw.deleteSpeed || 50, pause = tw.pauseTime || 2000;
+  let i = 0, ch = 0, deleting = false;
   function tick() {
-    var text = subs[i];
+    const text = subs[i];
     if (!deleting) {
       ch++;
       el.textContent = text.slice(0, ch);

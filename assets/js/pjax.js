@@ -15,33 +15,33 @@ import { initDynamic } from "./dynamic.js";
 
 function applyPage(doc, url) {
   document.title = doc.title;
-  var html = document.documentElement;
+  const html = document.documentElement;
   ["data-wallpaper-mode"].forEach(function (a) {
-    var v = doc.documentElement.getAttribute(a);
+    const v = doc.documentElement.getAttribute(a);
     if (v === null) html.removeAttribute(a); else html.setAttribute(a, v);
   });
-  var body = document.body;
+  const body = document.body;
   body.className = doc.body.className;
   ["data-view", "data-navbar-mode", "data-sidebar-position", "data-tablet-sidebar"].forEach(function (a) {
-    var v = doc.body.getAttribute(a);
+    const v = doc.body.getAttribute(a);
     if (v === null) body.removeAttribute(a); else body.setAttribute(a, v);
   });
   // the navbar survives pjax, so keep its home/non-home flag in sync (the
   // mobile banner glass is only used on the home page)
-  var nav = document.getElementById("navbar");
+  const nav = document.getElementById("navbar");
   if (nav) nav.setAttribute("data-is-home", body.getAttribute("data-view") === "home" ? "true" : "false");
   // the body class is reset with className above; the navbar element survives
   // pjax, so re-derive the sidebar offset state from it
   syncNavbarHidden(nav);
 
-  var anchor = document.getElementById("back-to-top");
-  var oldWall = document.getElementById("wallpaper-wrapper");
-  var oldPanel = document.getElementById("content-panel");
+  const anchor = document.getElementById("back-to-top");
+  const oldWall = document.getElementById("wallpaper-wrapper");
+  const oldPanel = document.getElementById("content-panel");
   if (oldWall) oldWall.remove();
   if (oldPanel) oldPanel.remove();
-  var frag = document.createDocumentFragment();
-  var newWall = doc.getElementById("wallpaper-wrapper");
-  var newPanel = doc.getElementById("content-panel");
+  const frag = document.createDocumentFragment();
+  const newWall = doc.getElementById("wallpaper-wrapper");
+  const newPanel = doc.getElementById("content-panel");
   if (newWall) frag.appendChild(document.importNode(newWall, true));
   if (newPanel) frag.appendChild(document.importNode(newPanel, true));
   if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(frag, anchor);
@@ -66,26 +66,26 @@ function applyPage(doc, url) {
   window.scrollTo(0, 0);
   // a swap does not replay the browser's hash navigation: land on the target
   // now, or let the segment loader carry the link into a later fragment
-  var hash = segmentHash(url);
+  const hash = segmentHash(url);
   if (hash) {
-    var target = findAnchor(hash);
+    const target = findAnchor(hash);
     if (target) target.scrollIntoView({ behavior: "instant", block: "start" });
   }
   initSegments(url);
 }
 
 function navigate(url, push) {
-  var panel = document.getElementById("content-panel");
+  const panel = document.getElementById("content-panel");
   if (panel) panel.classList.add("pjax-leaving");
   fetch(url, { headers: { "X-Requested-With": "pjax" } })
     .then(function (r) {
       if (!r.ok) throw new Error(String(r.status));
-      var type = r.headers.get("content-type") || "";
+      const type = r.headers.get("content-type") || "";
       if (type.indexOf("html") === -1) throw new Error("not html");
       return r.text();
     })
     .then(function (text) {
-      var doc = new DOMParser().parseFromString(text, "text/html");
+      const doc = new DOMParser().parseFromString(text, "text/html");
       applyPage(doc, url);
       if (push) history.pushState({ pjax: true }, "", url);
       pjaxKey = pageKey(url);
@@ -97,10 +97,10 @@ function sameOriginLink(a) {
   if (a.target && a.target !== "_self" && a.target !== "") return false;
   if (a.hasAttribute("download")) return false;
   if (a.hasAttribute("data-no-pjax")) return false;
-  var href = a.getAttribute("href") || "";
+  const href = a.getAttribute("href") || "";
   if (!href || href.charAt(0) === "#") return false;
   if (/^(mailto:|tel:|javascript:)/i.test(href)) return false;
-  var url;
+  let url;
   try { url = new URL(href, location.href); } catch (e) { return false; }
   if (url.origin !== location.origin) return false;
   if (url.pathname === location.pathname && url.search === location.search) return false;
@@ -111,11 +111,11 @@ function sameOriginLink(a) {
 
 // pathname+search identifies a page; the hash is a position inside it
 function pageKey(url) {
-  var u = new URL(url, location.href);
+  const u = new URL(url, location.href);
   return u.pathname + u.search;
 }
 
-var pjaxKey = null;
+let pjaxKey = null;
 
 function initPjax() {
   if (!CFG.pjax) return;
@@ -123,7 +123,7 @@ function initPjax() {
   pjaxKey = pageKey(location.href);
   document.addEventListener("click", function (e) {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    var a = e.target.closest && e.target.closest("a");
+    const a = e.target.closest && e.target.closest("a");
     if (!a || !sameOriginLink(a)) return;
     e.preventDefault();
     navigate(a.href, true);
@@ -133,7 +133,7 @@ function initPjax() {
     // to the anchor, so re-fetching the page would rebuild the article and
     // throw the reader back to the top
     if (pageKey(location.href) === pjaxKey) {
-      var hash = segmentHash(location.href);
+      const hash = segmentHash(location.href);
       if (hash && !findAnchor(hash)) state.anchorWait = hash;
       return;
     }

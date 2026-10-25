@@ -2,25 +2,25 @@
 import { $, $$ } from "./core.js";
 
 function initDynamic() {
-  var page = $("[data-dynamic-page]");
+  const page = $("[data-dynamic-page]");
   if (!page || page.dataset.bound) return;
-  var items = $$("[data-dynamic-item]", page);
+  const items = $$("[data-dynamic-item]", page);
   if (!items.length) return;
   page.dataset.bound = "1";
-  var search = $("[data-dynamic-search]", page);
-  var yearSelect = $("[data-dynamic-year]", page);
-  var empty = $("[data-dynamic-empty]", page);
+  const search = $("[data-dynamic-search]", page);
+  const yearSelect = $("[data-dynamic-year]", page);
+  const empty = $("[data-dynamic-empty]", page);
   // cache the lowercased text once instead of reading textContent per key
   items.forEach(function (item) {
     item.dataset.searchText = (item.textContent || "").toLowerCase();
   });
 
   function apply() {
-    var query = search ? search.value.trim().toLowerCase() : "";
-    var year = yearSelect ? yearSelect.value : "all";
-    var shown = 0;
+    const query = search ? search.value.trim().toLowerCase() : "";
+    const year = yearSelect ? yearSelect.value : "all";
+    let shown = 0;
     items.forEach(function (item) {
-      var match = (year === "all" || item.getAttribute("data-year") === year) &&
+      const match = (year === "all" || item.getAttribute("data-year") === year) &&
         (!query || item.dataset.searchText.indexOf(query) !== -1);
       item.hidden = !match;
       if (match) shown += 1;

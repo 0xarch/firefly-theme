@@ -2,11 +2,11 @@
 import { CFG, $, $$ } from "./core.js";
 import { loadGiscus, updateGiscusTheme } from "./comments.js";
 
-var THEME_MODES = ["light", "dark", "system"];
-var systemQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+const THEME_MODES = ["light", "dark", "system"];
+const systemQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
 
 function storedMode() {
-  var mode = null;
+  let mode = null;
   try { mode = localStorage.getItem("theme"); } catch (e) {}
   if (THEME_MODES.indexOf(mode) === -1) mode = CFG.defaultMode;
   if (THEME_MODES.indexOf(mode) === -1) mode = "system";
@@ -33,13 +33,13 @@ function setThemeMode(mode, persist) {
   updateGiscusTheme();
 }
 function initThemeToggle() {
-  var wrap = $(".theme-mode");
-  var btn = $("#theme-toggle");
+  const wrap = $(".theme-mode");
+  const btn = $("#theme-toggle");
   if (btn && !btn.dataset.bound) {
     btn.dataset.bound = "1";
     btn.addEventListener("click", function () {
       if (!wrap) return;
-      var open = wrap.classList.toggle("open");
+      const open = wrap.classList.toggle("open");
       btn.setAttribute("aria-expanded", open ? "true" : "false");
     });
   }
@@ -67,20 +67,20 @@ function initSystemThemeWatch() {
    `--hue` on <html>, which every oklch token derives from, so the whole
    palette — both modes — follows in place. */
 function initDisplaySettings() {
-  var wrap = $(".display-settings");
-  var panel = $("#display-setting");
-  var btn = $("#display-settings-switch");
-  var slider = $("#colorSlider");
-  var value = $("#hue-value");
-  var reset = $("#hue-reset");
+  const wrap = $(".display-settings");
+  const panel = $("#display-setting");
+  const btn = $("#display-settings-switch");
+  const slider = $("#colorSlider");
+  const value = $("#hue-value");
+  const reset = $("#hue-reset");
   if (!wrap || !panel || !btn || !slider || wrap.dataset.bound) return;
   wrap.dataset.bound = "1";
 
-  var def = Number(CFG.hue);
+  let def = Number(CFG.hue);
   if (!Number.isFinite(def)) def = 165;
-  var stored = null;
+  let stored = null;
   try { stored = localStorage.getItem("hue"); } catch (e) {}
-  var hue = stored !== null && Number.isFinite(Number(stored)) && Number(stored) >= 0
+  let hue = stored !== null && Number.isFinite(Number(stored)) && Number(stored) >= 0
     ? Math.round(Number(stored))
     : def;
 
@@ -110,7 +110,7 @@ function initDisplaySettings() {
     if (wrap.classList.contains("open")) close(); else open();
   });
   slider.addEventListener("input", function () {
-    var next = Math.round(Number(slider.value));
+    const next = Math.round(Number(slider.value));
     if (!Number.isFinite(next)) return;
     paint(next);
     save(next);

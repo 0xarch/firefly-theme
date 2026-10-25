@@ -8,33 +8,33 @@ import { spy } from "./toc.js";
    `hidden-up` class is the single source of truth, so mirror it onto <body>
    where the CSS can reach it (body.navbar-hidden). */
 function syncNavbarHidden(nav) {
-  var el = nav || document.getElementById("navbar");
+  const el = nav || document.getElementById("navbar");
   document.body.classList.toggle("navbar-hidden", !!(el && el.classList.contains("hidden-up")));
 }
 
 function initNavbar() {
-  var nav = $("#navbar");
+  const nav = $("#navbar");
   if (!nav) return;
-  var mode = document.body.getAttribute("data-navbar-mode") || "dynamic";
-  var lastY = window.pageYOffset;
-  var ticking = false;
+  const mode = document.body.getAttribute("data-navbar-mode") || "dynamic";
+  let lastY = window.pageYOffset;
+  let ticking = false;
 
   function update() {
-    var y = window.pageYOffset;
-    var max = document.documentElement.scrollHeight - window.innerHeight;
+    const y = window.pageYOffset;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
     nav.classList.toggle("scrolled", y > 8);
     if (mode === "dynamic") {
       if (y > lastY && y > 200) nav.classList.add("hidden-up");
       else nav.classList.remove("hidden-up");
     }
     syncNavbarHidden(nav);
-    var bar = $("#progress-bar");
+    const bar = $("#progress-bar");
     if (bar) {
-      var pct = max > 0 ? (y / max) * 100 : 0;
+      const pct = max > 0 ? (y / max) * 100 : 0;
       bar.style.width = pct + "%";
       bar.classList.toggle("active", y > 8 && pct < 100);
     }
-    var top = $("#back-to-top");
+    const top = $("#back-to-top");
     if (top) top.classList.toggle("show", y > 400);
     spy();
     lastY = y;
@@ -50,8 +50,8 @@ function initNavbar() {
 /* Keeps the reading progress bar in sync with pjax: it exists only on post
    pages, so it is created/removed around a navigation. */
 function syncProgressBar() {
-  var isPost = document.body.getAttribute("data-view") === "post";
-  var bar = document.getElementById("progress-bar");
+  const isPost = document.body.getAttribute("data-view") === "post";
+  let bar = document.getElementById("progress-bar");
   if (isPost && !bar) {
     bar = document.createElement("div");
     bar.id = "progress-bar";
@@ -65,7 +65,7 @@ function syncProgressBar() {
 }
 
 function initBackToTop() {
-  var btn = $("#back-to-top");
+  const btn = $("#back-to-top");
   if (!btn || btn.dataset.bound) return;
   btn.dataset.bound = "1";
   btn.addEventListener("click", function () {
@@ -75,8 +75,8 @@ function initBackToTop() {
 
 /* ---------- mobile drawer ---------- */
 function openDrawer(open) {
-  var panel = $("#nav-menu-panel");
-  var sw = $("#nav-menu-switch");
+  const panel = $("#nav-menu-panel");
+  const sw = $("#nav-menu-switch");
   if (!panel) return;
   panel.classList.toggle("open", open);
   panel.setAttribute("aria-hidden", open ? "false" : "true");
@@ -84,9 +84,9 @@ function openDrawer(open) {
   document.documentElement.style.overflow = open ? "hidden" : "";
 }
 function initDrawer() {
-  var sw = $("#nav-menu-switch");
-  var panel = $("#nav-menu-panel");
-  var close = $("#nav-menu-close");
+  const sw = $("#nav-menu-switch");
+  const panel = $("#nav-menu-panel");
+  const close = $("#nav-menu-close");
   if (sw && !sw.dataset.bound) {
     sw.dataset.bound = "1";
     sw.addEventListener("click", function () { openDrawer(!panel.classList.contains("open")); });
@@ -107,7 +107,7 @@ function initDropdowns() {
   $$(".nav-dropdown").forEach(function (dd) {
     if (dd.dataset.bound) return;
     dd.dataset.bound = "1";
-    var toggle = $(".nav-dropdown-toggle", dd);
+    const toggle = $(".nav-dropdown-toggle", dd);
     if (!toggle) return;
     function setOpen(open) {
       dd.classList.toggle("open", open);
@@ -134,14 +134,14 @@ function initDropdowns() {
     $$(".nav-dropdown.open").forEach(function (dd) {
       if (!dd.contains(e.target)) {
         dd.classList.remove("open");
-        var t = $(".nav-dropdown-toggle", dd);
+        const t = $(".nav-dropdown-toggle", dd);
         if (t) t.setAttribute("aria-expanded", "false");
       }
     });
     $$(".theme-mode.open").forEach(function (tm) {
       if (!tm.contains(e.target)) {
         tm.classList.remove("open");
-        var b = $("#theme-toggle");
+        const b = $("#theme-toggle");
         if (b) b.setAttribute("aria-expanded", "false");
       }
     });
@@ -150,21 +150,21 @@ function initDropdowns() {
     if (e.key !== "Escape") return;
     $$(".theme-mode.open, .nav-dropdown.open").forEach(function (el) {
       el.classList.remove("open");
-      var t = $("[aria-expanded='true']", el);
+      const t = $("[aria-expanded='true']", el);
       if (t) t.setAttribute("aria-expanded", "false");
     });
-    var b = $("#theme-toggle");
+    const b = $("#theme-toggle");
     if (b) b.setAttribute("aria-expanded", "false");
   });
 }
 
 function initNavActive() {
-  var path = location.pathname;
+  const path = location.pathname;
   $$(".nav-item, .nav-drawer-item").forEach(function (a) {
-    var href = a.getAttribute("href") || "";
+    const href = a.getAttribute("href") || "";
     if (!href || href === "#" || /^https?:/.test(href)) return;
-    var isHome = href === "/";
-    var active = isHome ? (path === "/" || path === "") : path.indexOf(href) === 0;
+    const isHome = href === "/";
+    const active = isHome ? (path === "/" || path === "") : path.indexOf(href) === 0;
     a.classList.toggle("active", active);
   });
 }
