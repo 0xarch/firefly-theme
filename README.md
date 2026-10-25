@@ -212,6 +212,10 @@ stay dependency-free while leaving room for these features:
   pointing `themes.firefly` at it, or fork this repository.
 - Layouts live in `layout/` (same base names as `layouts:` in `theme.yaml`),
   reusable fragments in `partial/` (call with `partial('name', { ...extra })`).
+- Stylesheets live in `assets/css/` (tokens, base, layout and one file per
+  component group) and are linked in cascade order from `partial/header.ejs`;
+  the runtime is plain ES modules under `assets/js/` with `main.js` as the only
+  script the page loads.
 - Icons are resolved at render time by `partial/icon.ejs`, which maps a short
   name to an [iconify](https://iconify.design) icon from the packs the original
   theme uses — the same `@iconify-json/*` packages declared in this theme's
