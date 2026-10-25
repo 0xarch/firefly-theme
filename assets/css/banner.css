@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Wallpaper / banner
+   ========================================================================== */
+#wallpaper-wrapper {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: var(--banner-h); overflow: hidden;
+  z-index: var(--z-banner); pointer-events: none;
+}
+html[data-wallpaper-mode="none"] #wallpaper-wrapper { display: none; }
+
+/* The hero keeps upstream's 65vh home height at every page size; every other
+   page only uses the 45vh band (mobile non-home pages drop the banner). */
+body.is-home { --banner-h: var(--banner-height-home); }
+
+.banner-media { display: block; width: 100%; height: 100%; }
+.banner-media-plain { background: linear-gradient(160deg, oklch(0.7 0.12 var(--hue)), oklch(0.55 0.15 calc(var(--hue) + 40))); }
+.banner-img { width: 100%; height: 100%; object-fit: cover; object-position: var(--banner-pos, center); }
+
+/* The mobile wallpaper is a portrait crop with its subject centred, so narrow
+   banners ignore the desktop offset (`0% 20%` would cut the subject off). */
+@media (max-width: 1023px) {
+  .banner-img { object-position: center; }
+}
+
+.banner-dim {
+  position: absolute; inset: 0; background: rgb(0 0 0 / var(--banner-dim, 0.2));
+}
+
+.banner-overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 0 1.5rem; color: #fff;
+}
+.banner-home-text { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 75%; text-shadow: 0 2px 12px rgb(0 0 0 / 0.35); }
+.banner-home-title { font-weight: 800; line-height: 1.1; letter-spacing: 0.02em; font-size: var(--banner-title-size, 4.5rem); overflow-wrap: break-word; }
+.banner-home-subtitle { font-weight: 500; opacity: 0.92; font-size: var(--banner-subtitle-size, 1.5rem); }
+
+/* Upstream's per-tier hero sizes: the title is capped against the viewport and
+   the text block widens as the screen narrows, so a long title cannot wrap
+   down into the content panel that overlaps the banner from below (the panel
+   keeps pointer-events off the banner area, see the content-panel rules). */
+@media (max-width: 1023px) {
+  .banner-home-text { width: 85%; }
+  .banner-home-title { font-size: min(var(--banner-title-size, 4.5rem), 7vw); }
+  .banner-home-subtitle { font-size: min(var(--banner-subtitle-size, 1.5rem), 1.5rem); }
+}
+@media (max-width: 767px) {
+  .banner-home-text { width: 88%; }
+  .banner-home-title { font-size: min(var(--banner-title-size, 4.5rem), 8vw); }
+  .banner-home-subtitle { font-size: min(var(--banner-subtitle-size, 1.5rem), 1.25rem); }
+}
+@media (max-width: 640px) {
+  .banner-home-text { width: 90%; }
+  .banner-home-title { font-size: min(var(--banner-title-size, 4.5rem), 10vw); }
+  .banner-home-subtitle { font-size: min(var(--banner-subtitle-size, 1.5rem), 1.125rem); }
+}
+@media (max-width: 480px) {
+  .banner-home-text { width: 95%; }
+  .banner-home-subtitle { font-size: min(var(--banner-subtitle-size, 1.5rem), 1rem); }
+}
+@media (max-width: 1023px) and (orientation: landscape) {
+  .banner-home-title { font-size: min(var(--banner-title-size, 4.5rem), 6vw); }
+  .banner-home-subtitle { font-size: min(var(--banner-subtitle-size, 1.5rem), 0.9rem); }
+}
+.typewriter-caret { display: inline-block; width: 2px; height: 1em; margin-left: 2px; background: currentColor; vertical-align: text-bottom; animation: caret 1s step-end infinite; }
+@keyframes caret { 50% { opacity: 0; } }
+.banner-home-links { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; pointer-events: auto; }
+.banner-link {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.45rem 0.9rem; border-radius: 999px;
+  background: rgb(255 255 255 / 0.15); backdrop-filter: blur(6px);
+  font-size: 0.9rem; font-weight: 500;
+  transition: background-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.banner-link:hover { background: rgb(255 255 255 / 0.3); transform: translateY(-2px); }
+
+.banner-post-overlay,
+.banner-page-title { max-width: 52rem; }
+.banner-page-title { font-size: 2.4rem; font-weight: 800; text-shadow: 0 2px 12px rgb(0 0 0 / 0.35); }
+.banner-post-title { font-size: 2.2rem; font-weight: 800; margin: 0 0 0.75rem; text-shadow: 0 2px 12px rgb(0 0 0 / 0.35); }
+.banner-post-desc { margin: 0; opacity: 0.92; }
+.banner-post-meta { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; opacity: 0.92; }
+.banner-post-meta .meta-item { color: #fff; }
+
+.banner-waves { position: absolute; left: 0; right: 0; bottom: -1px; height: 12vh; min-height: 4rem; max-height: 9rem; }
+.banner-waves svg { width: 100%; height: 100%; display: block; }
+.banner-waves .w1 { fill: var(--page-bg); opacity: 0.25; }
+.banner-waves .w2 { fill: var(--page-bg); opacity: 0.5; }
+.banner-waves .w3 { fill: var(--page-bg); opacity: 0.65; }
+.banner-waves .w4 { fill: var(--page-bg); opacity: 0.75; }
+

@@ -1,0 +1,41 @@
+/* ==========================================================================
+   Footer / back-to-top
+   ========================================================================== */
+.site-footer { margin-top: 1.5rem; }
+.footer-divider { border-top: 1px dashed var(--line-divider); margin: 0 2rem 1rem; }
+.footer-body { text-align: center; font-size: 0.85rem; color: var(--text-50); display: flex; flex-direction: column; gap: 0.4rem; padding-bottom: 1.5rem; }
+.footer-links, .footer-credit { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; align-items: center; }
+.footer-links a, .footer-credit a { color: var(--primary); font-weight: 500; }
+
+.back-to-top {
+  position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 60;
+  opacity: 0; transform: translateY(10px) scale(0.9); pointer-events: none;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.back-to-top.show { opacity: 1; transform: none; pointer-events: auto; }
+
+/* ==========================================================================
+   Animation + transitions
+   ========================================================================== */
+/* `backwards`, not `both`: a filled animation keeps an identity transform on
+   the element, which would capture `position: fixed` descendants (the TOC). */
+.onload-animation { animation: fade-up 500ms var(--ease) backwards; }
+@keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* pjax: fade the panel out while the next page is fetched; the fresh panel
+   fades back in through the .onload-animation on its content wrapper */
+#content-panel.pjax-leaving { opacity: 0; transition: opacity 150ms var(--ease); }
+
+@media (max-width: 1023px) {
+  body:not(.is-home) #wallpaper-wrapper { display: none; }
+  /* without the banner the panel has to clear the bar itself — 1rem of air on
+     top of the bar (upstream's --content-top: 5.5rem = bar + 1rem), otherwise
+     the first card sits on the bar's bottom edge */
+  body:not(.is-home) #content-panel { margin-top: calc(var(--navbar-h) + 1rem); }
+  html[data-wallpaper-mode="none"] #content-panel { margin-top: calc(var(--navbar-h) + 1rem); }
+}
+

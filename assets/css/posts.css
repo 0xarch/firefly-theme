@@ -1,0 +1,92 @@
+/* ==========================================================================
+   Post list
+   ========================================================================== */
+.post-list { display: flex; flex-direction: column; gap: 1rem; --post-card-min-width: 20rem; }
+/* Grid mode: auto-filled columns, each at least as wide as upstream's
+   postListLayout.grid.columnWidth (320px). */
+.post-list[data-layout="grid"] { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--post-card-min-width), 1fr)); }
+/* Upstream switches to `postListLayout.mobileDefaultMode` (grid) below 780px:
+   one column on a phone, two in the ~660-780px band — the extra tier between
+   the phone and the 780px+ list layout. */
+@media (max-width: 779px) {
+  .post-list[data-mobile-layout="grid"] { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--post-card-min-width), 1fr)); }
+}
+
+.post-card {
+  position: relative; display: flex; flex-direction: column-reverse;
+  padding: 1.4rem 1.25rem; overflow: hidden;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.post-card:hover { transform: translateY(-2px); }
+.post-card-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.post-card-title { font-size: 1.35rem; font-weight: 700; line-height: 1.4; color: var(--deep-text); transition: color var(--dur) var(--ease); }
+.post-card-title:hover { color: var(--primary); }
+/* Post card meta — upstream's PostMeta row: a tinted square behind every icon,
+   muted 0.875rem text and 1rem gaps between the items. */
+.post-card-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; margin: 0.4rem 0 1rem; }
+.post-card-meta .meta-item { gap: 0; color: var(--text-50); font-size: 0.875rem; font-weight: 500; }
+.post-card-meta .meta-icon {
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  width: 2rem; height: 2rem; margin-right: 0.5rem;
+  border-radius: 0.375rem; background: var(--btn-regular-bg); color: var(--btn-content);
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.post-card-meta .meta-link { color: inherit; font-weight: 500; white-space: nowrap; }
+.post-card-meta .meta-link:hover { color: var(--primary); }
+.post-card-desc { color: var(--text-75); font-size: 0.92rem; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+.post-card-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: auto; padding-top: 0.75rem; }
+.post-card-cover { position: relative; overflow: hidden; border-radius: var(--radius-md); aspect-ratio: 2 / 1; margin-bottom: 1rem; }
+.post-card-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform 350ms var(--ease); }
+.post-card:hover .post-card-cover img { transform: scale(1.06); }
+.post-card-cover-arrow {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: #fff; background: rgb(0 0 0 / 0.25); opacity: 0; transition: opacity var(--dur) var(--ease);
+}
+.post-card:hover .post-card-cover-arrow { opacity: 1; }
+/* The no-cover card's arrow is visible at every width (upstream shows it in
+   both list and grid mode): a full-height square button on the right edge. */
+.post-card-enter {
+  display: flex; align-items: center; justify-content: center;
+  position: absolute; right: 0.75rem; top: 0.75rem; bottom: 0.75rem; width: 3.25rem;
+  border-radius: var(--radius-md); background: var(--btn-regular-bg); color: var(--primary);
+  transition: background-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.post-card-enter:hover { background: var(--btn-regular-bg-hover); }
+.post-card-enter:active { background: var(--btn-regular-bg-active); transform: scale(0.95); }
+.post-card.no-cover { padding-right: 4.5rem; }
+
+/* The wide list cards only exist from 780px up: below that upstream is in its
+   mobile mode (grid by default), where the card keeps the stacked cover. */
+@media (min-width: 780px) {
+  .post-list[data-layout="list"] .post-card.has-cover { flex-direction: row; align-items: stretch; padding: 1.4rem; gap: 1.4rem; }
+  .post-list[data-layout="list"] .post-card.has-cover .post-card-content { order: 0; }
+  .post-list[data-layout="list"] .post-card.cover-left { flex-direction: row-reverse; }
+  .post-list[data-layout="list"] .post-card-cover {
+    flex: 0 0 34%; margin-bottom: 0; aspect-ratio: auto; align-self: stretch; min-height: 10rem;
+  }
+}
+
+/* ==========================================================================
+   Listing head / archive
+   ========================================================================== */
+.listing-head { padding: 1.25rem 1.5rem; }
+.listing-title { margin: 0; font-size: 1.5rem; font-weight: 700; }
+.listing-subtitle { margin: 0.3rem 0 0; color: var(--content-meta); font-size: 0.9rem; }
+.empty-note { color: var(--text-50); text-align: center; padding: 2rem 0; }
+
+.archive { display: flex; flex-direction: column; gap: 0.75rem; }
+.archive-group { background: var(--card-bg); border-radius: var(--radius-lg); padding: 0.75rem 1rem; }
+.archive-year {
+  display: flex; align-items: center; gap: 0.6rem; cursor: pointer; list-style: none;
+  font-size: 1.15rem; font-weight: 700; padding: 0.35rem 0.25rem;
+}
+.archive-year::-webkit-details-marker { display: none; }
+.archive-year .chev { margin-left: auto; transition: transform var(--dur) var(--ease); }
+.archive-group:not([open]) .archive-year .chev { transform: rotate(-90deg); }
+.archive-year-count { font-size: 0.8rem; color: var(--btn-content); background: var(--btn-regular-bg); border-radius: 999px; padding: 0.05rem 0.5rem; }
+.archive-list { list-style: none; margin: 0.4rem 0 0; padding: 0; display: flex; flex-direction: column; }
+.archive-item { display: flex; gap: 1rem; padding: 0.4rem 0.25rem; border-radius: var(--radius-sm); }
+.archive-item:hover { background: var(--btn-plain-bg-hover); }
+.archive-item time { color: var(--content-meta); font-variant-numeric: tabular-nums; flex: 0 0 3.5rem; }
+.archive-item a:hover { color: var(--primary); }
+

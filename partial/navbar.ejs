@@ -18,7 +18,7 @@ const defaultHue = Number.isFinite(Number(themeColorCfg.hue)) ? Number(themeColo
 const label = (name) => (t.nav && Object.prototype.hasOwnProperty.call(t.nav, name) && t.nav[name]) || name;
 
 // client-side search: a tiny JSON index of every post, rendered next to the
-// navbar and filtered by assets/firefly.js. `site.posts` is already sliced on
+// navbar and filtered by assets/js/search.js. `site.posts` is already sliced on
 // listing pages, so build it from the archive groups instead.
 const searchCfg = theme.search || {};
 const searchOn = searchCfg.enable === true;

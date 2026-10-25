@@ -1,0 +1,190 @@
+/* ==========================================================================
+   Sidebar widgets
+   ========================================================================== */
+.widget-card { padding: 1rem; }
+.widget-title {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin: 0 0 0.75rem; font-size: 1rem; font-weight: 700;
+  color: var(--deep-text); list-style: none; cursor: default;
+}
+.widget-title .icon { color: var(--primary); }
+.widget-title .chev { margin-left: auto; transition: transform var(--dur) var(--ease); }
+
+.profile-card { text-align: center; }
+.profile-avatar-link { display: block; position: relative; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 0.85rem; transition: transform var(--dur) var(--ease); }
+.profile-avatar-link:active { transform: scale(0.95); }
+.profile-avatar { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+/* hover mask (upstream behaviour): a dark veil with an address-card icon
+   fading in, instead of scaling the avatar itself */
+.profile-avatar-overlay {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; pointer-events: none; background: transparent;
+  transition: background-color var(--dur) var(--ease);
+}
+.profile-avatar-link:hover .profile-avatar-overlay { background: rgb(0 0 0 / 0.3); }
+.profile-avatar-link:active .profile-avatar-overlay { background: rgb(0 0 0 / 0.5); }
+.profile-avatar-overlay .icon { opacity: 0; transform: scale(0.9); transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease); }
+.profile-avatar-link:hover .profile-avatar-overlay .icon { opacity: 1; transform: scale(1); }
+.profile-name { font-size: 1.25rem; font-weight: 700; }
+.profile-divider { width: 1.4rem; height: 3px; background: var(--primary); border-radius: 999px; margin: 0.5rem auto 0.75rem; }
+.profile-bio { font-size: 0.9rem; color: var(--content-meta); margin-bottom: 0.9rem; }
+.profile-links { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+.profile-link.icon-only { width: 2.5rem; height: 2.5rem; padding: 0; justify-content: center; }
+
+/* site statistics (upstream SiteStats) */
+.stats-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+.stats-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.9rem; }
+.stats-icon { display: inline-flex; color: var(--primary); }
+.stats-label { color: var(--text-75); }
+.stats-value {
+  margin-left: auto; display: inline-flex; align-items: baseline; gap: 0.2rem;
+  font-weight: 700; color: var(--deep-text); font-variant-numeric: tabular-nums;
+}
+.stats-suffix { font-size: 0.8rem; font-weight: 500; color: var(--content-meta); }
+.stats-suffix[hidden] { display: none; }
+
+/* "recent" card: recently updated posts above a month × week heatmap */
+.recent-list { display: flex; flex-direction: column; gap: 0.1rem; }
+.recent-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+  padding: 0.4rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.9rem;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.recent-item:hover { background: var(--btn-plain-bg-hover); color: var(--primary); }
+.recent-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recent-date {
+  flex: none; font-size: 0.75rem; font-variant-numeric: tabular-nums;
+  color: var(--content-meta);
+}
+.recent-item:hover .recent-date { color: inherit; }
+.recent-divider { border-top: 1px solid var(--line-divider); margin: 0.75rem 0; }
+.recent-heatmap {
+  display: grid; grid-template-columns: repeat(12, 1fr); gap: 0.18rem;
+  padding: 0.1rem 0 0.2rem;
+}
+.heatmap-cell {
+  width: 100%; aspect-ratio: 1; padding: 0; border: 0; border-radius: 2px;
+  background: var(--btn-plain-bg-hover);
+}
+.heatmap-cell[data-level="1"] { background: color-mix(in oklch, var(--primary) 45%, transparent); }
+.heatmap-cell[data-level="2"] { background: color-mix(in oklch, var(--primary) 65%, transparent); }
+.heatmap-cell[data-level="3"] { background: color-mix(in oklch, var(--primary) 85%, transparent); }
+.heatmap-cell[data-level="4"] { background: var(--primary); }
+button.heatmap-cell { cursor: pointer; }
+button.heatmap-cell:focus-visible,
+.heatmap-cell.is-selected { outline: 2px solid var(--primary); outline-offset: 1px; }
+/* one shared tooltip element: the grid sits inside a card, so a CSS-positioned
+   bubble would be clipped by the sidebar edge */
+.heatmap-tooltip {
+  position: fixed; z-index: calc(var(--z-drawer) + 2); pointer-events: none;
+  padding: 0.3rem 0.55rem; border-radius: var(--radius-sm);
+  background: rgb(0 0 0 / 0.82); color: #fff;
+  font-size: 0.75rem; line-height: 1.3; white-space: nowrap;
+  transform: translate(-50%, -100%) translateY(-6px);
+}
+/* the top row sits directly under the navbar: flip the bubble below the cell */
+.heatmap-tooltip.below { transform: translate(-50%, 0) translateY(6px); }
+.heatmap-tooltip[hidden] { display: none; }
+
+.announcement-body { font-size: 0.9rem; color: var(--text-75); margin-bottom: 0.85rem; }
+.announcement-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.announcement-close { width: 2rem; height: 2rem; }
+.announcement-close:hover { background: oklch(0.9 0.08 25); color: oklch(0.4 0.15 25); }
+
+.widget-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+.widget-list a {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+  padding: 0.45rem 0.6rem; border-radius: var(--radius-sm); font-size: 0.9rem;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.widget-list a:hover { background: var(--btn-plain-bg-hover); color: var(--primary); }
+.widget-list-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.count, .tag-count {
+  font-size: 0.75rem; font-variant-numeric: tabular-nums;
+  color: var(--btn-content); background: var(--btn-regular-bg);
+  border-radius: 999px; padding: 0.05rem 0.45rem;
+}
+
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.tag-item {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  font-size: 0.78rem; padding: 0.15rem 0.55rem; border-radius: 999px;
+  background: var(--btn-regular-bg); color: var(--btn-content);
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.tag-item:hover { background: var(--btn-regular-bg-hover); transform: translateY(-1px); }
+.tag-item .tag-count { background: transparent; padding: 0; color: inherit; opacity: 0.7; }
+.tag-item-static { background: var(--line-divider); color: var(--content-meta); }
+
+details.collapsible-card { padding: 1rem; }
+details > summary { cursor: pointer; }
+details > summary::-webkit-details-marker { display: none; }
+details[open] > summary .chev { transform: rotate(0deg); }
+details:not([open]) > summary .chev { transform: rotate(-90deg); }
+
+/* Long tag/category lists are clipped to 7.5rem and get a more/less toggle,
+   like upstream's WidgetLayout (upstream: 5 categories, 10 tags). */
+.widget-collapse.collapsed { max-height: 7.5rem; overflow: hidden; }
+.widget-expand {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  width: 100%; height: 2.25rem; margin-top: 0.5rem;
+  border: none; border-radius: var(--radius-sm);
+  background: transparent; color: var(--primary);
+  font-size: 0.9rem; font-weight: 600;
+  transition: background-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.widget-expand:hover { background: var(--btn-plain-bg-hover); }
+.widget-expand:active { background: var(--btn-plain-bg-active); transform: scale(0.98); }
+.widget-expand .icon { width: 1.5rem; height: 1.5rem; }
+.widget-expand-less[hidden] { display: none; }
+
+/* TOC */
+.toc-card .toc-head { cursor: default; }
+.toc-toggle { width: 1.8rem; height: 1.8rem; margin-left: auto; }
+.toc-card.collapsed .toc-body { display: none; }
+.toc-card.collapsed .toc-toggle .chev { transform: rotate(-90deg); }
+.toc-list { position: relative; display: flex; flex-direction: column; gap: 0.1rem; padding: 0.125rem 0; }
+.toc-item {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.42rem 0.55rem; border-radius: var(--radius-md);
+  font-size: 0.85rem; line-height: 1.35; color: var(--content-meta);
+  transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+.toc-item:hover { background: var(--toc-btn-hover); transform: translateX(2px); }
+.toc-item.level-3 { padding-left: 1.35rem; }
+.toc-item.level-4 { padding-left: 2rem; font-size: 0.8rem; }
+.toc-item.visible { color: color-mix(in oklab, var(--content-meta) 40%, var(--primary)); background: var(--toc-indicator-bg); }
+.toc-item .toc-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toc-empty { font-size: 0.85rem; color: var(--text-50); margin: 0; }
+
+/* Floating TOC: below the right column's breakpoint the card is hidden and a
+   button above the back-to-top control opens the same list in a panel. */
+@media (max-width: 1279px) {
+  .toc-card { display: none; }
+}
+.toc-fab-wrap { position: fixed; right: 1.25rem; bottom: 4.85rem; z-index: 60; }
+.toc-fab-icon-close { display: none; }
+.toc-fab-wrap.open .toc-fab-icon-open { display: none; }
+.toc-fab-wrap.open .toc-fab-icon-close { display: flex; }
+.toc-fab-panel {
+  position: absolute; right: 0; bottom: calc(100% + 0.6rem);
+  width: min(20rem, calc(100vw - 2rem));
+  max-height: min(24rem, calc(100vh - 10rem)); overflow-y: auto;
+  padding: 0.75rem 0.9rem 0.6rem;
+  background: var(--float-panel-bg); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--line-divider) inset;
+  transform-origin: bottom right;
+  opacity: 0; visibility: hidden; transform: translateY(8px) scale(0.98); pointer-events: none;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility 0s linear var(--dur);
+}
+.toc-fab-wrap.open .toc-fab-panel {
+  opacity: 1; visibility: visible; transform: none; pointer-events: auto;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility 0s;
+}
+.toc-fab-title {
+  display: flex; align-items: center; gap: 0.45rem;
+  font-weight: 700; font-size: 0.9rem; color: var(--deep-text);
+  padding: 0 0.55rem 0.35rem;
+}
+
