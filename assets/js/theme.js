@@ -3,6 +3,7 @@ import { CFG, $, $$ } from "./core.js";
 import { loadGiscus, updateGiscusTheme } from "./comments.js";
 
 const THEME_MODES = ["light", "dark", "system"];
+const CODE_SCHEMES = ["atom", "github"];
 const systemQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
 
 function storedMode() {
@@ -61,11 +62,12 @@ function initSystemThemeWatch() {
   });
 }
 
-/* ---------- display settings (accent hue) ---------- */
-/* Upstream's "Display Settings" panel exposes many switches; only the accent
-   hue is ported. It is stored next to the light/dark choice and written to
-   `--hue` on <html>, which every oklch token derives from, so the whole
-   palette — both modes — follows in place. */
+/* ---------- display settings (accent hue + code scheme) ---------- */
+/* Upstream's "Display Settings" panel exposes many switches; the accent hue
+   and the code colour scheme are ported. The hue is written to `--hue` on
+   <html>, which every oklch token derives from, so the whole palette — both
+   modes — follows in place. The code scheme is a data attribute that selects
+   the Atom One / GitHub token rules in article.css. */
 function initDisplaySettings() {
   const wrap = $(".display-settings");
   const panel = $("#display-setting");
@@ -131,4 +133,37 @@ function initDisplaySettings() {
   paint(hue);
 }
 
-export { initThemeToggle, initSystemThemeWatch, initDisplaySettings };
+/* ---------- code colour scheme (Atom One / GitHub) ---------- */
+function storedCodeScheme() {
+  let scheme = null;
+  try { scheme = localStorage.getItem("code-scheme"); } catch (e) {}
+  if (CODE_SCHEMES.indexOf(scheme) === -1) scheme = "atom";
+  return scheme;
+}
+function applyCodeScheme(scheme) {
+  document.documentElement.setAttribute("data-code-scheme", scheme);
+}
+function syncCodeSchemeUi(scheme) {
+  const btn = $("#code-scheme-toggle");
+  if (!btn) return;
+  const github = scheme === "github";
+  btn.setAttribute("aria-checked", github ? "true" : "false");
+  const label = btn.getAttribute("data-label") || "Code scheme";
+  btn.setAttribute("aria-label", label + ": " + (github ? "GitHub" : "Atom"));
+}
+function initCodeSchemeToggle() {
+  const btn = $("#code-scheme-toggle");
+  let scheme = storedCodeScheme();
+  applyCodeScheme(scheme);
+  syncCodeSchemeUi(scheme);
+  if (!btn || btn.dataset.bound) return;
+  btn.dataset.bound = "1";
+  btn.addEventListener("click", function () {
+    scheme = scheme === "github" ? "atom" : "github";
+    applyCodeScheme(scheme);
+    syncCodeSchemeUi(scheme);
+    try { localStorage.setItem("code-scheme", scheme); } catch (e) {}
+  });
+}
+
+export { initThemeToggle, initSystemThemeWatch, initDisplaySettings, initCodeSchemeToggle };

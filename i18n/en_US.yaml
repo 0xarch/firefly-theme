@@ -16,6 +16,7 @@ theme:
   system: System
   display: Display settings
   color: Theme colour
+  code_scheme: Code colour scheme
   reset: Reset to default
 
 pagination:

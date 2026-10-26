@@ -38,8 +38,9 @@ themeColor:
   hue: 165
   # light | dark | system
   defaultMode: system
-  # show the navbar "display settings" button: a live hue slider whose value is
-  # kept in localStorage next to the light/dark choice (false hides it)
+  # show the navbar "display settings" button: a live hue slider and the
+  # Atom One / GitHub code colour toggle, both kept in localStorage next to the
+  # light/dark choice (false hides the whole panel)
   displaySettings: true
 
 profile:

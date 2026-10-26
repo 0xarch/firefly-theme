@@ -9,8 +9,9 @@ const logo = nav.logo || {};
 const navTitle = nav.title || site.title;
 const widthFull = nav.widthFull === true;
 const menuAlign = nav.menuAlign === "left" ? "left" : "center";
-// the hue slider is the only display setting (upstream's "Display Settings");
-// its default comes from themeColor.hue, the live value from localStorage
+// display settings (upstream's "Display Settings"): accent hue and the code
+// colour scheme. The hue default comes from theme.yaml; the code scheme
+// defaults to Atom One. Live values for both come from localStorage.
 const themeColorCfg = theme.themeColor || {};
 const displaySettings = themeColorCfg.displaySettings !== false;
 const defaultHue = Number.isFinite(Number(themeColorCfg.hue)) ? Number(themeColorCfg.hue) : 165;
@@ -94,6 +95,14 @@ const isActive = (u) => {
           </div>
           <div class="hue-slider-shell">
             <input id="colorSlider" class="hue-slider" type="range" min="0" max="360" step="5" value="<%= defaultHue %>" aria-label="<%= t.theme.color %>">
+          </div>
+          <div class="settings-row">
+            <span class="settings-label"><%= t.theme.code_scheme %></span>
+            <button type="button" id="code-scheme-toggle" class="code-scheme-toggle" role="switch" aria-checked="false" aria-label="<%= t.theme.code_scheme %>" data-label="<%= t.theme.code_scheme %>">
+              <span class="code-scheme-knob" aria-hidden="true"></span>
+              <span class="code-scheme-text code-scheme-text-atom" aria-hidden="true">Atom</span>
+              <span class="code-scheme-text code-scheme-text-github" aria-hidden="true">GitHub</span>
+            </button>
           </div>
         </div>
       </div>

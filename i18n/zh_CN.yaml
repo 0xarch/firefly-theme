@@ -16,6 +16,7 @@ theme:
   system: 跟随系统
   display: 显示设置
   color: 主题色
+  code_scheme: 代码着色方案
   reset: 重置为默认
 
 pagination:

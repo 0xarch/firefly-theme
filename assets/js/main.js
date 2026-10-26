@@ -1,6 +1,6 @@
 // Theme entry point: wire the modules and start them once the DOM is ready.
 // Browsers load the imported modules automatically.
-import { initDisplaySettings, initSystemThemeWatch, initThemeToggle } from "./theme.js";
+import { initCodeSchemeToggle, initDisplaySettings, initSystemThemeWatch, initThemeToggle } from "./theme.js";
 import { initBackToTop, initDrawer, initDropdowns, initNavActive, initNavbar } from "./navbar.js";
 import { initTypewriter } from "./banner.js";
 import { initAnnouncement, initStats, initWidgetCollapse } from "./widgets.js";
@@ -20,6 +20,7 @@ function init() {
   initThemeToggle();
   initSystemThemeWatch();
   initDisplaySettings();
+  initCodeSchemeToggle();
   initNavbar();
   initBackToTop();
   initDrawer();

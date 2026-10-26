@@ -106,6 +106,8 @@ const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
         document.documentElement.classList.toggle("dark", dark);
         const h = localStorage.getItem("hue");
         if (h) document.documentElement.style.setProperty("--hue", h);
+        const scheme = localStorage.getItem("code-scheme");
+        document.documentElement.setAttribute("data-code-scheme", scheme === "github" ? "github" : "atom");
       } catch (e) {}
     })();
   </script>
