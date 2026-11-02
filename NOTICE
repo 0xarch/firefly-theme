@@ -1,6 +1,6 @@
 # NOTICE
 
-`Ngwg-firefly-theme` is an independent Ngwg port of the
+`firefly-theme` is an independent Ngwg port of the
 [Firefly](https://github.com/CuteLeaf/Firefly) Astro theme, itself based on
 [Fuwari](https://github.com/saicaca/fuwari).
 
@@ -9,9 +9,7 @@ projects. The EJS templates, CSS and JavaScript in this repository are an
 original implementation for the Ngwg rendering pipeline, not a copy of the
 upstream Astro/Svelte/Starlight sources.
 
-This repository does **not** distribute media assets: the demo wallpapers
-(`assets/images/wallpaper/*`), author avatar (`assets/images/avatar.avif`) and
-logo (`assets/images/logo/*`) are listed in `.gitignore`. When they are present
+This repository does not distribute media assets. When they are present
 in a working copy they are copied verbatim from the Firefly project and remain
 under their original MIT license:
 
@@ -23,12 +21,9 @@ Both are distributed under the MIT License reproduced in `LICENSE`.
 ## Icons
 
 `partial/icon.ejs` renders its icons at build time from the iconify packs this
-theme depends on (see `package.json`) — the same sets the original theme uses:
+theme depends on (see `package.json`) the same sets the original theme uses:
 
 - [Material Symbols](https://github.com/google/material-design-icons) — Apache-2.0
 - [Font Awesome Free](https://github.com/FortAwesome/Font-Awesome)
   (Regular, Solid, Brands) — CC-BY-4.0
 
-No icon drawings are stored in this repository: they are resolved from the
-installed packages through the theme-scoped `require` provided by the EJS
-deployer. Pack versions are pinned in `bun.lock`.
