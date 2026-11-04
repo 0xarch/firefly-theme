@@ -84,6 +84,8 @@ const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
   <% } %>
   <% if (site.extra && site.extra.seo && site.extra.seo.generateRSS) { %>  <link rel="alternate" type="application/rss+xml" title="<%= site.title %>" href="<%= site.extra.seo.rssPath %>">
   <% } %>
+  <% if (site.extra && site.extra.seo && site.extra.seo.generateAtom) { %>  <link rel="alternate" type="application/atom+xml" title="<%= site.title %>" href="<%= site.extra.seo.atomPath %>">
+  <% } %>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon/firefly-32.png">
   <link rel="apple-touch-icon" href="/assets/images/favicon/firefly-180.png">
   <link rel="stylesheet" href="/assets/css/tokens.css">

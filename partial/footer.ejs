@@ -19,6 +19,7 @@ const year = new Date().getFullYear();
         <div class="footer-links">
           <a href="/">© <span id="copyright-year"><%= year %></span> <%= p.name || site.title %></a>
           <% if (seo && seo.generateRSS) { %><span aria-hidden="true">/</span><a href="<%= seo.rssPath %>">RSS</a><% } %>
+          <% if (seo && seo.generateAtom) { %><span aria-hidden="true">/</span><a href="<%= seo.atomPath %>">Atom</a><% } %>
           <% if (seo && seo.generateSitemap) { %><span aria-hidden="true">/</span><a href="<%= seo.sitemapPath %>">Sitemap</a><% } %>
         </div>
         <div class="footer-credit">
