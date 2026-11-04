@@ -4,6 +4,9 @@ import { CFG, $$ } from "./core.js";
 function initCodeCopy() {
   $$(".markdown pre").forEach(function (pre) {
     if (pre.dataset.copy) return;
+    // mermaid blocks are rendered from their own innerHTML by the diagram
+    // runtime; a copy button inside would corrupt the source
+    if (pre.classList.contains("mermaid")) return;
     pre.dataset.copy = "1";
     const btn = document.createElement("button");
     btn.type = "button";

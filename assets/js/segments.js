@@ -2,6 +2,9 @@
 // replay a pending #anchor once its fragment is in.
 import { $, findAnchor, segmentHash, state } from "./core.js";
 import { buildToc } from "./toc.js";
+import { initTabs } from "./tabs.js";
+import { initMermaid } from "./mermaid.js";
+import { initCodeCopy } from "./code-copy.js";
 
 //
 // The deployer ships the first segment plus a marker listing every remaining
@@ -102,7 +105,14 @@ function initSegments(pageUrl) {
       cursor++;
       inserted = true;
     }
-    if (inserted) buildToc();
+    if (inserted) {
+      // fragments can carry tab containers, mermaid diagrams and code blocks:
+      // wire the freshly spliced content up like the first segment was
+      buildToc();
+      initTabs();
+      initMermaid();
+      initCodeCopy();
+    }
     if (cursor >= urls.length && inflight === 0) {
       sentinel.remove();
       if (loader) loader.remove();

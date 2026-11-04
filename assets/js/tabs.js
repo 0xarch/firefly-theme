@@ -21,10 +21,12 @@ function initTabs() {
     buttons.forEach(function (button, i) {
       button.addEventListener("click", function () {
         activate(buttons, panels, i);
-        const id = button.dataset.id || wrapper.dataset.id;
-        if (id) {
-          groupState[id] = i;
-          document.querySelectorAll('.tabs-tabs-wrapper[data-id="' + id + '"]').forEach(function (other) {
+        const groupId = wrapper.dataset.id;
+        if (groupId) {
+          // the container id is the shared group; a tab value id (if present)
+          // names the active tab inside it, otherwise the index is shared
+          groupState[groupId] = button.dataset.id !== undefined ? button.dataset.id : i;
+          document.querySelectorAll('.tabs-tabs-wrapper[data-id="' + groupId + '"]').forEach(function (other) {
             syncShared(other);
           });
         }
@@ -36,16 +38,18 @@ function initTabs() {
   });
 
   function syncShared(wrapper) {
-    const id = wrapper.dataset.id;
-    if (id === undefined || groupState[id] === undefined) return;
+    const groupId = wrapper.dataset.id;
+    const shared = groupState[groupId];
+    if (shared === undefined) return;
     const buttons = $$(".tabs-tab-button", wrapper);
     const panels = $$(".tabs-tab-content", wrapper);
     if (!buttons.length) return;
-    // containers whose tabs carry ids switch together index-wise; plain
-    // containers just clamp the shared index to their own tab count
-    const usesIds = buttons.some(function (b) { return b.dataset.id !== undefined; });
-    const index = usesIds ? groupState[id] : Math.min(groupState[id], buttons.length - 1);
-    activate(buttons, panels, index);
+    // tab value ids sync by value (containers may list the tabs in any
+    // order); plain containers sync by index, clamped to their tab count
+    const index = typeof shared === "string"
+      ? buttons.findIndex(function (b) { return b.dataset.id === shared; })
+      : Math.min(shared, buttons.length - 1);
+    if (index >= 0) activate(buttons, panels, index);
   }
 
   function activate(buttons, panels, index) {
