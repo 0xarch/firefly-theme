@@ -21,6 +21,12 @@
 .post-card-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .post-card-title { font-size: 1.35rem; font-weight: 700; line-height: 1.4; color: var(--deep-text); transition: color var(--dur) var(--ease); }
 .post-card-title:hover { color: var(--primary); }
+.post-pinned {
+  display: inline-flex; align-items: center; gap: 0.25rem; align-self: flex-start;
+  margin-top: 0.35rem; padding: 0.15rem 0.5rem; border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary); font-size: 0.75rem; font-weight: 600;
+}
 /* Post card meta — upstream's PostMeta row: a tinted square behind every icon,
    muted 0.875rem text and 1rem gaps between the items. */
 .post-card-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; margin: 0.4rem 0 1rem; }

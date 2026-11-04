@@ -29,6 +29,9 @@ const metaIcon = (name) => `<span class="meta-icon">${partial('icon', { name, si
 <article class="post-card<%= cover ? ' has-cover ' + coverSide : ' no-cover' %>">
   <div class="post-card-content">
     <a class="post-card-title" href="<%= post.url %>"><%= meta.title %></a>
+    <% if (meta.pinned === true) { %>
+    <span class="post-pinned"><%- partial('icon', { name: 'pin', size: 14 }) %><%= t.post.pinned %></span>
+    <% } %>
     <div class="post-card-meta">
       <% if (stats.published !== false && meta.date) { %>
       <span class="meta-item"><%- metaIcon('calendar') %><time datetime="<%= meta.date %>"><%= h.formatDate(meta.date, "YYYY-MM-DD") %></time></span>

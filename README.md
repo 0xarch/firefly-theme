@@ -11,7 +11,9 @@ This theme uses EJS + CSS + ES (Vanilla).
 
 - Wallpaper banner with a per-build random image (desktop/mobile variants) and
   a typewriter subtitle on the home page
-- Post cards with optional cover, excerpt clamping and tag list
+- Post cards with optional cover, excerpt clamping and tag list; `pinned: true`
+  in a post's frontmatter sorts it above the date order in every listing and
+  adds a pin badge to the card and the post header
 - Archive (grouped by year), tag and category listing pages, and a 404 page
   (`layout/404.ejs` is rendered to `/404.html` by Ngwg; themes without the
   layout simply do not emit one)

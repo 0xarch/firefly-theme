@@ -8,6 +8,7 @@ const cats = Array.isArray(meta.categories) ? meta.categories : [];
   <header class="post-header">
     <h2 class="post-title"><%= meta.title %></h2>
     <div class="post-header-meta">
+      <% if (meta.pinned === true) { %><span class="post-pinned"><%- partial('icon', { name: 'pin', size: 14 }) %><%= t.post.pinned %></span><% } %>
       <% if (meta.date) { %><span class="meta-item"><%- partial('icon', { name: 'calendar', size: 16 }) %><time datetime="<%= meta.date %>"><%= h.formatDate(meta.date, "YYYY-MM-DD") %></time></span><% } %>
       <%- partial('post-updated') %>
       <% if (tags.length) { %><span class="meta-item post-tags"><%- partial('icon', { name: 'tag', size: 16 }) %><% for (const tag of tags) { %><a class="tag-item" href="/tags/<%= h.slugify(tag) %>/">#<%= tag %></a><% } %></span><% } %>

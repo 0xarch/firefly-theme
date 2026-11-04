@@ -63,6 +63,7 @@ announcement:
   close: 关闭公告
 
 post:
+  pinned: 置顶
   words: "字"
   words_count: "{0} 字"
   reading: "分钟"

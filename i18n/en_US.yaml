@@ -63,6 +63,7 @@ announcement:
   close: Close announcement
 
 post:
+  pinned: Pinned
   words: "words"
   words_count: "{0} words"
   reading: "min"
