@@ -18,6 +18,19 @@ const pageTitle = page && page.meta && page.meta.title
   ? `${page.meta.title} · ${site.title}`
   : site.title;
 const pageDesc = (page && page.meta && (page.meta.description || page.meta.excerpt)) || site.description || "";
+
+// per-post language: `lang` (Astro Firefly) or its `language` alias
+// (Nextario) only changes the document language and hreflang links; the UI
+// strings still follow the site language. `multi_language` maps language tags
+// to the URLs of the translated versions.
+const rawPageLang = page && page.meta && (page.meta.lang || page.meta.language);
+const pageLang = rawPageLang
+  ? String(rawPageLang).trim().split(/[.@]/)[0].replace(/_/g, "-")
+  : langAttr;
+const translations = page && page.meta && page.meta.multi_language;
+const translationEntries = translations && typeof translations === "object" && !Array.isArray(translations)
+  ? Object.entries(translations).filter(([, v]) => typeof v === "string" || (v && typeof v.url === "string"))
+  : [];
 const hasHomeText = bannerCfg.mode !== "none" && bannerCfg.homeText && bannerCfg.homeText.enable !== false;
 const sidebarPosition = sidebarCfg.enable === false ? "none" : (sidebarCfg.position || "both");
 // which side stays when both are configured but only one fits (768-1279px)
@@ -70,7 +83,7 @@ const runtimeConfig = {
 };
 const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
 %><!DOCTYPE html>
-<html lang="<%= langAttr %>" data-wallpaper-mode="<%= bannerCfg.mode || 'banner' %>">
+<html lang="<%= pageLang %>" data-wallpaper-mode="<%= bannerCfg.mode || 'banner' %>">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -85,6 +98,9 @@ const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
   <% if (site.extra && site.extra.seo && site.extra.seo.generateRSS) { %>  <link rel="alternate" type="application/rss+xml" title="<%= site.title %>" href="<%= site.extra.seo.rssPath %>">
   <% } %>
   <% if (site.extra && site.extra.seo && site.extra.seo.generateAtom) { %>  <link rel="alternate" type="application/atom+xml" title="<%= site.title %>" href="<%= site.extra.seo.atomPath %>">
+  <% } %>
+  <% for (const [code, target] of translationEntries) { const href = typeof target === "string" ? target : target.url; const abs = typeof h.absoluteUrl === "function" ? h.absoluteUrl(href, site) : href; %>
+  <link rel="alternate" hreflang="<%= String(code).replace(/_/g, '-') %>" href="<%= abs %>">
   <% } %>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon/firefly-32.png">
   <link rel="apple-touch-icon" href="/assets/images/favicon/firefly-180.png">

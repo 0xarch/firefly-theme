@@ -64,6 +64,7 @@ announcement:
 
 post:
   pinned: Pinned
+  available_in: Also available in
   words: "words"
   words_count: "{0} words"
   reading: "min"

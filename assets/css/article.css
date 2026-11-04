@@ -239,6 +239,24 @@
   .post-neighbors { grid-template-columns: 1fr 1fr; }
 }
 
+/* translation switcher (per-post `multi_language` frontmatter) */
+.post-langs {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+  margin: 0 0 1.25rem; padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-md); background: var(--btn-regular-bg);
+  font-size: 0.875rem;
+}
+.post-langs-label {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  color: var(--content-meta);
+}
+.post-lang {
+  padding: 0.2rem 0.55rem; border-radius: 999px;
+  background: var(--card-bg); color: var(--primary); font-weight: 600;
+  transition: background-color var(--dur) var(--ease);
+}
+.post-lang:hover { background: var(--card-bg-hover); }
+
 /* 404 — the theme opts in by shipping layout/404.ejs; Core writes /404.html */
 .not-found { text-align: center; padding: 3rem 1.5rem; }
 .not-found-code {

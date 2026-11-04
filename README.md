@@ -198,6 +198,27 @@ exists.
 (`language` in `ngwg.yaml` → `$NGWG_LANG` → theme `default_language`). Nav items
 may use an i18n key (`home`, `archives`, …) or a literal label.
 
+### Per-post language
+
+A post can declare its own language without changing the site UI language:
+
+```yaml
+---
+title: Hello
+lang: en_US            # or the Nextario-style alias `language:`
+multi_language:
+  zh_CN: /posts/hello/
+  en_US: /posts/hello-en/
+---
+```
+
+`lang` sets that page's `<html lang>` (and `og:locale` through the SEO plugin).
+`multi_language` lists the translated versions: each key becomes an
+`hreflang` alternate link in the head and a link in the switcher above the
+article, labelled with the language name (the current language is omitted).
+Pjax navigation keeps `<html lang>` in sync. The theme's own UI strings stay on
+the site language.
+
 ## Integration hooks
 
 `comments` and `music` are reserved, off-by-default hook points, so the theme can

@@ -16,6 +16,9 @@ import { initDynamic } from "./dynamic.js";
 function applyPage(doc, url) {
   document.title = doc.title;
   const html = document.documentElement;
+  // per-post language: keep <html lang> in sync with the swapped document
+  const lang = doc.documentElement.getAttribute("lang");
+  if (lang) html.setAttribute("lang", lang);
   ["data-wallpaper-mode"].forEach(function (a) {
     const v = doc.documentElement.getAttribute(a);
     if (v === null) html.removeAttribute(a); else html.setAttribute(a, v);

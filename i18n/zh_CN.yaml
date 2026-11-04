@@ -64,6 +64,7 @@ announcement:
 
 post:
   pinned: 置顶
+  available_in: 本文其他语言版本
   words: "字"
   words_count: "{0} 字"
   reading: "分钟"

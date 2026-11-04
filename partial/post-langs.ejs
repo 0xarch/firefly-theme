@@ -1,0 +1,35 @@
+<%
+/**
+ * Translation switcher for a post. Frontmatter (Nextario-compatible):
+ *
+ *   lang: en_US
+ *   multi_language:
+ *     zh_CN: /posts/hello/
+ *     en_US: /posts/hello-en/
+ *
+ * The current language (lang or its `language` alias) is omitted; labels fall
+ * back to the language tag when it is not in the small map below.
+ */
+const meta = (page && page.meta) || {};
+const map = meta.multi_language;
+const norm = (v) => String(v || "").replace(/-/g, "_").toLowerCase();
+const current = norm(meta.lang || meta.language);
+const LABELS = {
+  zh: "中文", zh_cn: "简体中文", zh_tw: "繁體中文",
+  en: "English", en_us: "English", en_gb: "English",
+  ja: "日本語", ko: "한국어", fr: "Français", de: "Deutsch",
+  es: "Español", pt: "Português", ru: "Русский", it: "Italiano",
+};
+const entries = map && typeof map === "object" && !Array.isArray(map)
+  ? Object.entries(map).filter(([code, v]) => norm(code) !== current && (typeof v === "string" || (v && typeof v.url === "string")))
+  : [];
+const label = (code, v) => (v && typeof v === "object" && v.title) || LABELS[norm(code)] || code;
+%>
+<% if (entries.length) { %>
+<div class="post-langs">
+  <span class="post-langs-label"><%- partial('icon', { name: 'language', size: 16 }) %><%= t.post.available_in %></span>
+  <% for (const [code, v] of entries) { const href = typeof v === "string" ? v : v.url; %>
+  <a class="post-lang" href="<%= href %>" hreflang="<%= String(code).replace(/_/g, '-') %>" lang="<%= String(code).replace(/_/g, '-') %>"><%= label(code, v) %></a>
+  <% } %>
+</div>
+<% } %>

@@ -15,6 +15,7 @@ const cats = Array.isArray(meta.categories) ? meta.categories : [];
       <% if (cats.length) { %><span class="meta-item post-cats"><%- partial('icon', { name: 'folder', size: 16 }) %><% for (const c of cats) { %><a class="meta-link" href="/categories/<%= h.slugify(c) %>/"><%= c %></a><% } %></span><% } %>
     </div>
   </header>
+  <%- partial('post-langs') %>
 
   <div class="post-body markdown" id="post-body">
     <%- page.html %>
