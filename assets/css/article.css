@@ -239,6 +239,22 @@
   .post-neighbors { grid-template-columns: 1fr 1fr; }
 }
 
+/* 404 — the theme opts in by shipping layout/404.ejs; Core writes /404.html */
+.not-found { text-align: center; padding: 3rem 1.5rem; }
+.not-found-code {
+  margin: 0; font-size: clamp(4rem, 12vw, 8rem); font-weight: 800;
+  line-height: 1; color: var(--primary);
+}
+.not-found-title { margin: 0.75rem 0 0.5rem; font-size: 1.5rem; color: var(--deep-text); }
+.not-found-message { margin: 0 auto 1.75rem; max-width: 32rem; color: var(--text-75); }
+.not-found-home {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.65rem 1.25rem; border-radius: var(--radius-md);
+  background: var(--primary); color: #fff; font-weight: 600;
+  transition: filter var(--dur) var(--ease);
+}
+.not-found-home:hover { filter: brightness(1.08); }
+
 /* comments */
 .comments { background: var(--card-bg); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; }
 

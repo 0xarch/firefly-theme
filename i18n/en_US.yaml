@@ -98,6 +98,11 @@ search:
 recent:
   heatmap_week: "Week {1} of month {0} · {2} posts"
 
+not_found:
+  title: Page not found
+  message: The page you are looking for does not exist or has moved.
+  home: Back to home
+
 dynamic:
   title: Moments
   description: Short thoughts and everyday moments.

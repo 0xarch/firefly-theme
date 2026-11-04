@@ -1,0 +1,8 @@
+<%- partial('header', { view: 'page', navUrl: '/404.html', navTitle: t.not_found.title }) %>
+<article class="post-article not-found">
+  <p class="not-found-code" aria-hidden="true">404</p>
+  <h2 class="not-found-title"><%= t.not_found.title %></h2>
+  <p class="not-found-message"><%= t.not_found.message %></p>
+  <a class="not-found-home" href="/"><%- partial('icon', { name: 'home', size: 18 }) %><%= t.not_found.home %></a>
+</article>
+<%- partial('footer', { view: 'page', navUrl: '/404.html', navTitle: t.not_found.title }) %>

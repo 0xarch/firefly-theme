@@ -12,7 +12,9 @@ This theme uses EJS + CSS + ES (Vanilla).
 - Wallpaper banner with a per-build random image (desktop/mobile variants) and
   a typewriter subtitle on the home page
 - Post cards with optional cover, excerpt clamping and tag list
-- Archive (grouped by year), tag and category listing pages
+- Archive (grouped by year), tag and category listing pages, and a 404 page
+  (`layout/404.ejs` is rendered to `/404.html` by Ngwg; themes without the
+  layout simply do not emit one)
 - Home pagination with the original theme's square page buttons and a
   jump-to-page box, on upstream's 768/780/1280px breakpoints
 - Post page with banner info, tag/category meta, neighbour links, licence notice
