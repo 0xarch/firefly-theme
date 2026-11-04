@@ -206,7 +206,13 @@
 .code-copy:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 .post-seg-end { display: none; }
-.seg-loading { display: flex; justify-content: center; padding: 1.5rem; }
+/* The first segment ends with a `.post-seg-end[data-next]` marker when more
+   fragments exist. Drive the loader from that marker so it is visible on the
+   very first paint, before main.js can run on a slow connection; the loader
+   stays hidden for unsegmented posts. JS still owns `hidden` for the
+   start/finish transitions and removes the element once everything is in. */
+.seg-loading { display: none; justify-content: center; padding: 1.5rem; }
+.post-body:has(.post-seg-end[data-next]) + .seg-loading:not([hidden]) { display: flex; }
 .seg-loading[hidden] { display: none; }
 .spinner {
   width: 1.6rem; height: 1.6rem; border-radius: 50%;
