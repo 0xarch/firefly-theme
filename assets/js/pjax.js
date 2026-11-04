@@ -8,6 +8,8 @@ import { initAnnouncement, initStats, initWidgetCollapse } from "./widgets.js";
 import { initSearch } from "./search.js";
 import { initSegments } from "./segments.js";
 import { initCodeCopy } from "./code-copy.js";
+import { initTabs } from "./tabs.js";
+import { initMermaid } from "./mermaid.js";
 import { loadGiscus } from "./comments.js";
 import { initPagination } from "./pagination.js";
 import { hideHeatTip, initRecent } from "./recent.js";
@@ -59,6 +61,8 @@ function applyPage(doc, url) {
   initWidgetCollapse();
   initSearch();
   initCodeCopy();
+  initTabs();
+  initMermaid();
   initStats();
   loadGiscus();
   initPagination();

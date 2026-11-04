@@ -9,6 +9,8 @@ import { bindTocFabDismiss, buildToc, initTocFab, initTocToggle } from "./toc.js
 import { initAnchors } from "./anchors.js";
 import { initSegments } from "./segments.js";
 import { initCodeCopy } from "./code-copy.js";
+import { initTabs } from "./tabs.js";
+import { initMermaid } from "./mermaid.js";
 import { loadGiscus } from "./comments.js";
 import { initPagination } from "./pagination.js";
 import { initRecent } from "./recent.js";
@@ -37,6 +39,8 @@ function init() {
   bindTocFabDismiss();
   initSegments(location.href);
   initCodeCopy();
+  initTabs();
+  initMermaid();
   initStats();
   loadGiscus();
   initPagination();

@@ -45,10 +45,19 @@ This theme uses EJS + CSS + ES (Vanilla).
 - Long-post segmented loading (provided by Ngwg-files): every fragment is
   fetched on page load and spliced in order, so the article is complete
   without scrolling first
-- Markdown admonitions (`!!! tip … !!!`, all 15 types the parser knows) with the
-  type's tint, icon and label — ported from the
+- Markdown admonitions (`!!! tip … !!!`) and GFM alerts (`> [!NOTE]`, all types
+  the parser knows) with the type's tint, icon and label — ported from the
   [Nextario](https://github.com/0xarch/fewu-theme-next) theme, which shares the
   markdown dialect (see known limitations for the one deviation)
+- Markdown extras from Ngwg-files: task lists (`- [ ]`), tab containers
+  (`::: tabs` + `@tab`, switchable, shared state via `tabs#id` + `@tab item#id`),
+  Mermaid diagrams (` ```mermaid ` — rendered in the browser from
+  `/assets/mermaid/mermaid.min.js`, which the parser ships only when a page has
+  a diagram) and TeX math (opt-in: `markdown.tex.enabled: true` in
+  `plugins.files.option` picks the site default backend — `katex` or `mathjax`;
+  a post's `tex: true | "katex" | "mathjax"` frontmatter overrides it. The
+  KaTeX stylesheet is linked automatically when `site.extra.markdown.tex.katex`
+  says a page uses it)
 - i18n (ships `zh_CN` and `en_US`)
 - SEO/RSS/sitemap through [Ngwg-ext-seo](https://github.com/Ngwgers/Ngwg-ext-seo)
 
