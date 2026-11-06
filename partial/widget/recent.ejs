@@ -3,12 +3,14 @@
  * "Recent" sidebar card: the most recently updated posts above a heatmap of
  * post activity.
  *
- * The grid has one column per month and one row per week of the month (days
- * 1-7, 8-14, 15-21, 22+), the same buckets as upstream's Calendar widget. With
- * `recent.heatmap.clickable` a cell with posts filters the list above to that
- * week (the runtime rebuilds the rows from the embedded JSON); clicking the
- * selected cell again restores the recent list. The list and grid are rendered
- * at build time, so the card still works without JavaScript.
+ * The grid buckets the newest publication year into 12 months × 4 weeks. It
+ * is NOT pre-rendered: the page only carries a compact declaration (the 48
+ * per-bucket counts + the i18n label template) and a `<recent-heatmap>`
+ * custom element renders the cells in the browser — the sidebar repeats on
+ * every page, so the 48-cell markup would otherwise be duplicated everywhere.
+ * The recent list itself is still server-rendered and reads without
+ * JavaScript. With `recent.heatmap.clickable` a cell with posts filters the
+ * list above to that week; the post data for that lives in one JSON block.
  */
 const cfg = theme.recent || {};
 const heat = cfg.heatmap || {};
@@ -48,17 +50,14 @@ for (const p of allPosts) {
 }
 const year = newestYear || new Date().getFullYear();
 
-const cells = [];
-for (let w = 0; w < 4; w++) {
-  for (let m = 0; m < 12; m++) cells.push({ m, w, count: 0 });
-}
+const counts = new Array(48).fill(0);
 const heatPosts = [];
 for (const p of allPosts) {
   const d = ymd(p.meta && p.meta.date);
   if (!d || d.y !== year) continue;
   const m = d.m - 1;
   const w = Math.min(Math.floor((d.d - 1) / 7), 3);
-  cells[w * 12 + m].count += 1;
+  counts[w * 12 + m] += 1;
   heatPosts.push({
     u: p.url,
     t: (p.meta && p.meta.title) || "",
@@ -70,12 +69,13 @@ for (const p of allPosts) {
 }
 heatPosts.sort((a, b) => b.s - a.s);
 
-const levelOf = (n) => Math.min(n, 4);
 const showCard = recentPosts.length > 0 || (heatEnabled && heatPosts.length > 0);
 // filtering needs the grid, the list and data to rebuild it from
 const canFilter = heatEnabled && clickable && recentPosts.length > 0 && heatPosts.length > 0;
 const heatData = heatPosts.map((p) => ({ u: p.u, t: p.t, d: p.d, m: p.m, w: p.w }));
-const weekLabel = (c) => h.t("recent.heatmap_week", c.m + 1, c.w + 1, c.count);
+// the label template goes through t() with placeholders as arguments, so the
+// translated sentence is embedded with {m}/{w}/{c} slots the component fills
+const weekLabel = h.t("recent.heatmap_week", "{m}", "{w}", "{c}");
 %>
 <% if (showCard) { %>
 <section class="widget-card recent-card" data-recent data-clickable="<%= canFilter ? 'true' : 'false' %>">
@@ -92,16 +92,12 @@ const weekLabel = (c) => h.t("recent.heatmap_week", c.m + 1, c.w + 1, c.count);
   <% } %>
   <% if (heatEnabled && heatPosts.length) { %>
   <% if (recentPosts.length) { %><div class="recent-divider" role="separator"></div><% } %>
-  <div class="recent-heatmap" role="group" aria-label="<%= t.sidebar.recent %>">
-    <% for (const c of cells) { const label = weekLabel(c); %>
-    <% if (canFilter && c.count > 0) { %>
-    <button type="button" class="heatmap-cell" data-level="<%= levelOf(c.count) %>" data-month="<%= c.m %>" data-week="<%= c.w %>" aria-label="<%= label %>" aria-pressed="false"></button>
-    <% } else { %>
-    <span class="heatmap-cell" data-level="<%= levelOf(c.count) %>" role="img" aria-label="<%= label %>"></span>
-    <% } %>
-    <% } %>
-  </div>
+  <recent-heatmap class="recent-heatmap" role="group" aria-label="<%= t.sidebar.recent %>"
+    counts="<%= counts.join(',') %>" week-label="<%= weekLabel %>"
+    <%= canFilter ? "clickable" : "" %>></recent-heatmap>
+  <% if (canFilter) { %>
   <script type="application/json" data-recent-data><%- JSON.stringify(heatData).replace(/</g, "\\u003c") %></script>
+  <% } %>
   <% } %>
 </section>
 <% } %>

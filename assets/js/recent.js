@@ -1,5 +1,46 @@
 // Recent-posts card: heatmap tooltip and week filter.
+//
+// The heatmap grid is a light-DOM custom element (`<recent-heatmap>`): the
+// page only ships a compact declaration (48 bucket counts + the i18n label
+// template) and the component renders the cells on upgrade. No shadow root —
+// the cells are styled by the theme stylesheet like the rest of the card.
+// Without JavaScript the grid stays empty (the recent list above it is
+// server-rendered and still reads fine).
 import { $, $$ } from "./core.js";
+
+class RecentHeatmap extends HTMLElement {
+  connectedCallback() {
+    if (this.dataset.rendered) return;
+    this.dataset.rendered = "1";
+    const counts = (this.getAttribute("counts") || "").split(",").map((n) => Number(n) || 0);
+    const template = this.getAttribute("week-label") || "";
+    const clickable = this.hasAttribute("clickable");
+    const frag = document.createDocumentFragment();
+    counts.forEach((count, i) => {
+      const w = Math.floor(i / 12);
+      const m = i % 12;
+      const label = template.replace("{m}", String(m + 1)).replace("{w}", String(w + 1)).replace("{c}", String(count));
+      let cell;
+      if (clickable && count > 0) {
+        cell = document.createElement("button");
+        cell.type = "button";
+        cell.setAttribute("aria-pressed", "false");
+      } else {
+        cell = document.createElement("span");
+        cell.setAttribute("role", "img");
+      }
+      cell.className = "heatmap-cell";
+      cell.dataset.level = String(Math.min(count, 4));
+      cell.dataset.month = String(m);
+      cell.dataset.week = String(w);
+      cell.setAttribute("aria-label", label);
+      frag.appendChild(cell);
+    });
+    this.replaceChildren(frag);
+  }
+}
+
+customElements.define("recent-heatmap", RecentHeatmap);
 
 let heatTip = null;
 function showHeatTip(cell) {
