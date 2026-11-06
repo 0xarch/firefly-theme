@@ -2,75 +2,39 @@
 
 Clean, bright and modern theme for the [Ngwg](https://github.com/Ngwgers/Ngwg-core) static site generator.
 
-As for now this is a port of the [Firefly](https://github.com/CuteLeaf/Firefly) Astro theme (itself based on [Fuwari](https://github.com/saicaca/fuwari))
-to the Ngwg theme contract.
-
-This theme uses EJS + CSS + ES (Vanilla).
-
 ## Features
 
 - Wallpaper banner with a per-build random image (desktop/mobile variants) and
   a typewriter subtitle on the home page
 - Post cards with optional cover, excerpt clamping and tag list; `pinned: true`
-  in a post's frontmatter sorts it above the date order in every listing and
-  adds a pin badge to the card and the post header
+  in a post's frontmatter sorts it above the date order and adds a pin badge
 - Archive (grouped by year), tag and category listing pages, and a 404 page
-  (`layout/404.ejs` is rendered to `/404.html` by Ngwg; themes without the
-  layout simply do not emit one)
-- Home pagination with the original theme's square page buttons and a
-  jump-to-page box, on upstream's 768/780/1280px breakpoints
+- Home pagination with square page buttons and a jump-to-page box
 - Post page with banner info, tag/category meta, neighbour links, licence notice
-  and a comments hook; an `updated:` frontmatter adds a last-updated date beside
-  the publish date, skipped when it equals the publish day
-- Left sidebar widgets: profile, announcement, categories, tags; right sidebar
-  site statistics, a recent-activity card and the TOC (client-rendered,
-  scroll-spy); below the desktop breakpoint the TOC card gives way to a floating
-  button with the same list
-- "Recent" card: the newest `updated:`/published posts above a month × week
-  heatmap (no month labels) whose cells carry a tooltip and, when
-  `recent.heatmap.clickable` is on, filter the list to that week
+  and a comments hook; an `updated:` frontmatter adds a last-updated date
+- Sidebar widgets: profile, announcement, categories, tags, site statistics,
+  recent-activity card (with heatmap) and the TOC
 - Dynamic (moments) page: a directory of short markdown pages rendered as a feed
-  with avatar/name/time/location/pinned header, plus in-page text search and a
-  year filter
-- Light/dark/system theme switch, plus a display-settings panel with a live
-  accent-hue slider (both stored in `localStorage`) and a `darkreader-lock` so
-  browser dark-mode extensions leave the theme alone
+  with in-page text search and a year filter
+- Light/dark/system theme switch and a display-settings panel with an accent-hue
+  slider
 - Client-side search, opened from the navbar or with Ctrl/Cmd+K (opt-in)
-- Navbar links with dropdown menus (the same groups become accordions in the
-  mobile drawer)
-- Tag/category widgets that collapse to 7.5rem with a more/collapse toggle once
-  they grow past their threshold
-- Pjax navigation, a reading progress bar (post pages only), back-to-top and
-  code copy buttons; in-page anchors (TOC items, footnotes) scroll in place
-- Long-post segmented loading (provided by Ngwg-files): every fragment is
-  fetched on page load and spliced in order, so the article is complete
-  without scrolling first
-- Markdown admonitions (`!!! tip … !!!`) and GFM alerts (`> [!NOTE]`, all types
-  the parser knows) with the type's tint, icon and label — ported from the
-  [Nextario](https://github.com/0xarch/fewu-theme-next) theme, which shares the
-  markdown dialect (see known limitations for the one deviation)
-- Markdown extras from Ngwg-files: task lists (`- [ ]`), tab containers
-  (`::: tabs` + `@tab`, switchable, shared state via `tabs#id` + `@tab item#id`),
-  Mermaid diagrams (` ```mermaid ` — rendered in the browser from
-  `/assets/mermaid/mermaid.min.js`, which the parser ships only when a page has
-  a diagram) and TeX math (opt-in: `markdown.tex.enabled: true` in
-  `plugins.files.option` picks the site default backend — `katex` or `mathjax`;
-  a post's `tex: true | "katex" | "mathjax"` frontmatter overrides it. The
-  KaTeX stylesheet is linked automatically when `site.extra.markdown.tex.katex`
-  says a page uses it)
+- Navbar links with dropdown menus (accordions in the mobile drawer)
+- Pjax navigation, reading progress bar (post pages only), back-to-top and code
+  copy buttons
+- Long-post segmented loading
+- Markdown: admonitions (`!!! tip … !!!`), GFM alerts (`> [!NOTE]`), task lists,
+  tab containers (`::: tabs` + `@tab`), Mermaid diagrams and TeX math
 - i18n (ships `zh_CN` and `en_US`)
 - SEO/RSS/sitemap through [Ngwg-ext-seo](https://github.com/Ngwgers/Ngwg-ext-seo)
 
 ## Requirements
 
-- A Ngwg core that exposes the merged theme config to templates (`theme` in the
-  render context) — see `Ngwg-docs/theme-development.md`
-- [Ngwg-files](https://github.com/Ngwgers/Ngwg-files) (default parser/deployer;
-  installed for you when you declare it) — **required**
-- [Ngwg-feature](https://github.com/Ngwgers/Ngwg-feature) (helpers used by the
-  templates) — **required**
+- [Ngwg-files](https://github.com/Ngwgers/Ngwg-files) — **required**
+- [Ngwg-feature](https://github.com/Ngwgers/Ngwg-feature) — **required**
 - [Ngwg-ext-seo](https://github.com/Ngwgers/Ngwg-ext-seo) — optional, enables
   the `og:`/`twitter:`/canonical meta, `sitemap.xml` and `rss.xml`
+- TeX math is opt-in and configured on the files plugin (see below)
 
 ## Install
 
@@ -90,8 +54,8 @@ plugins:
 
 ## Configuration
 
-Everything under `theme.yaml`'s `theme` section can be overridden from
-`ngwg.yaml` via `theme.<name>` — objects merge key by key, scalars replace:
+Everything under `theme.yaml` can be overridden from `ngwg.yaml` via
+`theme.<name>` — objects merge key by key, scalars replace:
 
 ```yaml
 theme:
@@ -113,69 +77,83 @@ The main knobs (see `theme.yaml` for the full list and defaults):
 | `themeColor.displaySettings` | show the navbar display-settings panel (hue slider); `false` hides it |
 | `profile.*` | sidebar avatar, name, bio and links |
 | `announcement.*` | sidebar announcement card (enable, content, link, closable) |
-| `navbar.*` | title, logo, `menuAlign` (`left` puts the links beside the title, upstream-style), `mode` (`static`/`fixed`/`dynamic`), links |
-| `navbar.links[].children` | turns a link into a dropdown menu (hover/click on desktop, accordion in the drawer) |
+| `navbar.*` | title, logo, `menuAlign` (`left` puts the links beside the title), `mode` (`static`/`fixed`/`dynamic`), links |
+| `navbar.links[].children` | turns a link into a dropdown menu |
 | `banner.*` | `mode` (`banner`/`none`), image lists, `position`, `dimOpacity`, home title/subtitle/typewriter/links, post info |
-| `sidebar.enable/position/tabletSidebar/hideOnPostPage` + `left`/`right` | widget columns (`profile`, `announcement`, `categories`, `tags`, `stats`, `recent`, `toc`); `tabletSidebar` picks the single side kept between 768px and 1279px |
-| `sidebar.collapse.categories` / `.tags` | entry count past which a widget is clipped to 7.5rem behind a more/collapse toggle (0 disables; upstream uses 5 and 10) |
-| `siteStats.enable/startDate` | sidebar statistics card (posts/categories/tags/words; running days and last-activity are refreshed in the browser) |
-| `recent.count` / `recent.heatmap.enabled` / `recent.heatmap.clickable` | sidebar "recent" card: list length, whether the heatmap is drawn, whether a click filters the list |
-| `dynamic.title` / `description` / `profileUrl` | moments page fallbacks (empty title/description use i18n) and the avatar/name link target |
-| `postList.layout` / `postList.mobileLayout` | card layout above / below 780px: `list` (wide cards with the cover beside the text) or `grid` (auto-filled columns) |
+| `sidebar.enable/position/tabletSidebar/hideOnPostPage` + `left`/`right` | widget columns (`profile`, `announcement`, `categories`, `tags`, `stats`, `recent`, `toc`) |
+| `sidebar.collapse.categories` / `.tags` | entry count past which a widget is clipped behind a more/collapse toggle (0 disables) |
+| `siteStats.enable/startDate` | sidebar statistics card |
+| `recent.count` / `recent.heatmap.enabled` / `recent.heatmap.clickable` | "recent" card: list length, whether the heatmap is drawn, whether a click filters the list |
+| `dynamic.title` / `description` / `profileUrl` | moments page fallbacks and the avatar/name link target |
+| `postList.layout` / `postList.mobileLayout` | card layout: `list` (wide cards) or `grid` (auto-filled columns) |
 | `postList.*` | cover side, excerpt lines, stats, tags |
 | `license.*` | end-of-post licence notice (`enable`, `name`, `url`); a post may override with `license` / `licenseUrl` frontmatter |
-| `search.enable` / `limit` / `excerptLength` / `hotkey` | client-side search over an index rendered beside the navbar |
+| `search.enable` / `limit` / `excerptLength` / `hotkey` | client-side search |
 | `comments.*` | giscus hook (disabled by default) |
 
 Local assets are addressed as `/assets/...` (the theme's `assets/` directory is
 deployed verbatim). Point `profile.avatar`, `banner.desktop` etc. at your own
-files placed under `source/assets/` or at remote URLs.
+files placed under `source/assets/` or at remote URLs; the wallpapers, avatar
+and favicons bundled in `assets/images/` are git-ignored, so a fresh clone
+expects you to bring your own.
 
 ### Responsive layout
-
-The breakpoints follow the original theme:
 
 | Width | Layout |
 | --- | --- |
 | < 768px | no side columns; the sidebar widgets stack below the content |
-| 768-1279px | one sticky side column under the navbar — `sidebar.tabletSidebar` (left by default) when `sidebar.position` is `both` |
+| 768-1279px | one sticky side column — `sidebar.tabletSidebar` picks the side when `sidebar.position` is `both` |
 | >= 1280px | every configured column |
-
-The listing also switches to `postList.mobileLayout` (grid) below 780px, so a
-phone shows one card per row while the ~660-780px band fits two; from 780px up
-the wide `list` cards are used.
 
 ### Search
 
-`search.enable: true` renders a JSON index of every post (URL, title, date, tags,
-categories and the `<!-- more -->` excerpt) beside the navbar and puts a
-magnifier in the navbar actions; Ctrl/Cmd+K opens the panel too. Filtering runs
-in the browser, so there is no service to run and no build step: every query
-token must match, title hits rank first, then tags/categories, then the excerpt.
-The arrow keys walk the results and Enter opens one (through pjax when it is
-active). `limit` caps the result count, `excerptLength` the stored excerpt and
-`hotkey: false` drops the shortcut. Because only the `<!-- more -->` slice is
-indexed, a listing page never carries the rest of the article into its HTML.
+```yaml
+theme:
+  firefly:
+    search:
+      enable: true
+      limit: 20          # result cap
+      excerptLength: 150 # stored excerpt length
+      hotkey: true       # Ctrl/Cmd+K
+```
+
+### TeX / Mermaid
+
+TeX is off by default (it is expensive at build time); a post's frontmatter can
+override the global setting per article:
+
+```yaml
+plugins:
+  files:
+    option:
+      markdown:
+        tex:
+          enabled: true   # default false
+          backend: katex  # "katex" (default) or "mathjax"
+```
+
+```markdown
+---
+tex: true          # or "katex" / "mathjax"
+---
+
+Inline $E = mc^2$ and display $$\int_{-\infty}^{\infty} e^{-x^2} dx$$ math.
+```
+
+Mermaid needs no configuration — a ```` ```mermaid ```` code block renders as a
+diagram.
 
 ### Recent card
 
-`partial/widget/recent.ejs` lists the `recent.count` posts with the newest
-activity first (`updated:` when present, otherwise `date:`) and draws the
-heatmap below a divider. The grid has one column per month and one row per week
-of the month (days 1-7, 8-14, 15-21, 22+); the year is the newest publication
-year, so a static build never shows an empty grid. Unlike upstream there are no
-month labels: each cell carries a tooltip built from `recent.heatmap_week`
-(`7 月第 3 周 · 1 篇文章`).
-
-With `recent.heatmap.clickable` (default on) a cell that holds posts replaces
-the list with that week's posts, using the same row design; clicking the
-selected cell again restores the recent list. Cells without posts only show the
-tooltip. The recent list and the grid are rendered at build time, so the card
-still reads without JavaScript — only the filtering needs it.
-
-The heatmap counts publication dates while the list sorts by activity, so a post
-published in January but updated this week is listed first and appears in the
-January cell.
+```yaml
+theme:
+  firefly:
+    recent:
+      count: 5            # list length
+      heatmap:
+        enabled: true
+        clickable: true   # a cell with posts filters the list to that week
+```
 
 ### Dynamic page
 
@@ -187,25 +165,24 @@ source/dynamic/
   2026-09-12-night-walk.md  # title/date/location/pinned frontmatter
 ```
 
-`index.md` renders the feed; its own `title`/`description` win, followed by
-`dynamic.title`/`dynamic.description` and then the i18n strings. Every other
-`.md` in the directory is listed pinned-first, then newest first. An item shows
-the profile avatar and name (linking to `dynamic.profileUrl`), its date,
-`location:` and a pinned badge, followed by the rendered markdown. The header
-renders the item count, a text search and a year filter; both filter the
-already-rendered items in the browser.
+`index.md` renders the feed; every other `.md` in the directory is listed
+pinned-first, then newest first, each also reachable at `/dynamic/<slug>/`.
+Add `/dynamic/` to `navbar.links` yourself — the theme does not assume the
+page exists.
 
-Each item is also a normal page at its own URL (`/dynamic/<slug>/`), which the
-time and the link button point at. Set `title:` on an item to control that
-page's heading and browser title (otherwise its first paragraph is used). Add
-`/dynamic/` to `navbar.links` yourself — the theme does not assume the page
-exists.
+### Post frontmatter extras
 
-### i18n support
-
-`i18n/<language>.yaml` holds the UI strings; the language is resolved by Ngwg
-(`language` in `ngwg.yaml` → `$NGWG_LANG` → theme `default_language`). Nav items
-may use an i18n key (`home`, `archives`, …) or a literal label.
+```yaml
+---
+title: Hello
+pinned: true           # sort above the date order, badge on cards
+updated: 2026-10-20    # last-updated date beside the publish date
+hidden: true           # deploy the page but keep it out of every listing
+no_segment: true       # opt out of long-post segmentation
+license: CC-BY-4.0     # override the theme licence notice
+licenseUrl: https://…
+---
+```
 
 ### Per-post language
 
@@ -214,98 +191,58 @@ A post can declare its own language without changing the site UI language:
 ```yaml
 ---
 title: Hello
-lang: en_US            # or the Nextario-style alias `language:`
+lang: en_US            # or the alias `language:`
 multi_language:
   zh_CN: /posts/hello/
   en_US: /posts/hello-en/
 ---
 ```
 
-`lang` sets that page's `<html lang>` (and `og:locale` through the SEO plugin).
-`multi_language` lists the translated versions: each key becomes an
-`hreflang` alternate link in the head and a link in the switcher above the
-article, labelled with the language name (the current language is omitted).
-Pjax navigation keeps `<html lang>` in sync. The theme's own UI strings stay on
-the site language.
+`lang` sets that page's `<html lang>` and `og:locale`; `multi_language` lists
+the translated versions — each key becomes an `hreflang` alternate link and a
+link in the switcher above the article.
 
-## Integration hooks
+### i18n
 
-`comments` and `music` are reserved, off-by-default hook points, so the theme can
-stay dependency-free while leaving room for these features:
+`i18n/<language>.yaml` holds the UI strings; the language is resolved by Ngwg
+(`language` in `ngwg.yaml` → `$NGWG_LANG` → theme `default_language`). Nav items
+may use an i18n key (`home`, `archives`, …) or a literal label.
 
-- **Comments** — only giscus is wired up. Set
-  `comments: { enable: true, provider: giscus, giscus: { repo, repoId, category, categoryId } }`;
-  the loader script injects `https://giscus.app/client.js` on demand and follows
-  the light/dark switch.
-- **Music** — no implementation yet; add a widget partial under
-  `partial/widget/` and register it in `sidebar.left`/`right`.
+## Comments
+
+```yaml
+theme:
+  firefly:
+    comments:
+      enable: true
+      provider: giscus
+      giscus:
+        repo: your/repo
+        repoId: …
+        category: …
+        categoryId: …
+```
 
 ## Customising
 
 - Override any template by keeping your own copy of the theme directory and
   pointing `themes.firefly` at it, or fork this repository.
 - Layouts live in `layout/` (same base names as `layouts:` in `theme.yaml`),
-  reusable fragments in `partial/` (call with `partial('name', { ...extra })`).
-- Stylesheets live in `assets/css/` (tokens, base, layout and one file per
-  component group) and are linked in cascade order from `partial/header.ejs`;
-  the runtime is plain ES modules under `assets/js/` with `main.js` as the only
-  script the page loads.
-- Icons are resolved at render time by `partial/icon.ejs`, which maps a short
-  name to an [iconify](https://iconify.design) icon from the packs the original
-  theme uses — the same `@iconify-json/*` packages declared in this theme's
-  `package.json`. Ngwg installs those dependencies into the theme directory and
-  the EJS deployer exposes a theme-scoped `require`, so the drawings are never
-  copied into this repository.
-  An `icon:` value resolves in this order: a full `collection:icon` reference
-  is used as given (any pack you install works, so `icon: fa7-brands:codeberg`
-  needs no theme change); otherwise the short name is looked up in
-  `ICON_MANIFEST`; otherwise it is searched in the theme's packs, in order
-  (`fa7-brands` > `fa7-regular` > `fa7-solid` > `material-symbols`). A name
-  only the fallback can resolve works but is reported at verbose level
-  (`--verbose`), suggesting the `ICON_MANIFEST` entry that pins it; a name
-  nothing can resolve warns (naming the missing pack or icon) and renders as an
-  empty placeholder instead of failing the build.
-
-## Known limitations
-
-- The TOC is built client-side from the rendered `<h2>`/`<h3>`/`<h4>` and grows
-  as long-post segments load; without JavaScript there is no TOC.
-- Long posts whose headings only appear in later segments still get a TOC (the
-  widget is emitted based on the full source, `page.body`), but it fills in
-  progressively.
-- Capability tiers beyond the core blog experience (live2d, music player, photo
-  carousel, immersive reading) are not ported.
-- Ngwg does not generate `/tags/` or `/categories/` index pages, so the sidebar
-  links only to the per-slug pages. Upstream's tag widget turns its "more"
-  button into a link to that index; here both widgets expand in place instead.
-- The statistics card's running days and last-activity rows are computed in the
-  browser; without JavaScript they keep the values from build time.
-- On non-home desktop pages the banner is a 45vh band whose wallpaper is cropped
-  to that band; upstream instead shifts a 65vh wrapper up behind the panel. The
-  visible height and the text centring match, only the crop of the image differs.
-- No media is shipped with the theme: `assets/images/` (wallpapers, avatar,
-  logo, favicons) is git-ignored, while the default `theme.yaml` still points at
-  `/assets/images/...`. A fresh clone therefore renders without those images
-  until you copy your own files into the theme's `assets/images/` or into your
-  site's `source/assets/images/`.
-- The theme depends on npm packages (the iconify sets) and therefore needs
-  `node_modules` in the theme directory: `ngwg update theme firefly` installs it
-  when fetching the theme into `.ngwg/themes/`, and Core runs `bun install` on
-  first build when it is missing. Layouts are EJS, because only the EJS deployer
-  exposes `require` to templates.
-- The dynamic feed renders every moment on one page (no pagination); images stay
-  inline instead of upstream's gallery/lightbox, and there is no inline comment
-  or Memos data source. Search and the year filter run in the browser.
-- The recent card's heatmap covers one year (the newest publication year), so
-  older years cannot be selected; clicking a cell is client-side only.
-- Admonition titles take the type's accent colour and its icon, while the body
-  keeps the normal text colour. Upstream Firefly colours the title only (as
-  here); Nextario also tints the body text, which would drop a light-mode
-  `warning` body to roughly 2.7:1 contrast, so that part is not copied.
+  reusable fragments in `partial/`, stylesheets in `assets/css/`, the runtime
+  in `assets/js/` with `main.js` as the only script the page loads.
+- An `icon:` value may be a full `collection:icon` reference from any iconify
+  pack you install (e.g. `icon: fa7-brands:codeberg`), or a short name that is
+  looked up in `ICON_MANIFEST` (in `partial/icon.ejs`) and then in the packs
+  declared in `package.json`. Unknown names render as an empty placeholder
+  instead of failing the build.
+- The theme's npm dependencies (the iconify packs) are installed by Ngwg on
+  first build; `ngwg update theme firefly` installs them when fetching the
+  theme into `.ngwg/themes/`.
 
 ## Credits & license
 
 MIT. See `LICENSE` and `NOTICE`. The colour system, layout and interaction
-design are inspired by Firefly/Fuwari; the templates, CSS and JS here are an
-original implementation for Ngwg. Bundled wallpapers/avatar/logo are copied from
-Firefly under the same MIT license.
+design are inspired by [Firefly](https://github.com/CuteLeaf/Firefly)
+([Fuwari](https://github.com/saicaca/fuwari)); the templates, CSS and JS here
+are an original implementation for Ngwg. Bundled wallpapers/avatar/logo are
+copied from Firefly under the same MIT license.
