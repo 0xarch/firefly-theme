@@ -18,6 +18,8 @@ function initNavbar() {
   const mode = document.body.getAttribute("data-navbar-mode") || "dynamic";
   let lastY = window.pageYOffset;
   let ticking = false;
+  let lastSpyAt = -Infinity;
+  let spyTimer = null;
 
   function update() {
     const y = window.pageYOffset;
@@ -36,7 +38,20 @@ function initNavbar() {
     }
     const top = $("#back-to-top");
     if (top) top.classList.toggle("show", y > 400);
-    spy();
+    // the heading spy reads layout for every heading; 10×/s is plenty and
+    // keeps long articles from doing that work on every scroll frame
+    const now = performance.now();
+    if (now - lastSpyAt >= 100) {
+      lastSpyAt = now;
+      spy();
+    } else if (!spyTimer) {
+      // trailing run so stopping inside the throttle window still updates
+      spyTimer = setTimeout(function () {
+        spyTimer = null;
+        lastSpyAt = performance.now();
+        spy();
+      }, 100 - (now - lastSpyAt));
+    }
     lastY = y;
     ticking = false;
   }

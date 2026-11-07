@@ -3,6 +3,8 @@
 import { $, $$ } from "./core.js";
 
 let spyHeads = [];
+let spyItems = [];
+let spyCurrent = -1;
 function tocLink(heading) {
   const a = document.createElement("a");
   a.className = "toc-item level-" + heading.tagName.charAt(1);
@@ -27,23 +29,25 @@ function buildToc() {
     lists.forEach(function (list) { list.appendChild(tocLink(hh)); });
   });
   spyHeads = heads;
+  // cache each list's items; the card and the floating panel hold the same
+  // headings in the same order, so scrolling only re-toggles two class lists
+  spyItems = lists.map(function (list) { return $$(".toc-item", list); });
+  spyCurrent = -1;
   spy();
   syncTocFab();
 }
 function spy() {
-  if (!spyHeads.length) return;
-  const lists = $$(".toc-list");
-  if (!lists.length) return;
+  if (!spyHeads.length || !spyItems.length) return;
   const offset = 120;
   let current = -1;
   for (let i = 0; i < spyHeads.length; i++) {
     if (spyHeads[i].getBoundingClientRect().top - offset <= 0) current = i;
     else break;
   }
-  // the card and the floating panel hold the same headings in the same order,
-  // so each list marks its own copy of the active one
-  lists.forEach(function (list) {
-    $$(".toc-item", list).forEach(function (it, i) { it.classList.toggle("visible", i === current); });
+  if (current === spyCurrent) return;
+  spyCurrent = current;
+  spyItems.forEach(function (items) {
+    items.forEach(function (it, i) { it.classList.toggle("visible", i === current); });
   });
 }
 function initTocToggle() {
