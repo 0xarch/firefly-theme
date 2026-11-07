@@ -30,12 +30,15 @@
    fades back in through the .onload-animation on its content wrapper */
 #content-panel.pjax-leaving { opacity: 0; transition: opacity 150ms var(--ease); }
 
+/* without a banner the panel has to clear the bar itself — 1rem of air on top
+   of the bar (upstream's --content-top: 5.5rem = bar + 1rem), otherwise the
+   first card sits on the bar's bottom edge. This applies at every width: a
+   `none` mode renders no #wallpaper-wrapper, so --banner-h must not be
+   reserved on desktop either. */
+html[data-wallpaper-mode="none"] #content-panel { margin-top: calc(var(--navbar-h) + 1rem); }
+
 @media (max-width: 1023px) {
   body:not(.is-home) #wallpaper-wrapper { display: none; }
-  /* without the banner the panel has to clear the bar itself — 1rem of air on
-     top of the bar (upstream's --content-top: 5.5rem = bar + 1rem), otherwise
-     the first card sits on the bar's bottom edge */
   body:not(.is-home) #content-panel { margin-top: calc(var(--navbar-h) + 1rem); }
-  html[data-wallpaper-mode="none"] #content-panel { margin-top: calc(var(--navbar-h) + 1rem); }
 }
 
