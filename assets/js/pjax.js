@@ -82,6 +82,7 @@ function applyPage(doc, url) {
 }
 
 function navigate(url, push) {
+  const generation = ++pjaxGeneration;
   const panel = document.getElementById("content-panel");
   if (panel) panel.classList.add("pjax-leaving");
   fetch(url, { headers: { "X-Requested-With": "pjax" } })
@@ -92,12 +93,17 @@ function navigate(url, push) {
       return r.text();
     })
     .then(function (text) {
+      // a newer navigation started while this response was in flight
+      if (generation !== pjaxGeneration) return;
       const doc = new DOMParser().parseFromString(text, "text/html");
       applyPage(doc, url);
       if (push) history.pushState({ pjax: true }, "", url);
       pjaxKey = pageKey(url);
     })
-    .catch(function () { window.location.href = url; });
+    .catch(function () {
+      // only the latest navigation may fall back to a full page load
+      if (generation === pjaxGeneration) window.location.href = url;
+    });
 }
 
 function sameOriginLink(a) {
@@ -123,6 +129,7 @@ function pageKey(url) {
 }
 
 let pjaxKey = null;
+let pjaxGeneration = 0;
 
 function initPjax() {
   if (!CFG.pjax) return;
