@@ -9,10 +9,10 @@
 
 .back-to-top {
   position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 60;
-  opacity: 0; transform: translateY(10px) scale(0.9); pointer-events: none;
-  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), background-color var(--dur) var(--ease);
+  opacity: 0; visibility: hidden; transform: translateY(10px) scale(0.9); pointer-events: none;
+  transition: opacity var(--dur) var(--ease), visibility var(--dur) var(--ease), transform var(--dur) var(--ease), background-color var(--dur) var(--ease);
 }
-.back-to-top.show { opacity: 1; transform: none; pointer-events: auto; }
+.back-to-top.show { opacity: 1; visibility: visible; transform: none; pointer-events: auto; }
 
 /* ==========================================================================
    Animation + transitions
