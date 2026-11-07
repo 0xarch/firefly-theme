@@ -87,7 +87,7 @@ banner:
   position: "0% 20%"
   # black overlay opacity, 0-1
   dimOpacity: 0.2
-  # random wallpaper picked per load; a single string also works
+  # random wallpaper picked per build; a single string also works
   desktop:
     - /assets/images/wallpaper/d1.avif
     - /assets/images/wallpaper/d2.avif
