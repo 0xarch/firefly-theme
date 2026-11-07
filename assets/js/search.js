@@ -16,9 +16,15 @@ function initSearch() {
   const list = $("#search-results");
   const empty = $("#search-empty");
   const hint = $("#search-hint");
-  const indexEl = $("#search-index");
-  let docs = [];
-  try { docs = JSON.parse((indexEl && indexEl.textContent) || "[]"); } catch (e) { docs = []; }
+  // parsing is deferred until the panel is first opened; the inline JSON index
+  // keeps search working without an extra route or request
+  let docs = null;
+  function loadDocs() {
+    if (docs) return docs;
+    const indexEl = $("#search-index");
+    try { docs = JSON.parse((indexEl && indexEl.textContent) || "[]"); } catch (e) { docs = []; }
+    return docs;
+  }
   const limit = Number(CFG.searchLimit) || 12;
   let active = -1;
   let lastFocus = null;
@@ -68,7 +74,7 @@ function initSearch() {
     const tokens = tokensOf(q);
     if (!tokens.length) return [];
     const hits = [];
-    docs.forEach(function (d) {
+    loadDocs().forEach(function (d) {
       const title = String(d.t || "").toLowerCase();
       const tags = (d.g || []).join(" ").toLowerCase();
       const cats = (d.c || []).join(" ").toLowerCase();
@@ -128,6 +134,7 @@ function initSearch() {
   }
 
   function open() {
+    loadDocs();
     lastFocus = document.activeElement;
     overlay.classList.add("open");
     overlay.setAttribute("aria-hidden", "false");
