@@ -75,6 +75,8 @@ post:
   next: Older
   toc: Contents
   back_to_top: Back to top
+  copy: Copy
+  copied: Copied
   comments: Comments
 
 license:

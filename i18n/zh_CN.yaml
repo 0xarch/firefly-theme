@@ -75,6 +75,8 @@ post:
   next: 下一篇
   toc: 目录
   back_to_top: 回到顶部
+  copy: 复制
+  copied: 已复制
   comments: 评论
 
 license:
