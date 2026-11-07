@@ -44,7 +44,7 @@ Declare the theme and the plugins in `ngwg.yaml`:
 theme: firefly
 
 themes:
-  firefly: https://github.com/0xarch/firefly-theme.git
+  firefly: https://github.com/Ngwgers/Ngwg-firefly-theme.git
 
 plugins:
   files: {}
