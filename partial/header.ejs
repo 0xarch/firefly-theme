@@ -12,7 +12,6 @@ const defaultMode = tc.defaultMode || "system";
 const navbar = theme.navbar || {};
 const bannerCfg = theme.banner || {};
 const sidebarCfg = theme.sidebar || {};
-const profile = theme.profile || {};
 
 const pageTitle = page && page.meta && page.meta.title
   ? `${page.meta.title} · ${site.title}`
@@ -31,7 +30,6 @@ const translations = page && page.meta && page.meta.multi_language;
 const translationEntries = translations && typeof translations === "object" && !Array.isArray(translations)
   ? Object.entries(translations).filter(([, v]) => typeof v === "string" || (v && typeof v.url === "string"))
   : [];
-const hasHomeText = bannerCfg.mode !== "none" && bannerCfg.homeText && bannerCfg.homeText.enable !== false;
 const sidebarPosition = sidebarCfg.enable === false ? "none" : (sidebarCfg.position || "both");
 // which side stays when both are configured but only one fits (768-1279px)
 const tabletSidebar = sidebarCfg.tabletSidebar === "right" ? "right" : "left";
@@ -58,17 +56,8 @@ if (siteStats.enable !== false) {
 const runtimeConfig = {
   hue,
   defaultMode,
-  navbarMode: navbar.mode || "dynamic",
-  bannerMode: bannerCfg.mode || "banner",
-  bannerPosition: bannerCfg.position || "center",
-  bannerDim: Number.isFinite(Number(bannerCfg.dimOpacity)) ? Number(bannerCfg.dimOpacity) : 0.2,
-  bannerDesktop: bannerCfg.desktop || [],
-  bannerMobile: bannerCfg.mobile || [],
-  bannerPostInfoMode: (bannerCfg.postInfo && bannerCfg.postInfo.mode) || "description",
   bannerSubtitles: (bannerCfg.homeText && bannerCfg.homeText.subtitle) || [],
   typewriter: (bannerCfg.homeText && bannerCfg.homeText.typewriter) || { enable: false },
-  isHome: view === "home",
-  comments: theme.comments || { enable: false },
   searchLimit: (theme.search && Number(theme.search.limit)) || 12,
   searchHotkey: !(theme.search && theme.search.hotkey === false),
   pjax: true,
@@ -149,7 +138,7 @@ const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
     <div id="main-grid">
       <%- partial('sidebar', { side: 'left' }) %>
       <div id="content-column">
-        <main id="swup-container" class="transition-main" data-page-url="<%= navUrl || '/' %>">
+        <main>
           <% if (!(view === "post" && (bannerCfg.mode || "banner") !== "none")) { %>
           <h1 class="sr-only"><%= (page && page.meta && page.meta.title) || (typeof navTitle !== "undefined" ? navTitle : site.title) %></h1>
           <% } %>
