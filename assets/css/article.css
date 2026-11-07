@@ -207,6 +207,7 @@
 .code-copy:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 .post-seg-end { display: none; }
+.seg-sentinel { width: 100%; height: 1px; }
 /* The first segment ends with a `.post-seg-end[data-next]` marker when more
    fragments exist. Drive the loader from that marker so it is visible on the
    very first paint, before main.js can run on a slow connection; the loader

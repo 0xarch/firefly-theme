@@ -6,7 +6,7 @@ import { buildToc, initTocToggle, initTocFab } from "./toc.js";
 import { initTypewriter } from "./banner.js";
 import { initAnnouncement, initStats, initWidgetCollapse } from "./widgets.js";
 import { initSearch } from "./search.js";
-import { initSegments } from "./segments.js";
+import { initSegments, loadSegmentForAnchor } from "./segments.js";
 import { initCodeCopy } from "./code-copy.js";
 import { initTabs } from "./tabs.js";
 import { initMermaid } from "./mermaid.js";
@@ -167,7 +167,10 @@ function initPjax() {
     // throw the reader back to the top
     if (pageKey(location.href) === pjaxKey) {
       const hash = segmentHash(location.href);
-      if (hash && !findAnchor(hash)) state.anchorWait = hash;
+      if (hash && !findAnchor(hash)) {
+        state.anchorWait = hash;
+        loadSegmentForAnchor();
+      }
       return;
     }
     navigate(location.href, false);

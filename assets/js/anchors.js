@@ -2,6 +2,7 @@
 // and rewrite the hash without a history entry; hand missing targets to the
 // segment loader.
 import { findAnchor, segmentHash, state } from "./core.js";
+import { loadSegmentForAnchor } from "./segments.js";
 
 // Fragment links (TOC items, footnotes, heading permalinks, …) scroll
 // smoothly and rewrite the url hash without adding a history entry. A target
@@ -15,6 +16,7 @@ function jumpToAnchor(id) {
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   } else {
     state.anchorWait = id;
+    loadSegmentForAnchor();
   }
   history.replaceState(history.state, "", "#" + id);
 }
