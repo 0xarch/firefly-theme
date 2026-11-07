@@ -1,8 +1,8 @@
 // Copy button on markdown code blocks.
 import { CFG, $$ } from "./core.js";
 
-function initCodeCopy() {
-  $$(".markdown pre").forEach(function (pre) {
+function initCodeCopy(root) {
+  $$(".markdown pre", root).forEach(function (pre) {
     if (pre.dataset.copy) return;
     // mermaid blocks are rendered from their own innerHTML by the diagram
     // runtime; a copy button inside would corrupt the source

@@ -6,8 +6,8 @@ import { $$ } from "./core.js";
 
 const groupState = {};
 
-function initTabs() {
-  $$(".tabs-tabs-wrapper").forEach(function (wrapper) {
+function initTabs(root) {
+  $$(".tabs-tabs-wrapper", root).forEach(function (wrapper) {
     if (wrapper.dataset.tabsInit) return;
     wrapper.dataset.tabsInit = "1";
     const buttons = $$(".tabs-tab-button", wrapper);

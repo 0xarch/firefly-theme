@@ -136,20 +136,20 @@ function initSegments(pageUrl) {
   // splice every fragment whose predecessors are already in place
   function drain() {
     if (!alive()) { stopListening(); return; }
-    let inserted = false;
+    const added = [];
     while (cursor < urls.length && typeof buffered[cursor] === "string") {
-      splice(buffered[cursor]);
+      added.push.apply(added, splice(buffered[cursor]));
       buffered[cursor] = null;
       cursor++;
-      inserted = true;
     }
-    if (inserted) {
+    if (added.length) {
       // fragments can carry tab containers, mermaid diagrams and code blocks:
-      // wire the freshly spliced content up like the first segment was
+      // wire up only the freshly spliced nodes; the TOC needs a full rebuild
+      // because it lists headings from every loaded segment
       buildToc();
-      initTabs();
-      initMermaid();
-      initCodeCopy();
+      initTabs(added);
+      initMermaid(added);
+      initCodeCopy(added);
     }
     if (cursor >= urls.length && inflight === 0) {
       finished = true;
@@ -175,11 +175,14 @@ function initSegments(pageUrl) {
     }
     const target = state.anchorWait ? findAnchorIn(frag, state.anchorWait) : null;
     frag.querySelectorAll(".post-seg-end").forEach(function (node) { node.remove(); });
+    // keep the top-level nodes so the callers only initialise the new content
+    const nodes = Array.prototype.slice.call(frag.childNodes);
     probe.parentNode.insertBefore(frag, probe);
     if (target) {
       state.anchorWait = null;
       target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+    return nodes;
   }
 
   let ticking = false;
