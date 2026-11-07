@@ -140,7 +140,7 @@ const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
   <script>window.__FIREFLY__ = <%- configJson %>;</script>
 </head>
 <body class="<%= view === 'home' ? 'is-home' : '' %>" data-view="<%= view %>" data-navbar-mode="<%= navbar.mode || 'dynamic' %>" data-sidebar-position="<%= sidebarPosition %>" data-tablet-sidebar="<%= tabletSidebar %>">
-<a class="skip-link" href="#content-wrapper"><%= t.nav.home %></a>
+<a class="skip-link" href="#content-wrapper"><%= (t.nav && t.nav.skip) || t.nav.home %></a>
 <% if (view === "post") { %><div id="progress-bar" aria-hidden="true"></div>
 <% } %><%- partial('navbar') %>
 <%- partial('banner') %>
