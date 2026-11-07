@@ -15,8 +15,27 @@ import { initPagination } from "./pagination.js";
 import { hideHeatTip, initRecent } from "./recent.js";
 import { initDynamic } from "./dynamic.js";
 
+const HEAD_SYNC = [
+  'meta[name="description"]',
+  'meta[name="robots"]',
+  'meta[property^="og:"]',
+  'meta[name^="twitter:"]',
+  'meta[property^="article:"]',
+  'link[rel="canonical"]',
+  'link[rel="alternate"]',
+].join(",");
+
+function syncHead(doc) {
+  const head = document.head;
+  head.querySelectorAll(HEAD_SYNC).forEach(function (node) { node.remove(); });
+  doc.head.querySelectorAll(HEAD_SYNC).forEach(function (node) {
+    head.appendChild(document.importNode(node, true));
+  });
+}
+
 function applyPage(doc, url) {
   document.title = doc.title;
+  syncHead(doc);
   const html = document.documentElement;
   // per-post language: keep <html lang> in sync with the swapped document
   const lang = doc.documentElement.getAttribute("lang");
