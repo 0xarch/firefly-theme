@@ -54,8 +54,8 @@ html[data-wallpaper-mode="banner"] body.is-home #content-panel .site-footer { po
 }
 /* Tablet (768-1279px): three columns would squeeze the reading column, so
    upstream keeps a single side — `sidebar.tabletSidebar`, left by default. The
-   hidden column is dropped from the template as well (a hidden grid item still
-   occupies its track). */
+   hidden column is `display: none` and the `:has()` rules below shrink the
+   grid tracks accordingly. */
 @media (min-width: 768px) and (max-width: 1279px) {
   body[data-sidebar-position="both"]:not([data-tablet-sidebar="right"]) #main-grid > .sidebar-right { display: none; }
   body[data-sidebar-position="both"]:not([data-tablet-sidebar="right"]) #main-grid:has(> .sidebar-right:not(.is-empty)) {
