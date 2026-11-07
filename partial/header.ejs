@@ -147,5 +147,7 @@ const configJson = JSON.stringify(runtimeConfig).replace(/</g, "\\u003c");
       <%- partial('sidebar', { side: 'left' }) %>
       <div id="content-column">
         <main id="swup-container" class="transition-main" data-page-url="<%= navUrl || '/' %>">
+          <% if (!(view === "post" && (bannerCfg.mode || "banner") !== "none")) { %>
           <h1 class="sr-only"><%= (page && page.meta && page.meta.title) || (typeof navTitle !== "undefined" ? navTitle : site.title) %></h1>
+          <% } %>
           <div id="content-wrapper" class="onload-animation">
