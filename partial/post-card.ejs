@@ -13,14 +13,14 @@ const cover = typeof meta.cover === "string" ? meta.cover
   : typeof meta.banner === "string" ? meta.banner : "";
 const coverSide = pl.coverPosition === "left" ? "cover-left" : "cover-right";
 
-const words = h.wordCount(post);
-const minutes = h.readingTime(post);
+const stats = pl.stats || {};
+const words = stats.words !== false ? h.wordCount(post) : 0;
+const minutes = stats.reading !== false ? h.readingTime(post) : 0;
 
 const showTags = pl.showTags !== false;
 const tagCount = Number.isFinite(Number(pl.tagCount)) ? Number(pl.tagCount) : 3;
 const shownTags = tagCount > 0 ? tags.slice(0, tagCount) : tags;
 const hiddenTagCount = tags.length - shownTags.length;
-const stats = pl.stats || {};
 const descLines = Number.isFinite(Number(pl.descriptionLines)) ? Number(pl.descriptionLines) : 2;
 const desc = post.excerptHtml ? null : h.excerpt(post, 200);
 // upstream wraps every meta icon in a tinted 2rem square (`.meta-icon`)
