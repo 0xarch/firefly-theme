@@ -1,19 +1,10 @@
 // Pjax navigation: swap the content panel, re-run the page-bound modules and
 // keep hash-only history entries from re-fetching the page.
 import { CFG, findAnchor, segmentHash, state } from "./core.js";
-import { initNavActive, syncNavbarHidden, syncProgressBar } from "./navbar.js";
-import { buildToc, initTocToggle, initTocFab } from "./toc.js";
-import { initTypewriter } from "./banner.js";
-import { initAnnouncement, initStats, initWidgetCollapse } from "./widgets.js";
-import { initSearch } from "./search.js";
+import { syncNavbarHidden, syncProgressBar } from "./navbar.js";
 import { initSegments, loadSegmentForAnchor } from "./segments.js";
-import { initCodeCopy } from "./code-copy.js";
-import { initTabs } from "./tabs.js";
-import { initMermaid } from "./mermaid.js";
-import { loadGiscus } from "./comments.js";
-import { initPagination } from "./pagination.js";
-import { hideHeatTip, initRecent } from "./recent.js";
-import { initDynamic } from "./dynamic.js";
+import { initPage } from "./page.js";
+import { hideHeatTip } from "./recent.js";
 
 const HEAD_SYNC = [
   'meta[name="description"]',
@@ -71,22 +62,7 @@ function applyPage(doc, url) {
   if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(frag, anchor);
   else body.appendChild(frag);
 
-  initNavActive();
-  initTocToggle();
-  buildToc();
-  initTocFab();
-  initTypewriter();
-  initAnnouncement();
-  initWidgetCollapse();
-  initSearch();
-  initCodeCopy();
-  initTabs();
-  initMermaid();
-  initStats();
-  loadGiscus();
-  initPagination();
-  initRecent();
-  initDynamic();
+  initPage();
   hideHeatTip();
   syncProgressBar();
   window.scrollTo(0, 0);
