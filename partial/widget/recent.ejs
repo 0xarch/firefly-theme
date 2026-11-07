@@ -18,12 +18,6 @@ const listCount = Math.max(0, Number(cfg.count == null ? 5 : cfg.count) || 0);
 const heatEnabled = heat.enabled !== false;
 const clickable = heat.clickable !== false;
 
-// `site.posts` is only the current page's slice on paginated listings, so take
-// the full list from the archive groups (same as the stats card)
-const allPosts = Array.isArray(site.archives) && site.archives.length
-  ? site.archives.reduce((acc, g) => acc.concat(g.posts || []), [])
-  : (Array.isArray(site.posts) ? site.posts : []);
-
 // plain calendar dates: a filename date, a frontmatter timestamp and an ISO
 // string all yield the same year/month/day regardless of the machine timezone
 const ymd = (raw) => {
@@ -36,46 +30,63 @@ const timeOf = (raw) => {
 };
 const activityOf = (p) => (p.meta && (p.meta.updated || p.meta.date)) || "";
 
-const recentPosts = allPosts
-  .filter((p) => activityOf(p))
-  .sort((a, b) => timeOf(activityOf(b)) - timeOf(activityOf(a)))
-  .slice(0, listCount);
-
-// grid year: the newest publication year, so a static build never shows an
-// empty grid for a blog that stopped posting
-let newestYear = 0;
-for (const p of allPosts) {
-  const d = ymd(p.meta && p.meta.date);
-  if (d && d.y > newestYear) newestYear = d.y;
-}
-const year = newestYear || new Date().getFullYear();
-
+let recentPosts = [];
 const counts = new Array(48).fill(0);
-const heatPosts = [];
-for (const p of allPosts) {
-  const d = ymd(p.meta && p.meta.date);
-  if (!d || d.y !== year) continue;
-  const m = d.m - 1;
-  const w = Math.min(Math.floor((d.d - 1) / 7), 3);
-  counts[w * 12 + m] += 1;
-  heatPosts.push({
-    u: p.url,
-    t: (p.meta && p.meta.title) || "",
-    d: `${String(m + 1).padStart(2, "0")}-${String(d.d).padStart(2, "0")}`,
-    m,
-    w,
-    s: timeOf(p.meta.date),
-  });
+let heatPosts = [];
+let canFilter = false;
+let weekLabel = "";
+
+// only aggregate the post list when one of the two halves is actually shown
+if (listCount > 0 || heatEnabled) {
+  // `site.posts` is only the current page's slice on paginated listings, so take
+  // the full list from the archive groups (same as the stats card)
+  const allPosts = Array.isArray(site.archives) && site.archives.length
+    ? site.archives.reduce((acc, g) => acc.concat(g.posts || []), [])
+    : (Array.isArray(site.posts) ? site.posts : []);
+
+  if (listCount > 0) {
+    recentPosts = allPosts
+      .filter((p) => activityOf(p))
+      .sort((a, b) => timeOf(activityOf(b)) - timeOf(activityOf(a)))
+      .slice(0, listCount);
+  }
+
+  if (heatEnabled) {
+    // grid year: the newest publication year, so a static build never shows an
+    // empty grid for a blog that stopped posting
+    let newestYear = 0;
+    for (const p of allPosts) {
+      const d = ymd(p.meta && p.meta.date);
+      if (d && d.y > newestYear) newestYear = d.y;
+    }
+    const year = newestYear || new Date().getFullYear();
+
+    for (const p of allPosts) {
+      const d = ymd(p.meta && p.meta.date);
+      if (!d || d.y !== year) continue;
+      const m = d.m - 1;
+      const w = Math.min(Math.floor((d.d - 1) / 7), 3);
+      counts[w * 12 + m] += 1;
+      heatPosts.push({
+        u: p.url,
+        t: (p.meta && p.meta.title) || "",
+        d: `${String(m + 1).padStart(2, "0")}-${String(d.d).padStart(2, "0")}`,
+        m,
+        w,
+        s: timeOf(p.meta.date),
+      });
+    }
+    heatPosts.sort((a, b) => b.s - a.s);
+    // filtering needs the grid, the list and data to rebuild it from
+    canFilter = clickable && recentPosts.length > 0 && heatPosts.length > 0;
+    // the label template goes through t() with placeholders as arguments, so the
+    // translated sentence is embedded with {m}/{w}/{c} slots the component fills
+    weekLabel = h.t("recent.heatmap_week", "{m}", "{w}", "{c}");
+  }
 }
-heatPosts.sort((a, b) => b.s - a.s);
 
 const showCard = recentPosts.length > 0 || (heatEnabled && heatPosts.length > 0);
-// filtering needs the grid, the list and data to rebuild it from
-const canFilter = heatEnabled && clickable && recentPosts.length > 0 && heatPosts.length > 0;
 const heatData = heatPosts.map((p) => ({ u: p.u, t: p.t, d: p.d, m: p.m, w: p.w }));
-// the label template goes through t() with placeholders as arguments, so the
-// translated sentence is embedded with {m}/{w}/{c} slots the component fills
-const weekLabel = h.t("recent.heatmap_week", "{m}", "{w}", "{c}");
 %>
 <% if (showCard) { %>
 <section class="widget-card recent-card" data-recent data-clickable="<%= canFilter ? 'true' : 'false' %>">

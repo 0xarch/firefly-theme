@@ -9,15 +9,17 @@
  */
 const cfg = theme.siteStats || {};
 const enable = cfg.enable !== false;
+const DAY = 86400000;
+const now = Date.now();
+const st = t.siteStats || {};
+%>
+<% if (enable) {
 // `site.posts` is only the current page's slice on paginated listings
 // (index/2/…, see core/tasks.ts), so take the full list from the archive
 // groups, which always carry every visible post exactly once.
 const allPosts = Array.isArray(site.archives) && site.archives.length
   ? site.archives.reduce((acc, g) => acc.concat(g.posts || []), [])
   : (Array.isArray(site.posts) ? site.posts : []);
-
-const DAY = 86400000;
-const now = Date.now();
 
 // words in the raw markdown, code stripped (CJK characters + latin words)
 const totalWords = allPosts.reduce((sum, p) => sum + h.wordCount(p), 0);
@@ -38,7 +40,6 @@ for (const p of allPosts) {
 }
 const daysAgo = lastActivity ? Math.floor((now - lastActivity.getTime()) / DAY) : null;
 
-const st = t.siteStats || {};
 const suffixOf = (key) => String(st[key] || "").replace("{0}", "").trim();
 const rows = [
   { icon: "file-text", label: st.posts, value: group(allPosts.length) },
@@ -58,7 +59,6 @@ const rows = [
   },
 ];
 %>
-<% if (enable) { %>
 <section class="widget-card stats-card" id="site-stats">
   <h2 class="widget-title"><%- partial('icon', { name: 'chart' }) %><span><%= t.sidebar.stats %></span></h2>
   <ul class="stats-list">

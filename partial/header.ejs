@@ -36,20 +36,23 @@ const sidebarPosition = sidebarCfg.enable === false ? "none" : (sidebarCfg.posit
 // which side stays when both are configured but only one fits (768-1279px)
 const tabletSidebar = sidebarCfg.tabletSidebar === "right" ? "right" : "left";
 
+const siteStats = theme.siteStats || {};
 // newest activity across posts — drives the live "last update" stat row.
 // `site.posts` is a slice on paginated listings, so read every post from the
-// archive groups instead (see partial/widget/stats.ejs).
-const allPosts = Array.isArray(site.archives) && site.archives.length
-  ? site.archives.reduce((acc, g) => acc.concat(g.posts || []), [])
-  : (site.posts || []);
+// archive groups instead (see partial/widget/stats.ejs). Only needed when the
+// stats card is enabled.
 let lastActivity = null;
-for (const post of allPosts) {
-  const raw = post.meta && (post.meta.updated || post.meta.date);
-  if (!raw) continue;
-  const d = new Date(raw);
-  if (!isNaN(d.getTime()) && (!lastActivity || d > lastActivity)) lastActivity = d;
+if (siteStats.enable !== false) {
+  const allPosts = Array.isArray(site.archives) && site.archives.length
+    ? site.archives.reduce((acc, g) => acc.concat(g.posts || []), [])
+    : (site.posts || []);
+  for (const post of allPosts) {
+    const raw = post.meta && (post.meta.updated || post.meta.date);
+    if (!raw) continue;
+    const d = new Date(raw);
+    if (!isNaN(d.getTime()) && (!lastActivity || d > lastActivity)) lastActivity = d;
+  }
 }
-const siteStats = theme.siteStats || {};
 
 // config carrier: JSON, "<" escaped so a "</script>" in config can never break out
 const runtimeConfig = {

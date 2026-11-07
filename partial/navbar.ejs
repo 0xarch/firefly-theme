@@ -24,20 +24,23 @@ const label = (name) => (t.nav && Object.prototype.hasOwnProperty.call(t.nav, na
 const searchCfg = theme.search || {};
 const searchOn = searchCfg.enable === true;
 const searchExcerpt = Number.isFinite(Number(searchCfg.excerptLength)) ? Number(searchCfg.excerptLength) : 120;
-const allPosts = (site.archives && site.archives.length)
-  ? site.archives.reduce((acc, g) => acc.concat(g.posts || []), [])
-  : (site.posts || []);
-const searchJson = searchOn ? JSON.stringify(allPosts.map((p) => {
-  const m = p.meta || {};
-  return {
-    u: p.url || "",
-    t: m.title || "",
-    d: m.date ? h.formatDate(m.date, "YYYY-MM-DD") : "",
-    g: Array.isArray(m.tags) ? m.tags : [],
-    c: Array.isArray(m.categories) ? m.categories : [],
-    x: h.excerpt(p.excerptHtml ? { html: p.excerptHtml } : p, searchExcerpt),
-  };
-})).replace(/</g, "\\u003c") : "";
+let searchJson = "";
+if (searchOn) {
+  const allPosts = (site.archives && site.archives.length)
+    ? site.archives.reduce((acc, g) => acc.concat(g.posts || []), [])
+    : (site.posts || []);
+  searchJson = JSON.stringify(allPosts.map((p) => {
+    const m = p.meta || {};
+    return {
+      u: p.url || "",
+      t: m.title || "",
+      d: m.date ? h.formatDate(m.date, "YYYY-MM-DD") : "",
+      g: Array.isArray(m.tags) ? m.tags : [],
+      c: Array.isArray(m.categories) ? m.categories : [],
+      x: h.excerpt(p.excerptHtml ? { html: p.excerptHtml } : p, searchExcerpt),
+    };
+  })).replace(/</g, "\\u003c");
+}
 
 const isActive = (u) => {
   if (!u || u === "#") return false;
