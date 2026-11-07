@@ -8,6 +8,7 @@ nav:
   dynamic: 动态
   about: 关于
   menu: 菜单
+  close: 关闭菜单
   search: 搜索
 
 theme:

@@ -8,6 +8,7 @@ nav:
   dynamic: Moments
   about: About
   menu: Menu
+  close: Close menu
   search: Search
 
 theme:
