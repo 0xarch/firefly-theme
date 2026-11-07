@@ -12,6 +12,9 @@
   pointer-events: none;
   transition: transform var(--dur) var(--ease);
 }
+/* static: the bar scrolls away with the document; fixed (the default above)
+   stays pinned and dynamic additionally hides on downward scroll */
+body[data-navbar-mode="static"] #navbar { position: absolute; }
 @media (min-width: 1280px) {
   #navbar { width: 92vw; }
 }
