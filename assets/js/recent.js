@@ -80,8 +80,14 @@ function initRecent() {
     const list = $("[data-recent-list]", card);
     const dataEl = $("[data-recent-data]", card);
     if (!list || !dataEl) return;
-    let posts = [];
-    try { posts = JSON.parse(dataEl.textContent || "[]"); } catch (e) { return; }
+    // parse (and filter) only when a cell is actually clicked; most visits
+    // never use the week filter
+    let posts = null;
+    function loadPosts() {
+      if (posts) return posts;
+      try { posts = JSON.parse(dataEl.textContent || "[]"); } catch (e) { posts = []; }
+      return posts;
+    }
     // the server-rendered list doubles as the "no filter" state
     const recentHTML = list.innerHTML;
     let selected = null;
@@ -107,13 +113,13 @@ function initRecent() {
 
     cells.forEach(function (cell) {
       if (cell.tagName !== "BUTTON") return;
-      const month = cell.getAttribute("data-month");
-      const week = cell.getAttribute("data-week");
-      const bucket = posts.filter(function (p) {
-        return String(p.m) === month && String(p.w) === week;
-      });
-      if (!bucket.length) return;
       cell.addEventListener("click", function () {
+        const month = cell.getAttribute("data-month");
+        const week = cell.getAttribute("data-week");
+        const bucket = loadPosts().filter(function (p) {
+          return String(p.m) === month && String(p.w) === week;
+        });
+        if (!bucket.length) return;
         const same = selected === cell;
         if (selected) {
           selected.classList.remove("is-selected");

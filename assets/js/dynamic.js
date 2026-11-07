@@ -10,18 +10,19 @@ function initDynamic() {
   const search = $("[data-dynamic-search]", page);
   const yearSelect = $("[data-dynamic-year]", page);
   const empty = $("[data-dynamic-empty]", page);
-  // cache the lowercased text once instead of reading textContent per key
-  items.forEach(function (item) {
-    item.dataset.searchText = (item.textContent || "").toLowerCase();
+  // cache the lowercased text once instead of reading textContent per key;
+  // keep it in memory rather than copying the whole feed into data attributes
+  const searchText = items.map(function (item) {
+    return (item.textContent || "").toLowerCase();
   });
 
   function apply() {
     const query = search ? search.value.trim().toLowerCase() : "";
     const year = yearSelect ? yearSelect.value : "all";
     let shown = 0;
-    items.forEach(function (item) {
+    items.forEach(function (item, i) {
       const match = (year === "all" || item.getAttribute("data-year") === year) &&
-        (!query || item.dataset.searchText.indexOf(query) !== -1);
+        (!query || searchText[i].indexOf(query) !== -1);
       item.hidden = !match;
       if (match) shown += 1;
     });
