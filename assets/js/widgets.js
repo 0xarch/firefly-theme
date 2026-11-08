@@ -22,8 +22,9 @@ function initStats() {
       const ago = Math.floor((now - last.getTime()) / DAY);
       $$('[data-stat-id="last-update"]').forEach(function (el) {
         el.textContent = ago <= 0 ? (ss.today || "today") : String(ago);
-        const suffix = $('[data-stat-suffix="last-update"]');
-        if (suffix) suffix.hidden = ago <= 0;
+      });
+      $$('[data-stat-suffix="last-update"]').forEach(function (suffix) {
+        suffix.hidden = ago <= 0;
       });
     }
   }
