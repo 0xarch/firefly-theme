@@ -9,4 +9,4 @@ const pl = theme.postList || {};
 <section class="post-list" data-layout="<%= pl.layout || 'list' %>" data-mobile-layout="<%= pl.mobileLayout || 'grid' %>">
   <% for (const post of page.posts) { %><%- partial('post-card', { post }) %><% } %>
 </section>
-<%- partial('footer', { view: 'tag', navUrl: `/tags/${h.slugify(page.tag)}/` }) %>
+<%- partial('footer', { view: 'tag' }) %>
