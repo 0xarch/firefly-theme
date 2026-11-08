@@ -58,7 +58,9 @@ function initThemeToggle() {
 function initSystemThemeWatch() {
   if (!systemQuery || !systemQuery.addEventListener) return;
   systemQuery.addEventListener("change", function () {
-    if (storedMode() === "system") applyDark(resolveDark("system"));
+    if (storedMode() !== "system") return;
+    applyDark(resolveDark("system"));
+    updateGiscusTheme();
   });
 }
 
