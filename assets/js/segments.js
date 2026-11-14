@@ -1,5 +1,5 @@
-// Long-post segment loader: fetch the next fragment when the reader approaches
-// the end of the loaded content, splice them in order and replay a pending
+// Long-post segment loader: fetch fragments sequentially as soon as the page
+// opens, splice them in order and replay a pending
 // #anchor once its fragment is in.
 import { $, findAnchor, segmentHash, state } from "./core.js";
 import { buildToc } from "./toc.js";
@@ -11,9 +11,8 @@ import { initCodeCopy } from "./code-copy.js";
 // The deployer ships the first segment plus a marker listing every remaining
 // fragment (`data-segments`); fragments written by an older deployer only
 // name their successor (`data-next`), which is still supported. One fragment
-// is requested at a time when the marker comes within ~600px of the viewport,
-// so a long article does not transfer every segment on page open. A pending
-// `#anchor` deliberately walks the chain until the fragment carrying it lands.
+// is requested at a time, without waiting for scrolling, so the TOC gains
+// each segment's headings as soon as its content arrives.
 //
 // A `#anchor` may live in a fragment the initial DOM does not contain; the
 // browser then resolves nothing, so the loader remembers the id and scrolls
@@ -65,8 +64,7 @@ function initSegments(pageUrl) {
   let inflight = 0;
   const retried = [];     // index → the one automatic retry was already used
   const sentinel = marker; // stays at the end of the loaded content
-  // the marker itself is display:none, so it has no useful geometry; a tiny
-  // visible probe sits immediately before it and tracks the end of the content
+  // Keep a stable insertion point immediately before the final marker.
   const probe = document.createElement("div");
   probe.className = "seg-sentinel";
   probe.setAttribute("aria-hidden", "true");
@@ -78,26 +76,12 @@ function initSegments(pageUrl) {
   function showLoader(on) {
     if (loader) loader.hidden = !on;
   }
-  function stopListening() {
-    window.removeEventListener("scroll", onScroll);
-    window.removeEventListener("resize", onScroll);
-  }
-
-  // the marker stays at the end of the loaded content, so its screen position
-  // tells us when the reader is close enough to ask for the next fragment
-  function nearViewport() {
-    if (!probe.parentNode) return true;
-    return probe.getBoundingClientRect().top <= window.innerHeight + 600;
-  }
-
   function maybeLoad() {
-    if (!alive()) { stopListening(); return; }
+    if (!alive()) return;
     if (finished || inflight > 0 || waitingRetry || nextRequest >= urls.length) {
       if (!finished && nextRequest >= urls.length && inflight === 0) showLoader(false);
       return;
     }
-    // a pending anchor can sit anywhere ahead: keep walking the chain
-    if (!state.anchorWait && !nearViewport()) { showLoader(false); return; }
     showLoader(true);
     request(nextRequest++);
   }
@@ -135,7 +119,7 @@ function initSegments(pageUrl) {
 
   // splice every fragment whose predecessors are already in place
   function drain() {
-    if (!alive()) { stopListening(); return; }
+    if (!alive()) return;
     const added = [];
     while (cursor < urls.length && typeof buffered[cursor] === "string") {
       added.push.apply(added, splice(buffered[cursor]));
@@ -156,7 +140,6 @@ function initSegments(pageUrl) {
       probe.remove();
       sentinel.remove();
       if (loader) loader.remove();
-      stopListening();
       if (activeLoader === maybeLoad) activeLoader = null;
       return;
     }
@@ -185,20 +168,7 @@ function initSegments(pageUrl) {
     return nodes;
   }
 
-  let ticking = false;
-  function onScroll() {
-    if (!alive()) { stopListening(); return; }
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(function () {
-      ticking = false;
-      maybeLoad();
-    });
-  }
-
   activeLoader = maybeLoad;
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", onScroll);
   showLoader(false);
   maybeLoad();
 }
