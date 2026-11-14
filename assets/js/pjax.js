@@ -91,8 +91,8 @@ function navigate(url, push) {
       // a newer navigation started while this response was in flight
       if (generation !== pjaxGeneration) return;
       const doc = new DOMParser().parseFromString(text, "text/html");
-      applyPage(doc, url);
       if (push) history.pushState({ pjax: true }, "", url);
+      applyPage(doc, url);
       pjaxKey = pageKey(url);
     })
     .catch(function () {
