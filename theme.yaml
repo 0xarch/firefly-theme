@@ -120,7 +120,7 @@ banner:
       deleteSpeed: 50
       pauseTime: 2000
     links:
-      - { name: GitHub, icon: github, url: "https://github.com/Ngwgers/Ngwg-firefly-theme", showName: true }
+      - { name: GitHub, icon: github, url: "https://github.com/0xarch/firefly-theme", showName: true }
       - { name: RSS, icon: rss, url: /rss.xml, showName: false }
   # what a post's banner shows: description | meta
   postInfo:

@@ -1,6 +1,6 @@
 # Firefly
 
-面向 [Ngwg](https://github.com/Ngwgers/Ngwg-core) 的 EJS 主题。提供壁纸 banner、文章卡片、可配置双侧栏、归档/标签/分类、404、搜索、动态页、PJAX、长文分段和 giscus 评论集成。UI 翻译提供 `zh_CN` 与 `en_US`。
+由 [0xarch](https://github.com/0xarch) 以个人名义发布、面向 [Ngwg](https://github.com/Ngwgers/Ngwg-core) 的 EJS 主题。提供壁纸 banner、文章卡片、可配置双侧栏、归档/标签/分类、404、搜索、动态页、PJAX、长文分段和 giscus 评论集成。UI 翻译提供 `zh_CN` 与 `en_US`。
 
 ## 安装
 
@@ -10,7 +10,7 @@
 title: 我的站点
 theme: firefly
 themes:
-  firefly: https://github.com/Ngwgers/Ngwg-firefly-theme.git
+  firefly: https://github.com/0xarch/firefly-theme.git
 language: zh_CN
 plugins:
   seo: https://github.com/Ngwgers/Ngwg-ext-seo.git
