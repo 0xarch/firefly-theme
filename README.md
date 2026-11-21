@@ -239,6 +239,10 @@ plugins:
 
 单篇 frontmatter `tex: true` / `katex` / `mathjax` / `false` 覆盖全局设置；KaTeX CSS/字体由插件部署、主题引用，MathJax 后端在构建期渲染。Mermaid 在浏览器运行，片段加载后也会初始化新图表和 tabs。
 
+Mermaid 同时下载站点 `/assets/mermaid/mermaid.min.js` 与 jsDelivr 的固定版本 10.9.8，只执行先成功下载的一份；两者均失败时重试一轮，网络恢复在线后可再次初始化。隐藏标签页中的图表在显示后绘制，PJAX 已移除的节点不再重绘。临时网络/布局错误最多重绘一次；语法、不支持的图表类型及未知错误保留源码并在控制台报告。每个图表使用独立 ID，避免同页多图互相覆盖。
+
+如站点配置了 CSP，需要在 `connect-src` 中允许站点自身与 `https://cdn.jsdelivr.net`，并在 `script-src` 中允许 `blob:`；下载完成后通过临时 Blob 脚本执行运行时，不使用 `eval`。
+
 文章 HTML 超过阈值且有可用顶层块切点时，只将首段写入文章页，其余写入 `seg/N.html`。Firefly 打开文章后按顺序连续加载剩余片段，每段插入后立即更新 TOC，不等待滚动；目标锚点位于后续片段时，会继续取段寻找目标。片段失败自动重试一次，再失败会跳过该片段，因此网络故障可能造成正文缺段。
 
 分段依赖 JavaScript；禁用 JavaScript 时只看到首段。需要完整无脚本阅读时，将 `chunk_size` 设为负数，或为文章设置 `no_segment: true`。无 JavaScript 时搜索、TOC、tabs 切换、热力图、评论和手动配色等交互也不可用，静态正文与普通链接仍能使用。

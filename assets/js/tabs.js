@@ -3,6 +3,7 @@
 // (`::: tabs#fruit`) plus a per-tab id (`@tab apple#apple`) keeps every
 // container sharing that id on the same tab across the page.
 import { $$ } from "./core.js";
+import { initMermaid } from "./mermaid.js";
 
 const groupState = {};
 
@@ -55,6 +56,7 @@ function initTabs(root) {
   function activate(buttons, panels, index) {
     buttons.forEach(function (b, i) { b.classList.toggle("active", i === index); });
     panels.forEach(function (p, i) { p.classList.toggle("active", i === index); });
+    initMermaid(panels[index]);
   }
 }
 

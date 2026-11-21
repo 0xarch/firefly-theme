@@ -3,10 +3,42 @@
 // files plugin (only when a page actually contains a diagram).
 import { $$ } from "./core.js";
 
-
 var mermaidNodes = new WeakMap();
+var mermaidNextId = 0;
 var mermaidRenderQueue = Promise.resolve();
 var mermaidInitializedRuntime = null;
+
+var mermaidWaiting = new Set();
+var mermaidVisibilityObserver = null;
+var mermaidOnlineBound = false;
+
+function mermaidVisible(node) {
+  return node.isConnected && node.getClientRects().length > 0;
+}
+
+function waitForMermaid(node) {
+  if (!node.isConnected) return;
+  if (!mermaidVisibilityObserver && typeof ResizeObserver !== "undefined") {
+    mermaidVisibilityObserver = new ResizeObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (mermaidVisible(entry.target)) queueMermaidNode(entry.target);
+      });
+    });
+  }
+  mermaidWaiting.add(node);
+  if (mermaidVisibilityObserver) mermaidVisibilityObserver.observe(node);
+}
+
+function forgetMermaid(node) {
+  mermaidWaiting.delete(node);
+  if (mermaidVisibilityObserver) mermaidVisibilityObserver.unobserve(node);
+}
+
+function deferMermaidNode(node, state) {
+  restoreMermaidSource(node, state);
+  state.status = "ready";
+  waitForMermaid(node);
+}
 
 function mermaidErrorKind(error) {
   var message = String(error && (error.message || error.str) || error);
@@ -32,11 +64,22 @@ function queueMermaidNode(node) {
     mermaidNodes.set(node, state);
   }
   if (state.status !== "ready") return mermaidRenderQueue;
+  if (!mermaidVisible(node)) {
+    waitForMermaid(node);
+    return mermaidRenderQueue;
+  }
+  forgetMermaid(node);
   state.status = "queued";
+  // Capture the shared download now so one failed batch does not repeat
+  // the same network attempts separately for every diagram on the page.
+  var runtimePromise = loadMermaidRuntime();
+  runtimePromise.catch(function () {});
   mermaidRenderQueue = mermaidRenderQueue.then(async function () {
+    if (!mermaidVisible(node)) { deferMermaidNode(node, state); return; }
     var runtime;
     try {
-      runtime = await loadMermaidRuntime();
+      runtime = await runtimePromise;
+      if (!mermaidVisible(node)) { deferMermaidNode(node, state); return; }
       if (mermaidInitializedRuntime !== runtime) {
         runtime.initialize({ startOnLoad: false });
         mermaidInitializedRuntime = runtime;
@@ -46,14 +89,24 @@ function queueMermaidNode(node) {
       console.warn("Mermaid runtime unavailable; source preserved", error);
       return;
     }
-    // Work on one node at a time so a malformed diagram cannot poison its
-    // neighbours. Mermaid marks nodes processed before rendering succeeds.
+    // Serialize rendering and supply unique IDs: Mermaid 10 run() uses
+    // Date.now() alone, which can collide between diagrams in one millisecond.
     for (var attempt = 0; attempt < 2; attempt++) {
+      if (!mermaidVisible(node)) { deferMermaidNode(node, state); return; }
       try {
-        await runtime.run({ nodes: [node] });
+        var id = "ngwg-mermaid-" + Date.now() + "-" + (++mermaidNextId);
+        var result = await runtime.render(id, state.source, node);
+        if (!mermaidVisible(node)) { deferMermaidNode(node, state); return; }
+        node.innerHTML = result.svg;
+        if (result.bindFunctions) result.bindFunctions(node);
+        node.setAttribute("data-processed", "true");
+        if (!mermaidVisible(node)) { deferMermaidNode(node, state); return; }
         state.status = "done";
         return;
       } catch (error) {
+        // A PJAX swap invalidates this job. Do not retry a detached node or
+        // report its layout failure as a problem on the new page.
+        if (!mermaidVisible(node)) { deferMermaidNode(node, state); return; }
         restoreMermaidSource(node, state);
         var kind = mermaidErrorKind(error);
         if (attempt === 0 && (kind === "layout" || kind === "network")) {
@@ -123,7 +176,7 @@ async function downloadMermaidRuntime() {
     }
     script.id = "mermaid-runtime";
     script.onload = function () {
-      if (!window.mermaid || typeof window.mermaid.run !== "function") {
+      if (!window.mermaid || typeof window.mermaid.render !== "function") {
         finish(new Error("Invalid Mermaid runtime"));
         return;
       }
@@ -137,9 +190,17 @@ async function downloadMermaidRuntime() {
 }
 
 function initMermaid(root) {
-  const nodes = $$(".mermaid", root).filter(function (el) { return !el.dataset.processed; });
+  mermaidWaiting.forEach(function (node) {
+    if (!node.isConnected) forgetMermaid(node);
+  });
+  var nodes = $$(".mermaid", root).filter(function (el) {
+    return !el.dataset.processed;
+  });
   if (!nodes.length) return;
-
+  if (!mermaidOnlineBound) {
+    mermaidOnlineBound = true;
+    window.addEventListener("online", function () { initMermaid(); });
+  }
   return Promise.all(nodes.map(queueMermaidNode));
 }
 
