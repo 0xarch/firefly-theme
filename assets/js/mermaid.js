@@ -4,6 +4,71 @@
 import { $$ } from "./core.js";
 
 
+var mermaidNodes = new WeakMap();
+var mermaidRenderQueue = Promise.resolve();
+var mermaidInitializedRuntime = null;
+
+function mermaidErrorKind(error) {
+  var message = String(error && (error.message || error.str) || error);
+  var name = error && (error.name || error.hash);
+  if (name === "SyntaxError" || /parse error|syntax error|no diagram type|unknown diagram/i.test(message) ||
+      (error && error.hash && typeof error.hash === "object" && error.hash.expected)) return "syntax";
+  if (name === "NetworkError" || name === "TimeoutError" || name === "ChunkLoadError" ||
+      /failed to fetch|loading chunk|dynamically imported module/i.test(message)) return "network";
+  if ((name === "TypeError" || name === "Error") &&
+      /getBoundingClientRect|getBBox|Cannot read properties of null/i.test(message)) return "layout";
+  return "unknown";
+}
+
+function restoreMermaidSource(node, state) {
+  node.textContent = state.source;
+  node.removeAttribute("data-processed");
+}
+
+function queueMermaidNode(node) {
+  var state = mermaidNodes.get(node);
+  if (!state) {
+    state = { source: node.textContent, status: "ready" };
+    mermaidNodes.set(node, state);
+  }
+  if (state.status !== "ready") return mermaidRenderQueue;
+  state.status = "queued";
+  mermaidRenderQueue = mermaidRenderQueue.then(async function () {
+    var runtime;
+    try {
+      runtime = await loadMermaidRuntime();
+      if (mermaidInitializedRuntime !== runtime) {
+        runtime.initialize({ startOnLoad: false });
+        mermaidInitializedRuntime = runtime;
+      }
+    } catch (error) {
+      state.status = "ready";
+      console.warn("Mermaid runtime unavailable; source preserved", error);
+      return;
+    }
+    // Work on one node at a time so a malformed diagram cannot poison its
+    // neighbours. Mermaid marks nodes processed before rendering succeeds.
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        await runtime.run({ nodes: [node] });
+        state.status = "done";
+        return;
+      } catch (error) {
+        restoreMermaidSource(node, state);
+        var kind = mermaidErrorKind(error);
+        if (attempt === 0 && (kind === "layout" || kind === "network")) {
+          await new Promise(function (resolve) { setTimeout(resolve, 100); });
+          continue;
+        }
+        state.status = "failed";
+        console.warn("Mermaid " + kind + " error; source preserved", error);
+        return;
+      }
+    }
+  });
+  return mermaidRenderQueue;
+}
+
 var mermaidRuntimePromise = null;
 
 // Race downloads, not script execution: a late response must never replace
@@ -75,10 +140,7 @@ function initMermaid(root) {
   const nodes = $$(".mermaid", root).filter(function (el) { return !el.dataset.processed; });
   if (!nodes.length) return;
 
-  loadMermaidRuntime().then(function (runtime) {
-    runtime.initialize({ startOnLoad: false });
-    return runtime.run({ nodes: nodes });
-  }).catch(function (error) { console.warn("Mermaid rendering failed", error); });
+  return Promise.all(nodes.map(queueMermaidNode));
 }
 
 export { initMermaid };
